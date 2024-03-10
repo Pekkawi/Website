@@ -1,4 +1,8 @@
 Job1:
     script:
-        - echo "This is a first Demo Job"
+        - echo "This is a first Demo Job 1"
+
+Job2:
+    script:
+        - echo "This is a demo job 2"
         
