@@ -1,0 +1,4 @@
+Job1:
+    script:
+        - echo "This is a first Demo Job"
+        
