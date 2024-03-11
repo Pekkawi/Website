@@ -10,6 +10,6 @@ deploy-prod:
   stage: deploy
   script:
     - docker build . -t thecore-docker:latest # Updated image name
-    - docker run -d -p 3000:3000 --rm --name thecore-docker:latest thecore-docker # Updated image name
+    - docker run -d -p 3000:3000 --rm --name thecore-docker thecore-docker:latest # Updated image name
   only:
     - main
