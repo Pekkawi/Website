@@ -7,19 +7,19 @@ import { IPerm } from "@/database/permission.model";
 
 type UserDetailsProps = {
   user: IUser;
-  perms: IPerm;
+  // perms: IPerm;
   // Add any additional props you might need, such as a callback for when a user's details are updated
   // role:string
 };
 
 const UserDetails: React.FC<UserDetailsProps> = ({ user }) => {
-  const [permss, setPermss] = useState<IPerm[]>([]);
+  // const [permss, setPermss] = useState<IPerm[]>([]);
 
   // Placeholder function for role change, implement according to your needs
-  const changeUserRole = (newRole: string) => {
+  /* const changeUserRole = (newRole: string) => {
     console.log(`Changing role to ${newRole} for user ${user._id}`);
     // Implement role change logic here
-  };
+  }; */
 
   return (
     <motion.div
@@ -45,7 +45,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user }) => {
           </div>
         </div>
         <div className="flex flex-1 flex-col gap-1">
-          {permss.map((permission) => {
+          {/* permss.map((permission) => {
             return (
               <div key={permission._id} className="items-center space-x-2">
                 <Checkbox />
@@ -54,7 +54,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user }) => {
                 </p>
               </div>
             );
-          })}
+          } ) */}
         </div>
       </div>
       <div className="mt-[-1rem] flex justify-end">
