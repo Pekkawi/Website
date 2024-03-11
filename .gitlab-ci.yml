@@ -1,18 +1,15 @@
 image: docker
+
 services:
   - docker:dind
+
 stages:
   - deploy
+
 deploy-prod:
   stage: deploy
   script:
-    # build the Docker image from the Dockerfile in the current folder and
-    # give the resulting image a tag/name
-    - docker build . -t thecore-docker
-    # run the Docker container in detached mode and allow it
-    # to be removed automatically when it exits or when the Docker daemon exits
-    - docker run -d -p 3000:3000 --rm --name nextjs-app thecore-docker
+    - docker build . -t my-nextjs-app:latest
+    - docker run -d -p 3000:3000 --rm --name my-nextjs-app my-nextjs-app:latest
   only:
-    - main # This job runs only on the main branch
-  tags:
-    - deploy
+    - main
