@@ -1,8 +1,11 @@
 image: docker
+
 services:
   - docker:dind
+
 stages:
   - deploy
+
 deploy-prod:
   stage: deploy
   script:
@@ -11,4 +14,4 @@ deploy-prod:
   tags:
     - deploy
   only:
-    -main
+    - main
