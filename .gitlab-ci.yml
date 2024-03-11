@@ -14,4 +14,4 @@ deploy-prod:
     # to be (-rm) removed when it exits or the Docker daemon exits
     - docker run -d -p 3000:3000 --rm --name docker-image thecore-docker 
     only:
-      - main
+    - main
