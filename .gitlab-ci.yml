@@ -1,17 +1,15 @@
-# .gitlab-ci.yml
 image: docker
+
 services:
   - docker:dind
+
 stages:
   - deploy
+
 deploy-prod:
   stage: deploy
   script:
-    # build the from the Dockerfile in current folder . and
-    # give the resulting image a (-t) tag / name
-    - docker build . -t docker-image
-    # run docker container in (-d) detached mode and allow it
-    # to be (-rm) removed when it exits or the Docker daemon exits
-    - docker run -d -p 3000:3000 --rm --name docker-image thecore-docker 
-    only:
+    - docker build . -t thecore-docker:latest # Updated image name
+    - docker run -d -p 3000:3000 --rm --name thecore-docker:latest thecore-docker # Updated image name
+  only:
     - main
