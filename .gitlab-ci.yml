@@ -12,6 +12,6 @@ deploy-prod:
     - docker build . -t my-nextjs-app:latest
     - docker run -d -p 3000:3000 --rm --name my-nextjs-app my-nextjs-app:latest
   tags:
-    - deploy
+    - build
   only:
     - main
