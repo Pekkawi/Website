@@ -28,7 +28,7 @@ deploy-prod:
     - docker pull $IMAGE_NAME
     - docker stop thecore-docker || true
     - docker rm thecore-docker || true
-    - docker run -d -p 3000:3000 --name thecore-docker $IMAGE_NAME
+    - docker run -d -p 3000:3000 -e MONGODB_URL=$MONGODB_URL --name thecore-docker $IMAGE_NAME
   only:
     - main
   tags:
