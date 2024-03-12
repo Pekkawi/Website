@@ -9,14 +9,15 @@ const Home = () => {
         <h1> And Several Bootiful pictures of our boss Andrei</h1>
 
         <div className=" flex flex-1 max-sm:flex-col">
-          {/*
+          {
             <Image
-            src="/assets/images/Andrei1.jpg"
-            width={300}
-            height={300}
-            alt="Andrei1"
-            className="rounded-lg shadow-light-300 max-sm:my-20 sm:mx-10"
-          /> */}
+              src="/assets/images/Andrei1.jpg"
+              width={300}
+              height={300}
+              alt="Andrei1"
+              className="rounded-lg shadow-light-300 max-sm:my-20 sm:mx-10"
+            />
+          }
           <Image
             src="/assets/images/Andrei2.png"
             width={300}
