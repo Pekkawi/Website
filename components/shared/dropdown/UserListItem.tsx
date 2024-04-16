@@ -12,14 +12,12 @@ type UserListItemProps = {
 };
 
 const UserListItem: React.FC<UserListItemProps> = ({ user, onDelete,isOpen,onToggle }) => {
-  // const [Open, setOpen] = useState(false);
-
-  // const toggleDetails = () => setOpen(!Open);
+ 
   const perms = user.permissions;
   return (
     <div key={user._id} className="border-b-2 border-gray-300 last:mb-0">
       <div
-        // onClick={toggleDetails}
+  
         onClick={onToggle}
         className="user-header flex cursor-pointer items-center justify-between p-2"
       >

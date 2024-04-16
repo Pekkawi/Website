@@ -246,6 +246,7 @@ import { useState } from "react";
 
 const DropDown = () => {
   const { users, deleteUser } = useUsers();
+
   const [openUserId, setOpenUserId] = useState(null);
 
   const handleToggle = (userId:any) => {
@@ -255,17 +256,15 @@ const DropDown = () => {
       setOpenUserId(userId); // Open the new one and close the previous one
     }
   };
-
   return (
     <div>
       <section className="mt-7 border border-gray-200 p-4 shadow-md shadow-gray-300">
         {users.map((user) => (
-          <UserListItem
-            key={user._id}
-            user={user}
-            onDelete={deleteUser}
-            isOpen={openUserId === user._id}
-            onToggle={() => handleToggle(user._id)}
+          <UserListItem key={user._id} user={user} onDelete={deleteUser}
+          
+          isOpen={openUserId === user._id}
+          onToggle={() => handleToggle(user._id)}
+          
           />
         ))}
       </section>
