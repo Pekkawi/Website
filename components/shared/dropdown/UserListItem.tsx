@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { IUser } from "@/database/user.model";
 import UserDetails from "@/components/shared/dropdown/UserDetails"; // Assume UserDetails is implemented
 import { AnimatePresence, motion } from "framer-motion";
@@ -7,17 +7,20 @@ import { IPerm } from "@/database/permission.model";
 type UserListItemProps = {
   user: IUser;
   onDelete: (userId: string) => Promise<void>;
+  isOpen: boolean;
+  onToggle: () => void;
 };
 
-const UserListItem: React.FC<UserListItemProps> = ({ user, onDelete }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const UserListItem: React.FC<UserListItemProps> = ({ user, onDelete,isOpen,onToggle }) => {
+  // const [Open, setOpen] = useState(false);
 
-  const toggleDetails = () => setIsOpen(!isOpen);
+  // const toggleDetails = () => setOpen(!Open);
   const perms = user.permissions;
   return (
     <div key={user._id} className="border-b-2 border-gray-300 last:mb-0">
       <div
-        onClick={toggleDetails}
+        // onClick={toggleDetails}
+        onClick={onToggle}
         className="user-header flex cursor-pointer items-center justify-between p-2"
       >
         <h3 className="font-medium">{user.display_name}</h3>
@@ -38,7 +41,7 @@ const UserListItem: React.FC<UserListItemProps> = ({ user, onDelete }) => {
             }}
             transition={{ duration: 0.45, ease: "easeInOut" }}
           >
-            <UserDetails user={user} />
+            <UserDetails user={user} onDelete={onDelete} />
           </motion.section>
         )}
       </AnimatePresence>

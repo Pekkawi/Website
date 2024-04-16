@@ -2,17 +2,14 @@ import React, { useState } from "react";
 import { IUser } from "@/database/user.model";
 import { Checkbox } from "@/components/ui/checkbox";
 import { m, motion } from "framer-motion";
-import { deleteUser } from "@/lib/actions/user.actions";
 import { IPerm } from "@/database/permission.model";
 
 type UserDetailsProps = {
   user: IUser;
-  // perms: IPerm;
-  // Add any additional props you might need, such as a callback for when a user's details are updated
-  // role:string
+  onDelete: (userId: string) => Promise<void>;
 };
 
-const UserDetails: React.FC<UserDetailsProps> = ({ user }) => {
+const UserDetails: React.FC<UserDetailsProps> = ({ user , onDelete }) => {
   // const [permss, setPermss] = useState<IPerm[]>([]);
 
   // Placeholder function for role change, implement according to your needs
@@ -61,7 +58,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user }) => {
         {" "}
         {/* Added mt-2 class */}
         <button
-          onClick={() => deleteUser(user._id)}
+          onClick={() => onDelete(user._id)}
           className="rounded bg-red-600 px-3 py-1  font-bold text-white hover:bg-red-700 md:px-4 md:py-2"
         >
           Delete

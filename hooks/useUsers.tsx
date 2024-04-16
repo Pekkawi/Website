@@ -4,14 +4,18 @@ import { IUser } from "@/database/user.model";
 export const useUsers = () => {
   const [users, setUsers] = useState<IUser[]>([]);
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchUsers = async () => {
-      const response = await fetch("/api/users");
+      const response = await fetch("/api/users",{
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setUsers(data);
     };
-
-    fetchUsers();
+    fetchUsers(); // Executes fetchUsers function in order for the users to be fetched
   }, []);
 
   const deleteUser = async (userId: string) => {
@@ -32,7 +36,7 @@ export const useUsers = () => {
     } catch (error) {
       console.error("Network error:", error);
     }
-  };
+  }; // Deletes a user from the database based on a userId
 
   return { users, deleteUser };
 };
