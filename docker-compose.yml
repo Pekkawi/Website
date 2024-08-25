@@ -1,0 +1,67 @@
+services:
+  nextjs:
+    container_name: nextjs
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    environment:
+      - VIRTUAL_HOST=myapp.thecores.xyz
+      - LETSENCRYPT_HOST=myapp.thecores.xyz
+      - LETSENCRYPT_EMAIL=edlie22@student.sdu.dk
+    restart: always
+
+  # nginx:
+  #   container_name: nginx
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - nextjs
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #   restart: always
+# services:
+#   nextjs:
+#     container_name: nextjs
+#     build: .
+#     ports:
+#       - "3000:3000"
+#     env_file:
+#       - .env.local
+#     environment:
+#       - VIRTUAL_HOST=myapp.thecores.xyz
+#       - LETSENCRYPT_HOST=myapp.thecores.xyz
+#       - LETSENCRYPT_EMAIL=edlie22@student.sdu.dk
+#     restart: always
+
+#   nginx-proxy:
+#     container_name: nginx-proxy
+#     image: jwilder/nginx-proxy
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     volumes:
+#       - /var/run/docker.sock:/tmp/docker.sock:ro
+#       - ./nginx/certs:/etc/nginx/certs:ro
+#       - ./nginx/html:/usr/share/nginx/html:rw  # Mount for ACME challenge files
+#     restart: always
+
+#   letsencrypt-nginx-proxy-companion:
+#     container_name: nginx-proxy-acme
+#     image: nginxproxy/acme-companion
+#     environment:
+#       - NGINX_PROXY_CONTAINER=nginx-proxy
+#       - DEFAULT_EMAIL=edlie22@student.sdu.dk
+#     depends_on:
+#       - nginx-proxy
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock:ro
+#       - ./nginx/certs:/etc/nginx/certs:rw
+#       - ./nginx/html:/usr/share/nginx/html:rw  # Ensure this is writable
+#       - ./nginx/acme:/etc/acme.sh:rw  # Mount for ACME client data
+#     restart: always
+
+# volumes:
+#   acme:

@@ -1,0 +1,35 @@
+image: docker
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - deploy
+
+variables:
+  IMAGE_NAME: $CI_REGISTRY_IMAGE/thecore-docker:latest
+
+build-image:
+  stage: build
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build . -t $IMAGE_NAME
+    - docker push $IMAGE_NAME
+  only:
+    - main
+  tags:
+    - build
+
+deploy-prod:
+  stage: deploy
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker pull $IMAGE_NAME
+    - docker stop thecore-docker || true
+    - docker rm thecore-docker || true
+    - docker run -d -p 3000:3000 -e MONGODB_URL=$MONGODB_URL --name thecore-docker $IMAGE_NAME
+  only:
+    - main
+  tags:
+    - deploy
