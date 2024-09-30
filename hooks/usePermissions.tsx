@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
-import CryptoJS from 'crypto-js';
 import { IPerm } from "@/database/permission.model";
 
 export const usePermissions = () => {
   const [permissions, setPermissions] = useState<IPerm[]>([]);
-  const encryptedMessage = CryptoJS.AES.encrypt(process.env.NEXT_PUBLIC_API_KEY || '', process.env.NEXT_PUBLIC_ENCRYPTION_KEY || '').toString();
-  console.log(encryptedMessage); 
   useEffect(() => {
     const fetchPerms = async () => {
       const response = await fetch("/api/permissions");
