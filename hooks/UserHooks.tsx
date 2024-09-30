@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { IUser } from "@/database/user.model";
 import { usePermissions } from "./usePermissions";
-import CryptoJS from 'crypto-js';
 
 export const UserHooks = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const { getPermissionById } = usePermissions();
-  const encryptedMessage = CryptoJS.AES.encrypt(process.env.PUBLIC_NEXT_API_KEY||"",process.env.PUBLIC_NEXT_ENCRYPTION_KEY||"").toString();
   useEffect(() => {
     const fetchUsers = async () => {
       
@@ -14,7 +12,6 @@ export const UserHooks = () => {
         method: "GET",
         headers: {
          "Content-Type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY  || "",
         },
       });
       const data = await response.json();
@@ -29,7 +26,6 @@ export const UserHooks = () => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-           "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
          },
         body: JSON.stringify({ userId }),
       });
@@ -50,7 +46,6 @@ export const UserHooks = () => {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-           "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
          },
         body: JSON.stringify({ role }),
       });
@@ -79,7 +74,6 @@ export const UserHooks = () => {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-           "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
          },
         body: JSON.stringify({ permissionId, userId, isChecked }),
       });
