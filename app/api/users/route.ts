@@ -10,10 +10,8 @@ export async function GET(request: NextRequest) {
   try {
    
 
-    await connectToDatabase();
-
-    // const some = await Permissions.find({}); // This is just to make sure that the model is registered with Mongoose.
-    const users = await User.find({}).populate("permissions");
+    await connectToDatabase();    // const some = await Permissions.find({}); // This is just to make sure that the model is registered with Mongoose.
+    const users = await User.find({}).limit(10);
     users.sort((a, b) => {
       if (a.first_name < b.first_name) {
         return -1;
@@ -32,12 +30,6 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // if (!verifyApiKey(request)) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    //     status: 401,
-    //   });
-    // }
-    // Connect to the database
     await connectToDatabase();
 
     // Parse the request body to get userId

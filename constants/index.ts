@@ -30,4 +30,9 @@ export const sidebarLinks: SidebarLink[] = [
     label: "Permissions",
     imgURL: "/assets/icons/permissions.svg",
   },
+  {
+    route: '/calendar',
+    label: 'Calendar',
+    imgURL: '/assets/icons/calendar.svg'
+  }
 ];

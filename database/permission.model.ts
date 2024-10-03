@@ -1,18 +1,12 @@
-import { Schema, models, model, Document } from "mongoose";
+import { IPerm } from "@/interfaces/database.interfaces";
+import { Schema, models, model } from "mongoose";
 
 const schedulings = ["on_demand", "scheduled", "locking"];
 const defaultScheduling = schedulings[0];
 const workflows = ["open", "timed", "controlled"];
 const defaultWorkflow = workflows[0];
 
-export interface IPerm extends Document {
-  abbreviation: String;
-  name: String;
-  description: String;
-  scheduling: String;
-  workflow: String;
-  default: Boolean;
-}
+
 
 const permissionSchema = new Schema({
   abbreviation: {
@@ -54,6 +48,6 @@ const permissionSchema = new Schema({
 });
 
 const Permissions =
-  models.permissions || model("permissions", permissionSchema, "permissions"); // Check if the model already exists , otherwise create a model based on the Schema
+  models.permissions || model<IPerm>("permissions", permissionSchema, "permissions"); // Check if the model already exists , otherwise create a model based on the Schema
 
 export default Permissions;

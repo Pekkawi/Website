@@ -30,6 +30,7 @@ export const usePermissions = () => {
         );
       }
       const data = await response.json();
+      
       return data;
     } catch (error) {
       console.error("Failed to fetch permission by ID:", error);
