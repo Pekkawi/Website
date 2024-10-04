@@ -20,6 +20,7 @@ export async function PATCH(
         });
       }
     
+      
       if(user.permissions.includes(permissionId)){
         user.permissions = user.permissions.filter((permission:Types.ObjectId) => !permission.equals(permissionId));
       }else{

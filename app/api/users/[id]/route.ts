@@ -1,7 +1,7 @@
 import User from "@/database/user.model";
 import { connectToDatabase } from "@/lib/mongoose";
 import { Types } from "mongoose";
-import { NextRequest } from "next/server";
+import { NextRequest} from "next/server";
 
 
 
@@ -19,3 +19,16 @@ return new Response(JSON.stringify({user,message:"Succesfully fetched the user"}
 }
 
 
+export async function DELETE(request: NextRequest, {params}:{params:{id:Types.ObjectId}}) {
+  try{
+    const userId = params.id;
+    await connectToDatabase(); // attempt connecting to the DB first
+    
+    const user = await User.where({_id:userId}).deleteOne();
+  
+    return new Response(JSON.stringify({user,message:"Succesfully deleted the user"}), {status: 200});
+    
+  }catch(err){
+    return new Response(JSON.stringify({err, message: "Failed to delete user"}), {status: 500});
+  }
+}
