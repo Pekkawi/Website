@@ -20,7 +20,7 @@ const UserPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, on
     }
 
     let l;
-    for (let i of range) {
+    for (const i of range) {
       if (l) {
         if (i - l === 2) {
           rangeWithDots.push(l + 1);
@@ -36,7 +36,7 @@ const UserPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, on
   };
 
   return (
-    <nav className="flex items-center justify-center space-x-1 py-4">
+    <nav className="flex items-center justify-center space-x-1 py-5">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}

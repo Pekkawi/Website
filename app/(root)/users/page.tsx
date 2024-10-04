@@ -91,7 +91,7 @@ const User2 = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openUserId, setOpenUserId] = useState<Types.ObjectId | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 12;
+  const usersPerPage = 10;
 
   const { data: Users, status: statusUsers, refetch: refetchUsers} = useQuery('users', getUsers, {
     staleTime: Infinity,

@@ -6,7 +6,7 @@ const PageLoader = () => {
     <div className="flex h-screen items-center justify-center">
         <div className="-mt-48 flex items-center justify-center">
       <motion.div
-        className="size-16 rounded-full border-t-4 border-solid border-blue-500"
+        className="size-16 rounded-full border-t-4 border-solid border-orange-500"
         animate={{
           rotate: 360
         }}

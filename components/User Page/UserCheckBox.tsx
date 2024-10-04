@@ -34,21 +34,17 @@ const UserCheckBox = ({
 }: {
   Permission: IPerm,
   UsersPermissions: Types.ObjectId[],
-  userId : Types.ObjectId
+  userId: Types.ObjectId
 }) => {
   const [checked, setChecked] = useState(!!UsersPermissions.includes(Permission._id));
-
   const queryClient = useQueryClient();
-
-  const mutation = useMutation( (permissionId:Types.ObjectId) => updateUserPermission(userId,permissionId),{
-    onSuccess: () =>{
-        queryClient.invalidateQueries(['DetailsUser',userId]);
+  const mutation = useMutation((permissionId: Types.ObjectId) => updateUserPermission(userId, permissionId), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['DetailsUser', userId]);
     }
-  } )
+  });
 
-  
-
-  function handleRoleChange(){
+  function handleRoleChange() {
     setChecked((prev) => !prev);
     mutation.mutate(Permission._id);
   }
@@ -57,15 +53,15 @@ const UserCheckBox = ({
     <label className="flex items-start space-x-3">
       <input
         type="checkbox"
-        className="size-5 rounded border-gray-300 text-blue-600 focus:outline-none focus:ring-0 focus:ring-offset-0 dark:border-gray-600 dark:text-blue-400"
+        className="size-5 rounded border-gray-700 bg-gray-800 text-orange-500 focus:ring-orange-500 focus:ring-offset-gray-900"
         checked={checked}
-        onChange={(e) => handleRoleChange()}
+        onChange={handleRoleChange}
       />
-      <span className="text-gray-900 dark:text-gray-100">
-        {Permission.abbreviation}:{Permission.name}
+      <span className="text-gray-400">
+        {Permission.abbreviation}: {Permission.name}
       </span>
     </label>
   );
-};
 
+};
 export default UserCheckBox;

@@ -43,19 +43,19 @@ const RoleSelector = ({ userId,userRole,roles}:{userId:Types.ObjectId, userRole:
   }
 
   return (
-    <div className="mx-auto w-auto xss:min-w-[300px] lg:min-w-[320px] ">
+    <div className="mx-auto w-auto xss:min-w-[300px] lg:min-w-[320px]">
       <div className="relative">
-        <label className="absolute -top-2.5 left-3 bg-white px-1 text-sm font-medium text-gray-700">
+        <label className="absolute -top-2.5 left-3 bg-white dark:bg-dark-300 px-1 text-sm font-medium text-gray-700 dark:text-gray-300">
           Role <span className="text-red-500">*</span>
         </label>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full cursor-default rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-dark-300 py-2 pl-3 pr-10 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:text-gray-100"
         >
           <span className="block truncate">{selectedRole}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <motion.svg
-              className={`size-5 text-gray-400${
+              className={`size-5 text-gray-400 dark:text-gray-500${
                 isOpen ? "rotate-180" : "rotate-0"
               }`}
               viewBox="0 0 20 20"
@@ -80,16 +80,16 @@ const RoleSelector = ({ userId,userRole,roles}:{userId:Types.ObjectId, userRole:
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg"
+              className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg dark:bg-dark-300"
             >
               <ul className="max-h-60 overflow-visible rounded-md py-1 text-base leading-6 shadow-sm focus:outline-none sm:text-sm sm:leading-5">
                 {roles.map((role, index) => (
                   <li
                     key={index}
                     onClick={() => {
-                        handleRoleChange(role);
+                      handleRoleChange(role);
                     }}
-                    className="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100"
+                    className="relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-dark-200"
                   >
                     <span className="block truncate">{role}</span>
                   </li>
