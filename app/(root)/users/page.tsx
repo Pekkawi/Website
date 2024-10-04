@@ -143,7 +143,7 @@ const User2 = () => {
   };
 
   return (
-    <div className="background background-light900_dark300 min-h-screen">
+    <div className="background background-light900_dark300 max-h-screen">
       <h1 className="h1-bold text-dark100_light900">Users</h1>
       <UserSearch 
         setFilteredUsers={setFilteredUsers} 
@@ -258,7 +258,7 @@ const UserDetails = ({
         open: { opacity: 1, height: "auto" },
         collapsed: { opacity: 0, height: 0 },
       }}
-      transition={{ duration: 0.4, ease: "easeInOut" }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
       className="relative overflow-hidden"
     >
       <div className="relative grid grid-cols-1 justify-items-start px-4 pb-7 md:items-baseline mmd:grid-cols-2 mmd:grid-rows-1">
