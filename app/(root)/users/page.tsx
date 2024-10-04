@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IPerm, IUser } from "@/interfaces/database.interfaces";
 import { UserType } from "@/interfaces/userpage.interfaces";
@@ -13,6 +13,7 @@ import DropDownLoading from "@/components/User Page/DropDownLoading";
 import UserSearch from "@/components/User Page/UserSearch";
 import UserPagination from "@/components/User Page/UserPagination";
 import NoUsersFound from "@/components/User Page/NoUsersFound";
+import ErrorFetchingUsers from "@/components/User Page/ErrorFetchingUser";
 
 
 // Will be moved to a seperate file
@@ -87,16 +88,29 @@ async function getPermissions(): Promise<IPerm[] | undefined> {
 const User2 = () => {
   const roles = ['User', 'Maintainer', 'Admin'];
   const [filteredUsers, setFilteredUsers] = useState<UserType[] | undefined>();
+  const [searchTerm, setSearchTerm] = useState("");
   const [openUserId, setOpenUserId] = useState<Types.ObjectId | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 12;
 
-  const { data: Users, status: statusUsers } = useQuery('users', getUsers, {
+  const { data: Users, status: statusUsers, refetch: refetchUsers} = useQuery('users', getUsers, {
     staleTime: Infinity,
     onSuccess: (Users) => {
-      setFilteredUsers(Users);
+      applyFilter(Users);
     }
   });
+
+  const applyFilter = useCallback((users: UserType[] | undefined) => {
+    if (users && searchTerm) {
+      const filtered = users.filter(user =>
+        user.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    } else {
+      setFilteredUsers(users);
+    }
+  }, [searchTerm]);
 
   const { data: Permissions, status: statusPermissions } = useQuery('permissions', getPermissions, {
     staleTime: Infinity,
@@ -106,12 +120,16 @@ const User2 = () => {
     setOpenUserId(openUserId !== userId ? userId : null);
   };
 
+  const handleRetry = () => {
+    refetchUsers();
+  };
+
   if (statusUsers === 'loading') {
     return <PageLoader />;
   }
 
   if (statusUsers === 'error') {
-    return <div>Error fetching data</div>;
+    return <div> <ErrorFetchingUsers onRetry={handleRetry}/></div>;
   }
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -127,7 +145,11 @@ const User2 = () => {
   return (
     <div className="background background-light900_dark300 min-h-screen">
       <h1 className="h1-bold text-dark100_light900">Users</h1>
-      <UserSearch setFilteredUsers={setFilteredUsers} />
+      <UserSearch 
+        setFilteredUsers={setFilteredUsers} 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        applyFilter={() => applyFilter(Users)} />
       <section className="mt-7 rounded-sm border border-gray-200 bg-white shadow-md shadow-gray-300 dark:border-dark-400 dark:bg-dark-300 dark:shadow-gray-500">
         {!currentUsers || currentUsers.length === 0 ? (
           <NoUsersFound />

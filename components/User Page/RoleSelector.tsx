@@ -22,8 +22,6 @@ const updateUserRole = async (userId: Types.ObjectId, role: string) => {
 
 }
 
-
-
 const RoleSelector = ({ userId,userRole,roles}:{userId:Types.ObjectId, userRole:string,roles:string[]}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(
