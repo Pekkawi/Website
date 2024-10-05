@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-
+// Interface for a Node
 export interface INode  {
     _id:Types.ObjectId,
     SerialNumber: string;
@@ -11,16 +11,22 @@ export interface INode  {
     os: string;
   }
 
-  export interface IPerm  {
+  export interface IPerm{
     _id:Types.ObjectId,
-    abbreviation: string;
-    name: string;
-    description: string;
-    scheduling: string;
-    workflow: string;
-    default: boolean;
+    description:string,
+    scheduling:"on_demand"|"scheduled"|"locking",
+    workflow:"open"|"timed"|"controlled",
+    default:boolean,
+    abbreviation:string,
+    name:string,
+    image:Types.ObjectId,
+    created:Date,
+    updated:Date,
+    __v:number
   }
   
+  
+  // Interface for a new User
   export interface IUser {
     _id:Types.ObjectId,
     azure_id: string;
@@ -32,4 +38,10 @@ export interface INode  {
     card_number: string;
     role: string;
     permissions?: Types.ObjectId[];
+  }
+
+
+  // Interface for an image
+  export interface IImage {
+
   }
