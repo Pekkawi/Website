@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+/* This is going to be a feature added for form validation when adding a machine */
+
 export const permissionSchema = z.object({
   machineName: z
     .string()

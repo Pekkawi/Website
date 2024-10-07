@@ -1,13 +1,6 @@
-import { Schema, models, model, Document } from "mongoose";
+import { INode } from "@/interfaces/database.interfaces";
+import { Schema, models, model} from "mongoose";
 
-export interface INode extends Document {
-  SerialNumber: String;
-  MACAddress: String;
-  DeviceName: String;
-  History: String;
-  Status: String;
-  os: String;
-}
 
 const status = ["Open", "Busy", "Maintenance"];
 const [defaultStatus] = status; // set default status to Open

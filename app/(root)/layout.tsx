@@ -1,10 +1,16 @@
+"use client";
+
 import LeftSidebar from "@/components/shared/LeftSidebar";
 import Navbar from "@/components/shared/navbar/Navbar";
 import React from "react";
 import { ClerkProvider, SignedIn } from "@clerk/nextjs";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
+  <QueryClientProvider client={queryClient}>
     <ClerkProvider>
       <header></header>
 
@@ -21,6 +27,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </SignedIn>
       </main>
     </ClerkProvider>
+    </QueryClientProvider>
   );
 };
 

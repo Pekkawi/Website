@@ -1,20 +1,9 @@
-import { Schema, models, model, Document } from "mongoose";
-import { IPerm } from "./permission.model";
+import { Schema, models, model} from "mongoose";
+import { IUser } from "@/interfaces/database.interfaces";
 
 const roles = ["user", "maintainer", "admin"];
 const [defaultRole] = roles;
 
-export interface IUser extends Document {
-  azure_id: String;
-  email: String;
-  first_name: String;
-  last_name: String;
-  display_name: String;
-  card_id: String;
-  card_number: String;
-  role: String;
-  permissions?: IPerm[];
-}
 
 const userSchema = new Schema({
   azure_id: {
@@ -70,7 +59,7 @@ const userSchema = new Schema({
   ],
 });
 
-const User = models.users || model("users", userSchema, "users");
+const User = models.users || model<IUser>("users", userSchema, "users");
 
 // Check if the model already exists , otherwise create a model based on the schema
 

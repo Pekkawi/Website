@@ -17,7 +17,7 @@ const Navbar = () => {
           className="max-sm:hidden"
         />
         <p className=" h2-bold mx-5 font-spaceGrotesk text-dark-100 dark:text-light-900">
-          The <span className=" text-teal-500">Core</span>
+          The <span className=" text-orange-500">Core</span>
         </p>
       </Link>
       <div className="flex-between gap-5">
