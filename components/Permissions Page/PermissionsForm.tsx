@@ -21,15 +21,13 @@ import {
   SelectContent,
   SelectItem,
 } from '../ui/select';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { FileWithPath, useDropzone } from 'react-dropzone';
+import { FileWithPreview } from '@/interfaces/permissionpage.interfaces';
+import { ImageCropper } from './ImageCropper';
 
 const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp',
-];
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 // The fields that the Form on the permissions page will take
 const permissionFormSchema = z.object({
@@ -40,10 +38,7 @@ const permissionFormSchema = z.object({
   abbreviation: z
     .string()
     .length(3, 'Abbreviation must be exactly 3 charachters')
-    .refine(
-      (value) => value === value.toUpperCase(),
-      'Abbreviation must be uppercase'
-    ),
+    .refine((value) => value === value.toUpperCase(), 'Abbreviation must be uppercase'),
   description: z
     .string()
     .max(200, 'Description must be less than 200 charachters')
@@ -56,10 +51,7 @@ const permissionFormSchema = z.object({
     ),
   image: z // workaround for file input as zod doesn't support file inputs
     .any()
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      'Max image size is 5MB'
-    )
+    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, 'Max image size is 5MB')
     .refine(
       (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
       'Only .jpg , .jpeg , .png and .webp formats are supported'
@@ -71,13 +63,13 @@ const permissionFormSchema = z.object({
       'Permission must be either "open" or "special_permission"'
     ),
 
-  //workflow not added as everything was set to "Open" and the meaning of it is lost but it still is in the DB collection
+  // workflow not added as everything was set to "Open" and the meaning of it is lost but it still is in the DB collection
 });
 
-const checkFileInfo = () => {};
-
 const PermissionsForm = () => {
-  const [fileInfo, setFileInfo] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<FileWithPreview | null>(null);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [croppedImage, setCroppedImage] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof permissionFormSchema>>({
     resolver: zodResolver(permissionFormSchema), // revalidates our data based on our validation rules set in permissionFormSchema
@@ -87,19 +79,6 @@ const PermissionsForm = () => {
       description: '',
     },
   }); // declare useForm
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      form.setValue('image', file);
-      setFileInfo(
-        `File: ${file.name}, Size: ${(file.size / 1024).toFixed(2)} KB`
-      );
-    } else {
-      form.setValue('image', undefined);
-      setFileInfo(null);
-    }
-  };
 
   const handleSubmit: SubmitHandler<{
     name: string;
@@ -112,12 +91,30 @@ const PermissionsForm = () => {
     console.log(data);
   };
 
+  const onDrop = React.useCallback((acceptedFiles: FileWithPath[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const fileWithPreview = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+      setSelectedFile(fileWithPreview);
+      setDialogOpen(true);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': [],
+    },
+  });
+
   return (
     <>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="max-w-md w-full flex flex-col gap-4"
+          className="flex w-full max-w-md flex-col gap-4"
         >
           <FormField
             control={form.control}
@@ -215,27 +212,48 @@ const PermissionsForm = () => {
           <FormField
             control={form.control}
             name="image"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      type="file"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold">Image</FormLabel>
+                <FormControl>
+                  <div
+                    {...getRootProps()}
+                    className="cursor-pointer border-2 border-dashed p-4 text-center"
+                  >
+                    <input
+                      {...getInputProps()}
                       onChange={(e) => {
-                        handleFileChange(e);
-                        field.onChange(e.target.files?.[0]);
+                        field.onChange(e.target.files);
                       }}
-                      accept=".jpg,.jpeg,.png,.webp"
                     />
-                  </FormControl>
-                  {fileInfo && (
-                    <p className="text-sm text-gray-500">{fileInfo}</p>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+                    <p>Drag & drop an image here, or click to select one</p>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
+
+          {selectedFile && (
+            <ImageCropper
+              dialogOpen={isDialogOpen}
+              setDialogOpen={setDialogOpen}
+              selectedFile={selectedFile}
+              setSelectedFile={setSelectedFile}
+              setCroppedImage={setCroppedImage}
+            />
+          )}
+
+          {croppedImage && (
+            <div className="mt-4">
+              <img
+                src={croppedImage}
+                alt="Cropped"
+                className="size-36 cursor-pointer object-cover"
+                onClick={() => setDialogOpen(true)}
+              />
+            </div>
+          )}
           <Button type="submit" className="w-full">
             Submit
           </Button>
