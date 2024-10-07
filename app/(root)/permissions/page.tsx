@@ -1,13 +1,9 @@
-
-
+import PermissionsForm from '@/components/Permissions Page/PermissionsForm';
 
 const Permission = () => {
-
   return (
-    <div> {/* Background of the website */}
-      <p> Hello baddy</p>
-
-
+    <div>
+      <PermissionsForm />
     </div>
   );
 };
