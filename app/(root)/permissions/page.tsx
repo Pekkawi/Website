@@ -7,7 +7,7 @@ const PermissionPage = () => {
     <>
       <div className="background background-light900_dark300 mt-[-30px]">
         <h1 className="h1-bold text-dark100_light900">New Permissions</h1>
-        <p className="mb-3 mt-[-10px]  text-gray-500">Add a new device group</p>
+        <p className="mb-3 mt-[-8px]  text-gray-500">Add a new device group</p>
         <PermissionsForm />
       </div>
 
