@@ -2,87 +2,20 @@
 
 import { useCallback, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { IPerm, IUser } from '@/interfaces/database.interfaces';
 import { UserType } from '@/interfaces/userpage.interfaces';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import { Types } from 'mongoose';
-import RoleSelector from '@/components/User Page/RoleSelector';
-import UserCheckBox from '@/components/User Page/UserCheckBox';
+
 import PageLoader from '@/components/shared/PageLoader';
-import DropDownLoading from '@/components/User Page/DropDownLoading';
 import UserSearch from '@/components/User Page/UserSearch';
 import UserPagination from '@/components/User Page/UserPagination';
 import NoUsersFound from '@/components/User Page/NoUsersFound';
 import ErrorFetchingUsers from '@/components/User Page/ErrorFetchingUser';
+import { getPermissions } from '@/hooks/permissionHooks';
+import { getUsers } from '@/hooks/userHooks';
+import UserDetails from '@/components/User Page/UserDetails';
 
 // Will be moved to a seperate file
-async function getUsers(): Promise<UserType[] | undefined> {
-  try {
-    const res = await fetch('/api/users', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    return undefined;
-  }
-}
-
-// Will be moved to a seperate file
-async function deleteUser(id: Types.ObjectId): Promise<boolean> {
-  try {
-    const res = await fetch(`/api/users/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return res.ok;
-  } catch (err) {
-    return false;
-  }
-}
-
-// Will be moved to a seperate file
-async function getUserDetails(id: Types.ObjectId): Promise<IUser | undefined> {
-  try {
-    const res = await fetch(`/api/users/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!res.ok) {
-      return undefined;
-    }
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    return undefined;
-  }
-}
-
-// Will be moved to a seperate file
-async function getPermissions(): Promise<IPerm[] | undefined> {
-  try {
-    const res = await fetch('/api/permissions', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!res.ok) {
-      return undefined;
-    }
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    return undefined;
-  }
-}
 
 const User2 = () => {
   const roles = ['User', 'Maintainer', 'Admin'];
@@ -235,100 +168,5 @@ const User2 = () => {
 };
 
 // User Details Component will be moved to seperate file to reduce lines of code
-const UserDetails = ({
-  userId,
-  roles,
-  Permissions,
-  statusPermission,
-  handleToggle,
-}: {
-  userId: Types.ObjectId;
-  roles: string[];
-  Permissions: IPerm[] | undefined;
-  statusPermission: 'idle' | 'error' | 'loading' | 'success';
-  handleToggle: (userId: Types.ObjectId) => void;
-}) => {
-  const { data, status } = useQuery(
-    ['DetailsUser', userId],
-    () => getUserDetails(userId),
-    {
-      enabled: !!userId,
-      staleTime: Infinity,
-    }
-  );
-
-  const queryClient = useQueryClient();
-  const deleteUserMutation = useMutation(() => deleteUser(userId), {
-    onSuccess: () => {
-      queryClient.invalidateQueries('users');
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(['DetailsUser', userId]);
-    },
-  });
-
-  if (status === 'loading' || statusPermission === 'loading') {
-    return <DropDownLoading />;
-  }
-  if (status === 'error' || statusPermission === 'error') {
-    return <div>Error fetching data</div>;
-  }
-
-  return (
-    <motion.div
-      initial="collapsed"
-      animate="open"
-      exit="collapsed"
-      variants={{
-        open: { opacity: 1, height: 'auto' },
-        collapsed: { opacity: 0, height: 0 },
-      }}
-      transition={{ duration: 0.2, ease: 'easeInOut' }}
-      className="relative overflow-hidden"
-    >
-      <div className="relative grid grid-cols-1 justify-items-start px-4 pb-7 md:items-baseline mmd:grid-cols-2 mmd:grid-rows-1">
-        <div className="absolute left-3 top-6">
-          <RoleSelector userId={userId} userRole={data?.user?.role} roles={roles} />
-        </div>
-        <button
-          className="absolute bottom-5 right-10 rounded bg-red-600 px-3 py-1 font-bold text-white hover:bg-red-700 md:px-4 md:py-2 xl:px-7 xl:py-2"
-          onClick={() => {
-            handleToggle(userId);
-            deleteUserMutation.mutate();
-          }}
-        >
-          Delete
-        </button>
-        <div className="">
-          <div className="mt-20">
-            <h4 className="text-dark100_light900">Card number</h4>
-            <p className="font-extralight text-gray-400 dark:text-gray-600">
-              {data?.user?.card_number}
-            </p>
-          </div>
-          <div className="mb-5 mt-6">
-            <h4 className="text-dark100_light900">Card ID</h4>
-            <p className="font-extralight text-gray-400 dark:text-gray-600">
-              {data?.user?.card_id}
-            </p>
-          </div>
-        </div>
-        <div className="mmd:relative mmd:bottom-12">
-          <div>
-            {Permissions?.map((permission) => (
-              <div key={`${permission._id}`} className="mt-2">
-                <UserCheckBox
-                  Permission={permission}
-                  UsersPermissions={data?.user?.permissions || []}
-                  userId={data?.user?._id}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
 export default User2;
