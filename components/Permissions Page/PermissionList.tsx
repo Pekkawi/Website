@@ -1,11 +1,11 @@
 'use client';
-
 import { useQuery } from 'react-query';
 import PageLoader from '@/components/shared/PageLoader';
 import { IPerm } from '@/interfaces/database.interfaces';
-import { Types } from 'mongoose';
+import PermissionsError from './PermissionsError';
 
 async function getPermissions() {
+  // eslint-disable-next-line no-useless-catch
   try {
     const res = await fetch('/api/permissions', {
       method: 'GET',
@@ -14,32 +14,38 @@ async function getPermissions() {
       },
     });
     if (!res.ok) {
-      return undefined;
+      throw new Error('Failed to fetch permissions');
     }
-    const permissions = await res.json();
+    const permissions: IPerm[] = await res.json();
     return permissions;
   } catch (err) {
-    return undefined;
+    throw err;
   }
 }
 
-async function updatePermission(id: Types.ObjectId) {
-  try {
-    const res = await fetch(`/api/permissions/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!res.ok) {
-      throw new Error('Failed to update permission');
-    }
-    return await res.json();
-  } catch (err) {
-    return undefined;
-  }
-}
+const PermissionList = () => {
+  const {
+    data: perms,
+    status,
+    refetch,
+  } = useQuery('permissions', getPermissions, {
+    staleTime: Infinity,
+  });
 
-const PermissionList = () => {};
+  if (status === 'loading') {
+    return <PageLoader />;
+  } else if (status === 'error') {
+    return <PermissionsError onRetry={refetch} />;
+  }
+
+  return (
+    <>
+      {perms &&
+        perms.map((perm) => (
+          <div key={perm._id.toString()}>{/* Render permission details here */}</div>
+        ))}
+    </>
+  );
+};
 
 export default PermissionList;

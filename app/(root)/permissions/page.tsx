@@ -1,5 +1,6 @@
 import React from 'react';
 import PermissionsForm from '@/components/Permissions Page/PermissionsForm';
+import PermissionList from '@/components/Permissions Page/PermissionList';
 
 const PermissionPage = () => {
   return (
