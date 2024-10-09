@@ -77,7 +77,7 @@ export function ImageCropper({
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogContent className="gap-0 p-0">
+      <DialogContent className="background-light900_dark300 gap-0 p-0">
         <div className="size-full p-6">
           <ReactCrop
             crop={crop}
@@ -97,7 +97,7 @@ export function ImageCropper({
         </div>
         <DialogFooter className="justify-center p-6 pt-0">
           <DialogClose asChild>
-            <Button size="sm" variant="outline" onClick={() => setSelectedFile(null)}>
+            <Button size="sm" variant="outline">
               <Trash2Icon className="mr-1.5 size-4" />
               Cancel
             </Button>
