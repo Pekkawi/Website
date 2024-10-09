@@ -1,48 +1,50 @@
+'use client';
 
+import { IPerm } from '@/interfaces/database.interfaces';
+import { Types } from 'mongoose';
+import { useState } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
 
-"use client";
-
-import { IPerm } from "@/interfaces/database.interfaces";
-import { Types } from "mongoose";
-import { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
-
-
-const updateUserPermission = async (userId: Types.ObjectId, permissionId:Types.ObjectId) => {
-    try{
-    const response = await fetch(`/api/users/${userId}/permissions`,{
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({permissionId})
+const updateUserPermission = async (
+  userId: Types.ObjectId,
+  permissionId: Types.ObjectId
+) => {
+  try {
+    const response = await fetch(`/api/users/${userId}/permissions`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ permissionId }),
     });
-    if(!response.ok){
-        throw new Error('Failed to update user role');
+    if (!response.ok) {
+      throw new Error('Failed to update user role');
     }
-    return response.json();
-}catch(err){
+    return await response.json();
+  } catch (err) {
     return undefined;
-}
-}
-
+  }
+};
 
 const UserCheckBox = ({
   Permission,
   UsersPermissions,
-  userId
+  userId,
 }: {
-  Permission: IPerm,
-  UsersPermissions: Types.ObjectId[],
-  userId: Types.ObjectId
+  Permission: IPerm;
+  UsersPermissions: Types.ObjectId[];
+  userId: Types.ObjectId;
 }) => {
   const [checked, setChecked] = useState(!!UsersPermissions.includes(Permission._id));
   const queryClient = useQueryClient();
-  const mutation = useMutation((permissionId: Types.ObjectId) => updateUserPermission(userId, permissionId), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['DetailsUser', userId]);
+  const mutation = useMutation(
+    (permissionId: Types.ObjectId) => updateUserPermission(userId, permissionId),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['DetailsUser', userId]);
+      },
     }
-  });
+  );
 
   function handleRoleChange() {
     setChecked((prev) => !prev);
@@ -62,6 +64,5 @@ const UserCheckBox = ({
       </span>
     </label>
   );
-
 };
 export default UserCheckBox;

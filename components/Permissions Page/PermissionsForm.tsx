@@ -124,41 +124,43 @@ const PermissionsForm: React.FC = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-dark100_light900">Name</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  className="background-light900_dark300 text-dark100_light900"
-                />
-              </FormControl>
-              <FormMessage className="text-red-500" />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+        <div className="mb-[-5px] grid grid-cols-2 grid-rows-1 gap-12">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="">
+                <FormLabel className="text-dark100_light900">Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="background-light900_dark300 text-dark100_light900"
+                  />
+                </FormControl>
+                <FormMessage className="text-red-500" />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="abbreviation"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-dark100_light900">Abbreviation</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  className="background-light900_dark300 text-dark100_light900"
-                />
-              </FormControl>
+          <FormField
+            control={form.control}
+            name="abbreviation"
+            render={({ field }) => (
+              <FormItem className="">
+                <FormLabel className="text-dark100_light900">Abbreviation</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="background-light900_dark300 text-dark100_light900"
+                  />
+                </FormControl>
 
-              <FormMessage className="text-red-500" />
-            </FormItem>
-          )}
-        />
+                <FormMessage className="text-red-500" />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}

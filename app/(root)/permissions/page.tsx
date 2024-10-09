@@ -1,17 +1,22 @@
-'use client';
 import React from 'react';
 import PermissionsForm from '@/components/Permissions Page/PermissionsForm';
 
-const Permission = () => {
+const PermissionPage = () => {
   return (
-    <div className="background background-light900_dark300  p-1">
-      <h1 className="h1-bold text-dark100_light900">New Permissions</h1>
-      <p className="mb-2 mt-[-5px]  text-gray-500">Add a new device group</p>
-      <PermissionsForm />
+    <>
+      <div className="background background-light900_dark300 mt-[-30px]">
+        <h1 className="h1-bold text-dark100_light900">New Permissions</h1>
+        <p className="mb-3 mt-[-10px]  text-gray-500">Add a new device group</p>
+        <PermissionsForm />
+      </div>
 
-      {/* Add a list of existing permissions here */}
-    </div>
+      <div className="background background-light900_dark300">
+        <h1 className="h1-bold text-dark100_light900">Permissions</h1>
+        <p className="mb-3 mt-[-10px]  text-gray-500">Available device groups</p>
+        <PermissionList />
+      </div>
+    </>
   );
 };
 
-export default Permission;
+export default PermissionPage;

@@ -1,20 +1,19 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { IPerm, IUser } from "@/interfaces/database.interfaces";
-import { UserType } from "@/interfaces/userpage.interfaces";
+import { useCallback, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { IPerm, IUser } from '@/interfaces/database.interfaces';
+import { UserType } from '@/interfaces/userpage.interfaces';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { Types } from "mongoose";
-import RoleSelector from "@/components/User Page/RoleSelector";
-import UserCheckBox from "@/components/User Page/UserCheckBox";
-import PageLoader from "@/components/shared/PageLoader";
-import DropDownLoading from "@/components/User Page/DropDownLoading";
-import UserSearch from "@/components/User Page/UserSearch";
-import UserPagination from "@/components/User Page/UserPagination";
-import NoUsersFound from "@/components/User Page/NoUsersFound";
-import ErrorFetchingUsers from "@/components/User Page/ErrorFetchingUser";
-
+import { Types } from 'mongoose';
+import RoleSelector from '@/components/User Page/RoleSelector';
+import UserCheckBox from '@/components/User Page/UserCheckBox';
+import PageLoader from '@/components/shared/PageLoader';
+import DropDownLoading from '@/components/User Page/DropDownLoading';
+import UserSearch from '@/components/User Page/UserSearch';
+import UserPagination from '@/components/User Page/UserPagination';
+import NoUsersFound from '@/components/User Page/NoUsersFound';
+import ErrorFetchingUsers from '@/components/User Page/ErrorFetchingUser';
 
 // Will be moved to a seperate file
 async function getUsers(): Promise<UserType[] | undefined> {
@@ -22,12 +21,12 @@ async function getUsers(): Promise<UserType[] | undefined> {
     const res = await fetch('/api/users', {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
     const data = await res.json();
     return data;
-  } catch(err) {
+  } catch (err) {
     return undefined;
   }
 }
@@ -38,11 +37,11 @@ async function deleteUser(id: Types.ObjectId): Promise<boolean> {
     const res = await fetch(`/api/users/${id}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
     });
     return res.ok;
-  } catch(err) {
+  } catch (err) {
     return false;
   }
 }
@@ -53,34 +52,34 @@ async function getUserDetails(id: Types.ObjectId): Promise<IUser | undefined> {
     const res = await fetch(`/api/users/${id}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
     if (!res.ok) {
       return undefined;
     }
     const data = await res.json();
     return data;
-  } catch(err) {
+  } catch (err) {
     return undefined;
   }
 }
 
- // Will be moved to a seperate file
+// Will be moved to a seperate file
 async function getPermissions(): Promise<IPerm[] | undefined> {
   try {
     const res = await fetch('/api/permissions', {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
     if (!res.ok) {
       return undefined;
     }
     const data = await res.json();
     return data;
-  } catch(err) {
+  } catch (err) {
     return undefined;
   }
 }
@@ -88,33 +87,45 @@ async function getPermissions(): Promise<IPerm[] | undefined> {
 const User2 = () => {
   const roles = ['User', 'Maintainer', 'Admin'];
   const [filteredUsers, setFilteredUsers] = useState<UserType[] | undefined>();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [openUserId, setOpenUserId] = useState<Types.ObjectId | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
-  const { data: Users, status: statusUsers, refetch: refetchUsers} = useQuery('users', getUsers, {
+  const {
+    data: Users,
+    status: statusUsers,
+    refetch: refetchUsers,
+  } = useQuery('users', getUsers, {
     staleTime: Infinity,
     onSuccess: (Users) => {
       applyFilter(Users);
-    }
+    },
   });
 
-  const applyFilter = useCallback((users: UserType[] | undefined) => {
-    if (users && searchTerm) {
-      const filtered = users.filter(user =>
-        user.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredUsers(filtered);
-    } else {
-      setFilteredUsers(users);
-    }
-  }, [searchTerm]);
+  const applyFilter = useCallback(
+    (users: UserType[] | undefined) => {
+      if (users && searchTerm) {
+        const filtered = users.filter(
+          (user) =>
+            user.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredUsers(filtered);
+      } else {
+        setFilteredUsers(users);
+      }
+    },
+    [searchTerm]
+  );
 
-  const { data: Permissions, status: statusPermissions } = useQuery('permissions', getPermissions, {
-    staleTime: Infinity,
-  });
+  const { data: Permissions, status: statusPermissions } = useQuery(
+    'permissions',
+    getPermissions,
+    {
+      staleTime: Infinity,
+    }
+  );
 
   const handleToggle = (userId: Types.ObjectId) => {
     setOpenUserId(openUserId !== userId ? userId : null);
@@ -129,7 +140,12 @@ const User2 = () => {
   }
 
   if (statusUsers === 'error') {
-    return <div> <ErrorFetchingUsers onRetry={handleRetry}/></div>;
+    return (
+      <div>
+        {' '}
+        <ErrorFetchingUsers onRetry={handleRetry} />
+      </div>
+    );
   }
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -143,21 +159,28 @@ const User2 = () => {
   };
 
   return (
-    <div className="background background-light900_dark300 max-h-screen">
+    <div className="background background-light900_dark300 mt-[-30px]">
       <h1 className="h1-bold text-dark100_light900">Users</h1>
-      <UserSearch 
-        setFilteredUsers={setFilteredUsers} 
+      <UserSearch
+        setFilteredUsers={setFilteredUsers}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        applyFilter={() => applyFilter(Users)} />
+        applyFilter={() => applyFilter(Users)}
+      />
       <section className="mt-7 rounded-sm border border-gray-200 bg-white shadow-md shadow-gray-300 dark:border-dark-400 dark:bg-dark-300 dark:shadow-gray-500">
         {!currentUsers || currentUsers.length === 0 ? (
           <NoUsersFound />
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {currentUsers.map((user, index) => (
-              <div key={`${user._id}`} className={`${index === currentUsers.length - 1 ? 'rounded-b-lg' : ''}`}>
-                <div className="flex cursor-pointer items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-dark-200" onClick={() => handleToggle(user._id)}>
+              <div
+                key={`${user._id}`}
+                className={`${index === currentUsers.length - 1 ? 'rounded-b-lg' : ''}`}
+              >
+                <div
+                  className="flex cursor-pointer items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-dark-200"
+                  onClick={() => handleToggle(user._id)}
+                >
                   <div className="flex flex-1 flex-col sm:flex-row sm:justify-between">
                     <p className="text-dark500_light700 font-medium">
                       {user.display_name}
@@ -202,7 +225,7 @@ const User2 = () => {
           </div>
         )}
       </section>
-      <UserPagination 
+      <UserPagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={onPageChange}
@@ -211,26 +234,28 @@ const User2 = () => {
   );
 };
 
-
-
- // User Details Component will be moved to seperate file to reduce lines of code
+// User Details Component will be moved to seperate file to reduce lines of code
 const UserDetails = ({
   userId,
   roles,
   Permissions,
   statusPermission,
-  handleToggle
+  handleToggle,
 }: {
-  userId: Types.ObjectId,
-  roles: string[],
-  Permissions: IPerm[] | undefined,
-  statusPermission: "idle" | "error" | "loading" | "success",
-  handleToggle: (userId: Types.ObjectId) => void
+  userId: Types.ObjectId;
+  roles: string[];
+  Permissions: IPerm[] | undefined;
+  statusPermission: 'idle' | 'error' | 'loading' | 'success';
+  handleToggle: (userId: Types.ObjectId) => void;
 }) => {
-  const { data, status } = useQuery(['DetailsUser', userId], () => getUserDetails(userId), {
-    enabled: !!userId,
-    staleTime: Infinity,
-  });
+  const { data, status } = useQuery(
+    ['DetailsUser', userId],
+    () => getUserDetails(userId),
+    {
+      enabled: !!userId,
+      staleTime: Infinity,
+    }
+  );
 
   const queryClient = useQueryClient();
   const deleteUserMutation = useMutation(() => deleteUser(userId), {
@@ -248,17 +273,17 @@ const UserDetails = ({
   if (status === 'error' || statusPermission === 'error') {
     return <div>Error fetching data</div>;
   }
-  
+
   return (
     <motion.div
       initial="collapsed"
       animate="open"
       exit="collapsed"
       variants={{
-        open: { opacity: 1, height: "auto" },
+        open: { opacity: 1, height: 'auto' },
         collapsed: { opacity: 0, height: 0 },
       }}
-      transition={{ duration: 0.2, ease: "easeInOut" }}
+      transition={{ duration: 0.2, ease: 'easeInOut' }}
       className="relative overflow-hidden"
     >
       <div className="relative grid grid-cols-1 justify-items-start px-4 pb-7 md:items-baseline mmd:grid-cols-2 mmd:grid-rows-1">
