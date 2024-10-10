@@ -86,12 +86,24 @@ const PermissionsForm: React.FC = () => {
 
   const submitPermissionForm = async (data: PermissionFormData) => {
     try {
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('abbreviation', data.abbreviation);
+      formData.append('description', data.description || '');
+      formData.append('permission', data.permission);
+      formData.append('scheduling', data.scheduling);
+
+      if (croppedImage) {
+        const blob = await (await fetch(croppedImage)).blob(); // Fetch the image and convert it to blob
+        formData.append('image', blob, data.image.name); // Append the blob to the form data
+      }
+
       const response = await fetch('/api/permissions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(formData),
       });
       if (!response.ok) {
         throw new Error('Failed to submit form');
@@ -99,6 +111,7 @@ const PermissionsForm: React.FC = () => {
       console.log('Form submitted sucessfully');
       form.reset();
       setCroppedImage(null);
+      setSelectedFile(null);
     } catch (error) {
       console.error('Error submitting form: ', error);
     }

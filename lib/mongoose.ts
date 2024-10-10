@@ -1,21 +1,21 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 let isConnected: boolean = false;
 
 export const connectToDatabase = async () => {
   if (isConnected) {
-    return;
+    return mongoose.connection.db;
   }
-  mongoose.set("strictQuery", true);
+  mongoose.set('strictQuery', true);
   if (!process.env.MONGODB_URL) {
-    return console.log("Missing mongodb_url");
+    return new Error('MONGODB_URL is not set');
   }
 
   try {
     const mongodbUrl = process.env.MONGODB_URL;
     await mongoose.connect(mongodbUrl);
     isConnected = true;
-    console.log("MONGODB IS CONNECTED");
+    return mongoose.connection.db;
   } catch (err) {
     console.log(err);
   }
