@@ -10,32 +10,13 @@ import {
 } from '@/components/ui/table';
 import { useQuery } from 'react-query';
 import PageLoader from '@/components/shared/PageLoader';
-import { IPerm } from '@/interfaces/database.interfaces';
 import PermissionsError from './PermissionsError';
 import Image from 'next/image';
 import { X, Check } from 'lucide-react';
 
 import DeletePermissionDialog from './DeletePermDialog';
 import EditPermissionDialog from './EditPermDialog';
-
-async function getPermissions() {
-  // eslint-disable-next-line no-useless-catch
-  try {
-    const res = await fetch('/api/permissions', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!res.ok) {
-      throw new Error('Failed to fetch permissions');
-    }
-    const permissions: IPerm[] = await res.json();
-    return permissions;
-  } catch (err) {
-    throw err;
-  }
-}
+import { getPermissions } from '@/hooks/permissionHooks';
 
 const PermissionList = () => {
   const {
@@ -71,7 +52,7 @@ const PermissionList = () => {
             perms.map((perm) => (
               <TableRow key={perm._id.toString()}>
                 <TableCell>
-                  <Image width={50} height={50} src={'/icons/account.svg'} />
+                  <Image width={50} height={50} src={`/${perm.image}`} alt={perm.name} />
                 </TableCell>
                 <TableCell>{perm.abbreviation}</TableCell>
                 <TableCell>{perm.name}</TableCell>

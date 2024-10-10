@@ -7,12 +7,50 @@ import { Types } from 'mongoose';
 import { decode } from 'base64-arraybuffer';
 
 // Get all permissions
+/* export async function GET(request: NextRequest) {
+  try {
+    const db = await connectToDatabase();
+
+    if (db instanceof Db) {
+      const bucket = new GridFSBucket(db, { bucketName: 'images' });
+
+      const perms = await Permissions.find({});
+
+      const permissionImages = [];
+
+      for (let i = 0; i < perms.length; i++) {
+        const image = await bucket.openDownloadStream(perms[i].image);
+        const buffer = await new Promise<Buffer>((resolve, reject) => {
+          const chunks: Uint8Array[] = [];
+          image.on('data', (chunk) => chunks.push(chunk));
+          image.on('error', reject);
+          image.on('end', () => resolve(Buffer.concat(chunks)));
+        });
+
+        const base64Data = `data:image/jpeg;base64,${buffer.toString('base64')}`;
+        permissionImages.push(base64Data);
+      }
+
+      perms.forEach((perm, index) => {
+        perm.image = permissionImages[index];
+        console.log(perm.name);
+      });
+
+      return new Response(JSON.stringify(perms), { status: 200 });
+    } else {
+      return new Response('Failed to fetch permissions', { status: 500 });
+    }
+  } catch (err) {
+    return new Response('Failed to fetch permissions', { status: 500 });
+  }
+} */
+
 export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
-    const perms = await Permissions.find({});
+    const permissions = await Permissions.find({});
 
-    return new Response(JSON.stringify(perms), { status: 200 });
+    return new Response(JSON.stringify(permissions), { status: 200 });
   } catch (err) {
     return new Response('Failed to fetch permissions', { status: 500 });
   }

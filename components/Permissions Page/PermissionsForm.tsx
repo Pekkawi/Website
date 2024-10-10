@@ -153,7 +153,6 @@ const PermissionsForm: React.FC = () => {
               </FormItem>
             )}
           />
-          ==
           <FormField
             control={form.control}
             name="abbreviation"
