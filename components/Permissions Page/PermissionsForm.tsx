@@ -87,11 +87,10 @@ const PermissionsForm: React.FC = () => {
   const submitPermissionForm = async (data: PermissionFormData) => {
     try {
       // change data.image to be the cropped image instead of the original image
-
       if (croppedImage) {
         data.image = croppedImage;
       }
-
+      console.log(data);
       const response = await fetch('/api/permissions', {
         method: 'POST',
         headers: {
