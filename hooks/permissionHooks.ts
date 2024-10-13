@@ -1,6 +1,4 @@
-import { IPerm } from '@/interfaces/database.interfaces';
-
-export async function getPermissions(): Promise<IPerm[] | undefined> {
+export async function getPermissions() {
   try {
     const res = await fetch('/api/permissions', {
       method: 'GET',
@@ -12,6 +10,7 @@ export async function getPermissions(): Promise<IPerm[] | undefined> {
       return undefined;
     }
     const data = await res.json();
+
     return data;
   } catch (err) {
     return undefined;

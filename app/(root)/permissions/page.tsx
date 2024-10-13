@@ -11,7 +11,7 @@ const PermissionPage = () => {
         <PermissionsForm />
       </div>
 
-      <div className="background background-light900_dark300">
+      <div className="background background-light900_dark300 mt-8">
         <h1 className="h1-bold text-dark100_light900">Permissions</h1>
         <p className="mb-3 mt-[-10px]  text-gray-500">Available device groups</p>
         <PermissionList />
