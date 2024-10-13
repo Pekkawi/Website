@@ -56,8 +56,8 @@ const PermissionList = () => {
                 </TableCell> */}
                 <TableCell>
                   <Image
-                    width={50}
-                    height={50}
+                    width={170}
+                    height={170}
                     src={perm.image} // Use the full image URL returned from the GET route
                     alt={perm.name}
                     onError={(e) => (e.currentTarget.src = '/placeholder-image.jpg')} // Optionally add a fallback image

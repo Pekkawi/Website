@@ -30,10 +30,6 @@ import { X } from 'lucide-react';
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-// BUG: FORM VALIDATION DOESN'T WORK FOR IMAGE ONCE YOU HAVE UPLOADED/REMOVED IT
-
-// BUG: POST ROUTE NOT WORKING PROPERLY
-
 const permissionFormSchema = z.object({
   name: z
     .string()
