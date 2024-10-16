@@ -20,7 +20,7 @@ const DeletePermissionDialog = ({ permId }: { permId: Types.ObjectId }) => {
 
   const queryClient = useQueryClient();
 
-  const deleteUserMutation = useMutation(
+  const deletePermMutation = useMutation(
     (permissionId: Types.ObjectId) => deletePermission(permissionId),
     {
       onSuccess: () => {
@@ -29,10 +29,6 @@ const DeletePermissionDialog = ({ permId }: { permId: Types.ObjectId }) => {
       },
     }
   );
-
-  const handleDelete = () => {
-    deleteUserMutation.mutate(permId);
-  };
 
   return (
     <>
@@ -62,10 +58,10 @@ const DeletePermissionDialog = ({ permId }: { permId: Types.ObjectId }) => {
             <Button
               variant="destructive"
               className="rounded bg-red-600 font-bold text-white hover:bg-red-700"
-              onClick={handleDelete}
-              disabled={deleteUserMutation.isLoading}
+              onClick={() => deletePermMutation.mutate(permId)}
+              disabled={deletePermMutation.isLoading}
             >
-              {deleteUserMutation.isLoading ? (
+              {deletePermMutation.isLoading ? (
                 <>
                   <svg className="mr-2 size-4 animate-spin" viewBox="0 0 24 24">
                     <circle
