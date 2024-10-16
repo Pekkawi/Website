@@ -1,4 +1,4 @@
-import { Pencil, Trash } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -8,8 +8,9 @@ import {
   DialogTrigger,
 } from '../ui/dialog';
 import { Button } from '../ui/button';
+import { Types } from 'mongoose';
 
-const EditPermissionDialog = () => {
+const EditPermissionDialog = ({ permId }: { permId: Types.ObjectId }) => {
   return (
     <>
       <Dialog>

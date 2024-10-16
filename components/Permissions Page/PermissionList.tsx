@@ -83,8 +83,8 @@ const PermissionList = () => {
                   )}
                 </TableCell>
                 <TableCell className="space-y-1 ">
-                  <EditPermissionDialog />
-                  <DeletePermissionDialog />
+                  <EditPermissionDialog permId={perm._id} />
+                  <DeletePermissionDialog permId={perm._id} />
                 </TableCell>
               </TableRow>
             ))}

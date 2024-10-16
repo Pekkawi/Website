@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,48 +26,14 @@ import { ImageCropper } from '@/components/Permissions Page/ImageCropper';
 import { FileWithPreview } from '@/interfaces/permissionpage.interfaces';
 import Image from 'next/image';
 import { X } from 'lucide-react';
-
-const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-
-const permissionFormSchema = z.object({
-  name: z
-    .string()
-    .min(3, 'Name must contain atleast 3 charachter(s)')
-    .max(30, 'Name must not be greater than 30 charachter(s)'),
-  abbreviation: z
-    .string()
-    .length(3, 'Abbreviation must be 3 charachter(s)')
-    .refine(
-      (value) => value === value.toUpperCase(),
-      'Abbreviation must be 3 uppercase letters'
-    ),
-  description: z
-    .string()
-    .max(300, 'Description must not be greater than 300 charachter(s)')
-    .optional(),
-  scheduling: z.enum(['on_demand', 'locking']),
-  permission: z.enum(['default_permission', 'special_permission']),
-  image: z
-    .any()
-    .refine((files) => files, "Image can't be empty")
-    .refine(
-      (files) => !files || files.length === 0 || files[0]?.size <= MAX_FILE_SIZE,
-      'Max image size is 5MB'
-    )
-    .refine(
-      (files) =>
-        !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0]?.type),
-      'Only .jpg, .jpeg, .png and .webp formats are supported'
-    ),
-});
-
-export type PermissionFormData = z.infer<typeof permissionFormSchema>;
+import { useMutation, useQueryClient } from 'react-query';
+import { permissionFormSchema, PermissionFormData } from '@/schemas/permissionFormSchema';
 
 const PermissionsForm: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<FileWithPreview | null>(null);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<PermissionFormData>({
     resolver: zodResolver(permissionFormSchema),
@@ -76,9 +42,26 @@ const PermissionsForm: React.FC = () => {
       abbreviation: '',
       description: '',
       scheduling: 'on_demand',
-      permission: 'default_permission',
+      permission: 'default',
     },
   });
+
+  const queryClient = useQueryClient();
+  const addNewPermissionMutation = useMutation(
+    (data: PermissionFormData) => submitPermissionForm(data),
+    {
+      onMutate: () => {
+        setIsSubmitting(true);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries('permissions');
+        setIsSubmitting(false);
+      },
+      onError: () => {
+        setIsSubmitting(false);
+      },
+    }
+  );
 
   const submitPermissionForm = async (data: PermissionFormData) => {
     try {
@@ -107,7 +90,7 @@ const PermissionsForm: React.FC = () => {
   };
 
   const handleSubmit: SubmitHandler<PermissionFormData> = (data) => {
-    submitPermissionForm(data);
+    addNewPermissionMutation.mutate(data); // Call the mutation
   };
 
   const onDrop = React.useCallback((acceptedFiles: File[]) => {
@@ -219,8 +202,8 @@ const PermissionsForm: React.FC = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="background-light900_dark300 text-dark100_light900">
-                  <SelectItem value="default_permission">Default </SelectItem>
-                  <SelectItem value="special_permission">Special </SelectItem>
+                  <SelectItem value="default">Default </SelectItem>
+                  <SelectItem value="special">Special </SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage className="text-red-500" />
@@ -309,9 +292,40 @@ const PermissionsForm: React.FC = () => {
 
         <Button
           type="submit"
-          className="w-full bg-orange-500 text-lg text-white hover:bg-orange-600 dark:hover:bg-orange-600"
+          className={`w-full text-lg text-white transition-colors ${
+            isSubmitting
+              ? 'bg-orange-500 hover:bg-orange-500'
+              : 'bg-orange-500 hover:bg-orange-600'
+          }`}
+          disabled={isSubmitting}
         >
-          Submit
+          {isSubmitting ? (
+            <>
+              <svg
+                className="-ml-1 mr-3 size-5 animate-spin text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Processing...
+            </>
+          ) : (
+            'Submit'
+          )}
         </Button>
       </form>
     </Form>

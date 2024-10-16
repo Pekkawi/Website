@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 export async function getPermissions() {
   try {
     const res = await fetch('/api/permissions', {
@@ -14,5 +16,19 @@ export async function getPermissions() {
     return data;
   } catch (err) {
     return undefined;
+  }
+}
+
+export async function deletePermission(permId: Types.ObjectId) {
+  try {
+    const res = await fetch(`/api/permissions/${permId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return res.ok;
+  } catch (err) {
+    return false;
   }
 }
