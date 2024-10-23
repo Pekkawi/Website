@@ -1,10 +1,10 @@
 # Web Interface for The Core
 
-This web page is designed with Next.js to help manage access permissions for workshop equipment. It allows administrators to view users, remove/add permissions and roles, add a new machine(permission), manage machines and check their usage history.
+This web page is designed in Next.js to help manage access for workshop equipment. It allows administrators to view users, change their roles and permissions, add a new machine type, manage machines and check their usage history.
 
 ## Project Overview
 
-This project aims to create an efficient access control system for workshop equipment, providing:
+This project aims to create an access control system for workshop equipment, providing:
 
 - **User Management**: View registered users and manage their roles and what machines they are allowed to use or delete them.
 - **Permission Management**: Easily add new machines as permissions.
@@ -76,17 +76,17 @@ To run this project, you will need:
 
 ### Managing and viewing a Machine
 
-- Go to the **Nodes** page and here you can view
+- Go to the **Nodes** page and here you can view all working machines, manage them and view their usage history.
 
 ## Technologies Used
 
 - **Next.js**: A React framework for building full-stack web applications.
-- **MongoDB**: Used for storing data.
+- **MongoDB**: Non-relational Database used for storing data.
 - **Clerk**: For authentication and restricting access to the platform
 - **TailwindCSS**: For styling the user interface with utility-first CSS.
-- **Framer Motion**: Library for adding smooth animations and transitions
-- **Shadcn-ui**: Premade components library using RadixUI which are easely usable and customizable.
-- **GridFS**: A library used for storing images in MongoDB databases
+- **Framer Motion**: Library for adding smooth animations and transitions.
+- **Shadcn-ui**: Premade component library using RadixUI, with easely customizable components.
+- **GridFS**: A library used for storing and retrieving files from MongoDB.
 
 ## Contributing
 
