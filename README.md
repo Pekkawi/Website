@@ -6,8 +6,7 @@ This web page is designed with Next.js to help manage access permissions for wor
 
 This project aims to create an efficient access control system for workshop equipment, providing:
 
-- **User Management**: View registered users and manage their roles and what machines they are allowed to use.
-- **Permission Control**: Grant or revoke permissions to specific machines.
+- **User Management**: View registered users and manage their roles and what machines they are allowed to use or delete them.
 - **Permission Management**: Easily add new machines as permissions.
 - **Monitor Machine Usage**: Check the status of a machine and it's history usage
 
