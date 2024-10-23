@@ -88,6 +88,7 @@ To run this project, you will need:
 - **shadcn/ui**: Premade component library using RadixUI, with easely customizable components.
 - **Docker**: Containerization platform used to package the application and its dependencies, ensuring consistent environments across different systems.
 - **GitLab CI/CD**: Used for continuous integration and deployment, automating the build and deployment processes.
+- **zod**: A validation library used for validating forms and data inputs.
 
 ## Contributing
 
