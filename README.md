@@ -81,12 +81,13 @@ To run this project, you will need:
 ## Technologies Used
 
 - **Next.js**: A React framework for building full-stack web applications.
-- **MongoDB**: Non-relational Database used for storing data.
+- **MongoDB**: Non-relational Database used for storing data,including file storage using GridFS.
 - **Clerk**: For authentication and restricting access to the platform
 - **TailwindCSS**: For styling the user interface with utility-first CSS.
 - **Framer Motion**: Library for adding smooth animations and transitions.
-- **Shadcn-ui**: Premade component library using RadixUI, with easely customizable components.
-- **GridFS**: A library used for storing and retrieving files from MongoDB.
+- **shadcn/ui**: Premade component library using RadixUI, with easely customizable components.
+- **Docker**: Containerization platform used to package the application and its dependencies, ensuring consistent environments across different systems.
+- **GitLab CI/CD**: Used for continuous integration and deployment, automating the build and deployment processes.
 
 ## Contributing
 
