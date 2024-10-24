@@ -1,9 +1,10 @@
 import Permissions from '@/database/permission.model';
 import { connectToDatabase } from '@/lib/mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { Db, GridFSBucket } from 'mongodb';
 // import { Readable } from 'stream';
 import { Types } from 'mongoose';
+import { Readable } from 'stream';
 // import { decode } from 'base64-arraybuffer';
 
 export async function GET(request: NextRequest) {
