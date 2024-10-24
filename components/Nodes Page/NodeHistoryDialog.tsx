@@ -1,6 +1,5 @@
 'use client';
 
-import { Trash } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -11,26 +10,32 @@ import {
 } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { useState } from 'react';
-import { useMutation, useQueryClient } from 'react-query';
-import { Types } from 'mongoose';
-import { deletePermission } from '@/hooks/permissionHooks';
+import { columns, History } from './NodeHistoryColumns';
+import { HistoryTable } from './NodeHistoryTable';
+
+// dummy data for the history dialog
+export const data: History[] = [
+  {
+    name: 'Adam Eve',
+    email: 'admaa@gmail.com',
+    date: new Date(2024, 10, 24, 15, 30),
+  },
+  {
+    name: 'Johnny Jones',
+    email: 'jj@gmail.com',
+    date: new Date(2024, 10, 23, 12, 0),
+  },
+  {
+    name: 'Sørn Christensen',
+    email: 'sochri@gmail.com',
+    date: new Date(2024, 10, 23, 8, 0),
+  },
+];
 
 const NodeHistoryDialog = ({ id }: { id: string }) => {
   // The passed in id represents the id of the node
 
   const [open, setOpen] = useState(false);
-
-  const queryClient = useQueryClient();
-
-  const deletePermMutation = useMutation(
-    (permissionId: Types.ObjectId) => deletePermission(permissionId),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('permissions');
-        setOpen(false);
-      },
-    }
-  );
 
   return (
     <>
@@ -38,19 +43,21 @@ const NodeHistoryDialog = ({ id }: { id: string }) => {
         <DialogTrigger>
           <Button
             variant="outline"
-            className="font-bold px-3 py-1 text-base background-light900_dark300 text-dark100_light900 hover:bg-gray-100 dark:hover:bg-gray-800 border-gray-300 dark:border-gray-600 md:py-2 xl:px-7 xl:py-2"
+            className="background-light900_dark300 text-dark100_light900 border-gray-300 px-3 py-1 text-base font-bold hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 md:py-2 xl:px-7 xl:py-2"
           >
             History
           </Button>
         </DialogTrigger>
-        <DialogContent className="background-light900_dark300 sm:max-w-[425px]">
+        <DialogContent className="background-light900_dark300 sm:max-w-[900px]">
           <DialogHeader>
-            <DialogTitle className="font-semibold">Delete Permissions</DialogTitle>
+            <DialogTitle className="font-semibold">History</DialogTitle>
           </DialogHeader>
 
-          <p className="mb-4 mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
-            Are you sure you want to delete this permission? This action cannot be undone.
+          <p className="mb-4 mt-2 text-left text-sm text-gray-500 dark:text-gray-400">
+            Here you can view the all the past entries in the past month
           </p>
+
+          <HistoryTable columns={columns} data={data} />
 
           <DialogFooter>
             <Button
