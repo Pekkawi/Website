@@ -66,7 +66,7 @@ const UserDetails = ({
         <button
           className="absolute bottom-5 right-10 rounded bg-red-600 px-3 py-1 font-bold text-white hover:bg-red-700 md:px-4 md:py-2 xl:px-7 xl:py-2"
           onClick={() => {
-            handleToggle(userId);
+            handleToggle(userId); // once a user has been delete close the dropdown
             deleteUserMutation.mutate();
           }}
         >
