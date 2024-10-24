@@ -39,7 +39,7 @@ const NodeDropDown = ({
           </div>
         </div>
 
-        <div className="justify-self-start col-span-2">
+        <div className="col-span-2 justify-self-start">
           {/* To be added when node is finished */}
           <div className="mt-2">
             <h4 className="text-dark100_light900">Created</h4>
@@ -53,7 +53,7 @@ const NodeDropDown = ({
 
         <div className="absolute bottom-5 right-10 flex gap-2">
           <NodeHistoryDialog id={serialNumber} />
-          <Button className=" rounded bg-red-600 px-3 py-1 text-base font-bold text-white hover:bg-red-700 md:px-4 md:py-2 xl:px-7 xl:py-2">
+          <Button className=" rounded bg-red-600 px-3 py-1 text-base  text-white hover:bg-red-700 md:px-4 md:py-2 xl:px-7 xl:py-2">
             Delete
           </Button>
         </div>
