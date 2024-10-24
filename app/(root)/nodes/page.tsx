@@ -1,5 +1,6 @@
 'use client';
 
+import CreateNodeDialog from '@/components/Nodes Page/CreateNodeDialog';
 import NodeDetails from '@/components/Nodes Page/NodeDetails';
 import NodeDropDown from '@/components/Nodes Page/NodeDropDown';
 import { RestrictedAccess } from '@/components/shared/RestrictedAccess';
@@ -16,40 +17,62 @@ export interface nodeInterface {
 }
 
 const data: nodeInterface[] = [
+  // 3D Printers - Bambu Lab
   {
-    name: 'Laser Cutter 1',
+    name: 'Bambu X1C-1',
     status: 'Ready',
     occupied: 'None',
     MACAddress: '00:1B:44:11:3A:B7',
-    SerialNumber: 'LC2024-AX1289374',
+    SerialNumber: 'BX1C2401-0584',
   },
   {
-    name: 'Bambu Printer 1',
+    name: 'Bambu X1C-2',
     status: 'Maintenance',
     occupied: 'None',
-    MACAddress: '00:1A:2B:3C:4D:5E',
-    SerialNumber: 'BP-X1-2023-987654',
+    MACAddress: '00:1B:44:11:3A:C8',
+    SerialNumber: 'BX1C2401-0585',
   },
   {
-    name: 'Bambu Printer 2',
-    status: 'Ready',
-    occupied: 'None',
-    MACAddress: '00:1A:2B:3C:4D:5F',
-    SerialNumber: 'BP-X1-2023-987655',
-  },
-  {
-    name: 'Dreamer Printer 1',
-    status: 'Ready',
-    occupied: 'None',
-    MACAddress: 'A4:C3:F0:85:7B:D2',
-    SerialNumber: 'DMP-2024-XR456789',
-  },
-  {
-    name: 'Dreamer Printer 2',
+    name: 'Laser Cutter 1',
     status: 'Locked',
-    occupied: 'Adam Pablo',
+    occupied: 'Pablo Perez',
+    MACAddress: '00:1B:44:12:4B:D9',
+    SerialNumber: 'BP1P2312-1024',
+  },
+
+  // 3D Printers - Prusa
+  {
+    name: 'Prusa MK4-1',
+    status: 'Ready',
+    occupied: 'None',
+    MACAddress: 'B8:27:EB:AA:BB:CC',
+    SerialNumber: 'PMK4-2023-2584',
+  },
+  {
+    name: 'Prusa MK4-2',
+    status: 'Ready',
+    occupied: 'None',
+    MACAddress: 'B8:27:EB:AA:BB:CD',
+    SerialNumber: 'PMK4-2023-2585',
+  },
+
+  // Laser Cutters
+
+  {
+    name: 'Glowforge Pro-1',
+    status: 'Locked',
+    occupied: 'Emma Smith',
     MACAddress: 'A4:C3:F0:85:7B:D3',
-    SerialNumber: 'DMP-2024-XR456790',
+    SerialNumber: 'GFPRO-2024-0140',
+  },
+
+  // CNC Machines
+  {
+    name: 'Snapmaker 2-1',
+    status: 'Ready',
+    occupied: 'None',
+    MACAddress: 'CC:50:E3:2D:9A:B1',
+    SerialNumber: 'SM2A350-2401-0892',
   },
 ];
 
@@ -114,6 +137,7 @@ const Nodes = () => {
               })}
             </section>
           }
+          <CreateNodeDialog />
         </>
       ) : (
         <RestrictedAccess />

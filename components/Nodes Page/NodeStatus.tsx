@@ -8,7 +8,7 @@ const StatusDropdown = ({ index = 0 }) => {
 
   // Close dropdown when clicking outside
   React.useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: any) => {
       if (isOpen && !event.target.closest(`[data-dropdown-id="${index}"]`)) {
         setIsOpen(false);
       }
