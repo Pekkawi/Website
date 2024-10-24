@@ -93,76 +93,82 @@ const User2 = () => {
 
   return (
     <div className="background background-light900_dark300 mt-[-30px]">
-      <h1 className="h1-bold text-dark100_light900">Users</h1>
-      <UserSearch
-        setFilteredUsers={setFilteredUsers}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        applyFilter={() => applyFilter(Users)}
-      />
-      <section className="mt-7 rounded-sm border border-gray-200 bg-white shadow-md shadow-gray-300 dark:border-dark-400 dark:bg-dark-300 dark:shadow-gray-500">
-        {!currentUsers || currentUsers.length === 0 ? (
-          <NoUsersFound />
-        ) : (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {currentUsers.map((user, index) => (
-              <div
-                key={`${user._id}`}
-                className={`${index === currentUsers.length - 1 ? 'rounded-b-lg' : ''}`}
-              >
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <h1 className="h1-bold text-dark100_light900">Users</h1>
+        <UserSearch
+          setFilteredUsers={setFilteredUsers}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          applyFilter={() => applyFilter(Users)}
+        />
+        <section className="mt-7 rounded-sm border border-gray-200 bg-white shadow-md shadow-gray-300 dark:border-dark-400 dark:bg-dark-300 dark:shadow-gray-500">
+          {!currentUsers || currentUsers.length === 0 ? (
+            <NoUsersFound />
+          ) : (
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
+              {currentUsers.map((user, index) => (
                 <div
-                  className="flex cursor-pointer items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-dark-200"
-                  onClick={() => handleToggle(user._id)}
+                  key={`${user._id}`}
+                  className={`${index === currentUsers.length - 1 ? 'rounded-b-lg' : ''}`}
                 >
-                  <div className="flex flex-1 flex-col sm:flex-row sm:justify-between">
-                    <p className="text-dark500_light700 font-medium">
-                      {user.display_name}
-                    </p>
-                    <p className="user-info text-dark500_light700 font-medium sm:text-right">
-                      {user.email}
-                    </p>
-                  </div>
-                  <motion.span
-                    className={`ml-4 shrink-0 text-gray-400`}
-                    initial={{ rotate: 0 }}
-                    animate={{ rotate: openUserId === user._id ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
+                  <div
+                    className="flex cursor-pointer items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-dark-200"
+                    onClick={() => handleToggle(user._id)}
                   >
-                    <svg
-                      className="size-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
+                    <div className="flex flex-1 flex-col sm:flex-row sm:justify-between">
+                      <p className="text-dark500_light700 font-medium">
+                        {user.display_name}
+                      </p>
+                      <p className="user-info text-dark500_light700 font-medium sm:text-right">
+                        {user.email}
+                      </p>
+                    </div>
+                    <motion.span
+                      className={`ml-4 shrink-0 text-gray-400`}
+                      initial={{ rotate: 0 }}
+                      animate={{ rotate: openUserId === user._id ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clipRule="evenodd"
+                      <svg
+                        className="size-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </motion.span>
+                  </div>
+                  <AnimatePresence>
+                    {openUserId === user._id && (
+                      <UserDetails
+                        handleToggle={handleToggle}
+                        userId={user._id}
+                        roles={roles}
+                        Permissions={Permissions}
+                        statusPermission={statusPermissions}
                       />
-                    </svg>
-                  </motion.span>
+                    )}
+                  </AnimatePresence>
                 </div>
-                <AnimatePresence>
-                  {openUserId === user._id && (
-                    <UserDetails
-                      handleToggle={handleToggle}
-                      userId={user._id}
-                      roles={roles}
-                      Permissions={Permissions}
-                      statusPermission={statusPermissions}
-                    />
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-      <UserPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-      />
+              ))}
+            </div>
+          )}
+        </section>
+        <UserPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
+      </motion.div>
     </div>
   );
 };

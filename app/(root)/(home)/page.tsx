@@ -22,7 +22,7 @@ const Home = () => {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.3 }}
           >
             <h1 className="h1-bold text-dark100_light900">About this page </h1>
             <p className="mb-6 text-gray-700">
