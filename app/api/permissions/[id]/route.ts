@@ -43,6 +43,8 @@ export async function PATCH(
     const permId = params.id;
     const db = await connectToDatabase();
     const formData = await request.json();
+    console.log('Received formData:', formData); // Debug
+
     if (db instanceof Db) {
       const { name, abbreviation, description, scheduling, permission, image } = formData;
       const bucket = new GridFSBucket(db, { bucketName: 'images' });
@@ -54,53 +56,54 @@ export async function PATCH(
 
       let fileId = perm.image; // Default to existing image
 
-      // Check if we need to process a new image
-      if (image && !image.includes('api')) {
-        // Delete old image if it exists
-        if (perm.image) {
-          try {
-            await bucket.delete(perm.image);
-          } catch (error) {
-            console.error('Error deleting old image:', error);
+      // Check if we have a new image (base64 string)
+      if (image && typeof image === 'string') {
+        console.log('Processing image...'); // Debug
+        console.log('image is' + image);
+
+        // If it's not the existing API URL, process as new image
+        if (image.includes('base64')) {
+          console.log('New image detected'); // Debug
+
+          // Delete old image if it exists
+          if (perm.image) {
+            try {
+              await bucket.delete(perm.image);
+            } catch (error) {
+              console.error('Error deleting old image:', error);
+            }
           }
-        }
 
-        // If image is a blob/file
-        if (image instanceof Blob) {
-          // Convert blob to base64
-          const arrayBuffer = await image.arrayBuffer();
-          const base64 = Buffer.from(arrayBuffer).toString('base64');
-          const contentType = image.type;
+          // Process base64 image
+          try {
+            const [, base64Data] = image.split(',');
+            const contentType = image.match(/data:([^;]+);base64/)?.[1] || 'image/jpeg';
 
-          const uploadStream = bucket.openUploadStream(name, {
-            chunkSizeBytes: 261120,
-            contentType,
-          });
-
-          const buffer = Buffer.from(base64, 'base64');
-          fileId = await new Promise<Types.ObjectId>((resolve, reject) => {
-            uploadStream.end(buffer, (error) => {
-              if (error) reject(error);
-              else resolve(uploadStream.id);
+            const uploadStream = bucket.openUploadStream(name, {
+              chunkSizeBytes: 261120,
+              contentType,
             });
-          });
-        } else if (typeof image === 'string' && image.includes('base64')) {
-          // If image is already base64
-          const [, base64] = image.split(',');
-          const contentType = image.split(':')[1].split(';')[0];
 
-          const uploadStream = bucket.openUploadStream(name, {
-            chunkSizeBytes: 261120,
-            contentType,
-          });
+            const buffer = Buffer.from(base64Data, 'base64');
 
-          const buffer = Buffer.from(base64, 'base64');
-          fileId = await new Promise<Types.ObjectId>((resolve, reject) => {
-            uploadStream.end(buffer, (error) => {
-              if (error) reject(error);
-              else resolve(uploadStream.id);
+            fileId = await new Promise<Types.ObjectId>((resolve, reject) => {
+              uploadStream.end(buffer, (error) => {
+                if (error) {
+                  console.error('Upload error:', error); // Debug
+                  reject(error);
+                } else {
+                  resolve(uploadStream.id);
+                }
+              });
             });
-          });
+
+            console.log('New fileId:', fileId); // Debug
+          } catch (error) {
+            console.error('Image processing error:', error); // Debug
+            throw error;
+          }
+        } else {
+          console.log('Using existing image URL'); // Debug
         }
       }
 
@@ -125,6 +128,8 @@ export async function PATCH(
         return new Response('Failed to update permission', { status: 400 });
       }
 
+      console.log('Updated permission:', updatedPerm); // Debug
+
       return new Response(JSON.stringify(updatedPerm), {
         status: 200,
         headers: {
@@ -132,7 +137,10 @@ export async function PATCH(
         },
       });
     }
+
+    return new Response('Database connection failed', { status: 500 });
   } catch (err) {
+    console.error('PATCH error:', err); // Debug
     return new Response(JSON.stringify({ err, message: 'Failed to update permission' }), {
       status: 500,
     });

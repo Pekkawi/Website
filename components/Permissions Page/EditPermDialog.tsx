@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pencil, X } from 'lucide-react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -69,6 +69,23 @@ const EditPermissionDialog = ({
       image: initialData.image,
     },
   });
+
+  // Update local state when data prop changes
+
+  useEffect(() => {
+    if (open) {
+      // Only update when dialog is open
+      setCurrentImage(initialData.image.toString());
+      form.reset({
+        name: initialData.name,
+        abbreviation: initialData.abbreviation,
+        description: initialData.description,
+        scheduling: initialData.scheduling,
+        permission: initialData.default ? 'default' : 'special',
+        image: initialData.image,
+      });
+    }
+  }, [initialData, open, form]); // Add initialData and open to dependencies
 
   const handleDialogChange = (newOpen: boolean) => {
     setOpen(newOpen);
