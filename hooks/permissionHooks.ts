@@ -1,3 +1,4 @@
+import { IPerm } from '@/interfaces/database.interfaces';
 import { Types } from 'mongoose';
 
 export async function getPermissions() {
@@ -31,4 +32,16 @@ export async function deletePermission(permId: Types.ObjectId) {
   } catch (err) {
     return false;
   }
+}
+
+export async function updatePermission(permId: Types.ObjectId, data: IPerm) {
+  const response = await fetch(`/api/permissions/${permId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to update permission');
+  return response.json();
 }

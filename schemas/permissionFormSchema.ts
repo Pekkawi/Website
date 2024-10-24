@@ -25,12 +25,19 @@ export const permissionFormSchema = z.object({
     .any()
     .refine((files) => files, "Image can't be empty")
     .refine(
-      (files) => !files || files.length === 0 || files[0]?.size <= MAX_FILE_SIZE,
+      (files) =>
+        !files ||
+        files.length === 0 ||
+        files[0]?.size <= MAX_FILE_SIZE ||
+        typeof files === 'string',
       'Max image size is 5MB'
     )
     .refine(
       (files) =>
-        !files || files.length === 0 || ACCEPTED_IMAGE_TYPES.includes(files[0]?.type),
+        !files ||
+        files.length === 0 ||
+        ACCEPTED_IMAGE_TYPES.includes(files[0]?.type) ||
+        typeof files === 'string',
       'Only .jpg, .jpeg, .png and .webp formats are supported'
     ),
 });
