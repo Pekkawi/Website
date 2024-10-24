@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { UserType } from '@/interfaces/userpage.interfaces';
 import { useQuery } from 'react-query';
@@ -25,32 +25,39 @@ const User2 = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
-  const {
-    data: Users,
-    status: statusUsers,
-    refetch: refetchUsers,
-  } = useQuery('users', getUsers, {
-    staleTime: Infinity,
-    onSuccess: (Users) => {
-      applyFilter(Users);
-    },
-  });
-
   const applyFilter = useCallback(
     (users: UserType[] | undefined) => {
-      if (users && searchTerm) {
+      if (!users) return;
+
+      if (searchTerm) {
         const filtered = users.filter(
           (user) =>
             user.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredUsers(filtered);
+        setCurrentPage(1); // Reset to first page when filtering
       } else {
         setFilteredUsers(users);
+        setCurrentPage(1); // Reset to first page when clearing filter
       }
     },
     [searchTerm]
   );
+
+  const {
+    data: Users,
+    status: statusUsers,
+    refetch: refetchUsers,
+  } = useQuery('users', getUsers, {
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (Users) {
+      applyFilter(Users);
+    }
+  }, [Users, searchTerm, applyFilter]);
 
   const { data: Permissions, status: statusPermissions } = useQuery(
     'permissions',
