@@ -38,6 +38,7 @@ import { FileWithPreview } from '@/interfaces/permissionpage.interfaces';
 import { PermissionFormData, permissionFormSchema } from '@/schemas/permissionFormSchema';
 import { updatePermission } from '@/hooks/permissionHooks';
 import { IPerm } from '@/interfaces/database.interfaces';
+import { Textarea } from '../ui/textarea';
 
 // updating permission API route
 
@@ -129,12 +130,16 @@ const EditPermissionDialog = ({
     },
   });
 
-  // UPDATE MUTATION (WHAT EXECUTES WHEN FORM IS SUBMITTED)
+  // UPDATE MUTATION (EXECUTES WHEN FORM IS SUBMITTED)
   const updatePermMutation = useMutation(
     async (formData: PermissionFormData) => {
       console.log('formData', formData);
       return updatePermission(permId, {
-        ...formData,
+        scheduling: formData.scheduling,
+        name: formData.name,
+        abbreviation: formData.abbreviation,
+        description: formData.description,
+        default: formData.permission === 'default',
         image: croppedImage || currentImage,
       });
     },
@@ -165,9 +170,9 @@ const EditPermissionDialog = ({
   return (
     <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
-        <div className="rounded-full p-2 duration-150 hover:bg-gray-100">
-          <Pencil className="size-5 text-gray-400 hover:cursor-pointer" />
-        </div>
+        <button className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-gray-100">
+          <Pencil className="size-5 text-gray-400" />
+        </button>
       </DialogTrigger>
       <DialogContent
         className="background-light900_dark300 max-h-fit sm:max-w-[425px]"
@@ -192,33 +197,54 @@ const EditPermissionDialog = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-dark100_light900">Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="background-light900_dark300 text-dark100_light900"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-500" />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-dark100_light900">Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="background-light900_dark300 text-dark100_light900"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
 
+              <FormField
+                control={form.control}
+                name="abbreviation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-dark100_light900">Abbreviation</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="background-light900_dark300 text-dark100_light900"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Description field */}
             <FormField
               control={form.control}
-              name="abbreviation"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-dark100_light900">Abbreviation</FormLabel>
+                  <FormLabel className="text-dark100_light900">Description</FormLabel>
                   <FormControl>
-                    <Input
+                    <Textarea
                       {...field}
-                      className="background-light900_dark300 text-dark100_light900"
+                      className="background-light900_dark300 text-dark100_light900 min-h-[100px]"
+                      placeholder="Enter description..."
                     />
                   </FormControl>
                   <FormMessage className="text-red-500" />
@@ -273,6 +299,7 @@ const EditPermissionDialog = ({
                 </FormItem>
               )}
             />
+
             {/* IMAGE UPLOAD */}
             <FormField
               control={form.control}

@@ -15,8 +15,8 @@ export async function DELETE(
       const bucket = new GridFSBucket(db, { bucketName: 'images' }); // create a GridFs bucket
       const perm = await Permissions.findOne({ _id: permId });
       const fileId = perm.image;
-      console.log(perm);
-      console.log(fileId);
+      //  console.log(perm); // Debug
+      // console.log(fileId); // Debug
       await bucket.delete(fileId); // delete an image from the GridFS bucket (chunkcs and files collection)
       await Permissions.findOneAndDelete({ _id: permId }); // delete the permission
 
@@ -43,10 +43,16 @@ export async function PATCH(
     const permId = params.id;
     const db = await connectToDatabase();
     const formData = await request.json();
-    console.log('Received formData:', formData); // Debug
 
     if (db instanceof Db) {
-      const { name, abbreviation, description, scheduling, permission, image } = formData;
+      const {
+        name,
+        abbreviation,
+        description,
+        scheduling,
+        default: isDefault,
+        image,
+      } = formData;
       const bucket = new GridFSBucket(db, { bucketName: 'images' });
 
       const perm = await Permissions.findOne({ _id: permId });
@@ -58,13 +64,8 @@ export async function PATCH(
 
       // Check if we have a new image (base64 string)
       if (image && typeof image === 'string') {
-        console.log('Processing image...'); // Debug
-        console.log('image is' + image);
-
         // If it's not the existing API URL, process as new image
         if (image.includes('base64')) {
-          console.log('New image detected'); // Debug
-
           // Delete old image if it exists
           if (perm.image) {
             try {
@@ -97,13 +98,13 @@ export async function PATCH(
               });
             });
 
-            console.log('New fileId:', fileId); // Debug
+            // console.log('New fileId:', fileId); // Debug
           } catch (error) {
             console.error('Image processing error:', error); // Debug
             throw error;
           }
         } else {
-          console.log('Using existing image URL'); // Debug
+          // console.log('Using existing image URL'); // Debug
         }
       }
 
@@ -116,7 +117,7 @@ export async function PATCH(
             abbreviation,
             description,
             scheduling,
-            permission,
+            default: isDefault,
             image: fileId,
             updatedAt: new Date(),
           },

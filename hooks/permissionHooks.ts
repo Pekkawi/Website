@@ -34,7 +34,7 @@ export async function deletePermission(permId: Types.ObjectId) {
   }
 }
 
-export async function updatePermission(permId: Types.ObjectId, data: IPerm) {
+export async function updatePermission(permId: Types.ObjectId, data: Partial<IPerm>) {
   const response = await fetch(`/api/permissions/${permId}`, {
     method: 'PATCH',
     headers: {
