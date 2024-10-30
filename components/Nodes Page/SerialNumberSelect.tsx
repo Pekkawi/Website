@@ -3,7 +3,7 @@ import { ChevronDown } from 'lucide-react';
 
 const SerialNumberSelect = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<{ id: string; desc: string } | null>(null);
 
   const raspberryPiSerials = [
     { id: '1000000063421f91', desc: 'Raspberry Pi 4 Model B - 8GB' },

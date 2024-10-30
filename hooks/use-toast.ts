@@ -1,6 +1,5 @@
 "use client"
 
-// This is part of the Shadcn/ui toast component
 // Inspired by react-hot-toast library
 import * as React from "react"
 

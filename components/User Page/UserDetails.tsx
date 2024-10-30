@@ -21,7 +21,7 @@ const UserDetails = ({
   statusPermission: 'idle' | 'error' | 'loading' | 'success';
   handleToggle: (userId: Types.ObjectId) => void;
 }) => {
-  const { data, status } = useQuery(
+  const { data, status } = useQuery<any>( // TODO: Fix any | temp fix
     ['DetailsUser', userId],
     () => getUserDetails(userId),
     {
