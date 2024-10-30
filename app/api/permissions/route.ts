@@ -1,10 +1,9 @@
 import Permissions from '@/database/permission.model';
 import { connectToDatabase } from '@/lib/mongoose';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { Db, GridFSBucket } from 'mongodb';
 // import { Readable } from 'stream';
 import { Types } from 'mongoose';
-import { Readable } from 'stream';
 // import { decode } from 'base64-arraybuffer';
 
 export async function GET(request: NextRequest) {
@@ -53,10 +52,10 @@ export async function POST(request: NextRequest) {
     });
 
     const fileId = await new Promise<Types.ObjectId>((resolve, reject) => {
-      uploadStream.end(buffer, (error) => {
-        if (error) reject(error);
-        else resolve(uploadStream.id);
+      uploadStream.on('finish', () => {
+        resolve(uploadStream.id);
       });
+      uploadStream.end(buffer);
     });
 
     const newPermission = new Permissions({

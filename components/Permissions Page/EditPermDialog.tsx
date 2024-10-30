@@ -65,7 +65,8 @@ const EditPermissionDialog = ({
       name: initialData.name,
       abbreviation: initialData.abbreviation,
       description: initialData.description,
-      scheduling: initialData.scheduling,
+      scheduling:
+        initialData.scheduling === 'scheduled' ? 'on_demand' : initialData.scheduling,
       permission: initialData.default ? 'default' : 'special',
       image: initialData.image,
     },
@@ -81,7 +82,8 @@ const EditPermissionDialog = ({
         name: initialData.name,
         abbreviation: initialData.abbreviation,
         description: initialData.description,
-        scheduling: initialData.scheduling,
+        scheduling:
+          initialData.scheduling === 'scheduled' ? 'on_demand' : initialData.scheduling,
         permission: initialData.default ? 'default' : 'special',
         image: initialData.image,
       });
@@ -102,7 +104,8 @@ const EditPermissionDialog = ({
           name: initialData.name,
           abbreviation: initialData.abbreviation,
           description: initialData.description,
-          scheduling: initialData.scheduling,
+          scheduling:
+            initialData.scheduling === 'scheduled' ? 'on_demand' : initialData.scheduling,
           permission: initialData.default ? 'default' : 'special',
           image: initialData.image,
         });
@@ -140,7 +143,9 @@ const EditPermissionDialog = ({
         abbreviation: formData.abbreviation,
         description: formData.description,
         default: formData.permission === 'default',
-        image: croppedImage || currentImage,
+        image: new Types.ObjectId(
+          croppedImage || currentImage || new Types.ObjectId().toString()
+        ),
       });
     },
     {
@@ -361,7 +366,7 @@ const EditPermissionDialog = ({
               <div className="relative mt-4 inline-block">
                 <div className="overflow-hidden rounded-lg border-2 border-gray-300 dark:border-gray-600">
                   <Image
-                    src={croppedImage || currentImage}
+                    src={croppedImage || currentImage || ''}
                     alt="Permission"
                     width={144}
                     height={144}

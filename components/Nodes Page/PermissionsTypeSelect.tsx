@@ -8,9 +8,9 @@ import { IPerm } from '@/interfaces/database.interfaces';
 
 const PermissionsTypeSelect = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<IPerm | null>(null);
 
-  const { data: perms, status } = useQuery('permissions', getPermissions, {
+  const { data: perms } = useQuery('permissions', getPermissions, {
     staleTime: Infinity,
   });
 

@@ -12,8 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import SerialNumberSelect from './SerialNumberSelect';
-import { getPermissions } from '@/hooks/permissionHooks';
-import { useQuery } from 'react-query';
 import PermissionsTypeSelect from './PermissionsTypeSelect';
 
 const CreateNodeDialog = () => {
