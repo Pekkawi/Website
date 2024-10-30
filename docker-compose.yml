@@ -1,9 +1,13 @@
 services:
   nextjs:
-    container_name: nextjs
-    build: .
+    container_name: WebApp
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - '3000:3000'
+    privileged: true
+    image: website:latest
     env_file:
       - .env.local
     #    environment:

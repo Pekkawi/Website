@@ -3,10 +3,7 @@
 @tailwind utilities;
 
 @import url('../styles/theme.css');
-
-body {
-  font-family: 'Inter', sans-serif;
-}
+@import url('../styles/fonts.css');
 
 @layer utilities {
   .flex-center {
