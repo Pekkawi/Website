@@ -88,14 +88,10 @@ export async function PATCH(
             const buffer = Buffer.from(base64Data, 'base64');
 
             fileId = await new Promise<Types.ObjectId>((resolve, reject) => {
-              uploadStream.end(buffer, (error) => {
-                if (error) {
-                  console.error('Upload error:', error); // Debug
-                  reject(error);
-                } else {
-                  resolve(uploadStream.id);
-                }
+              uploadStream.on('finish', () => {
+                resolve(uploadStream.id);
               });
+              uploadStream.end(buffer);
             });
 
             // console.log('New fileId:', fileId); // Debug

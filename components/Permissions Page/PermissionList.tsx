@@ -2,7 +2,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -47,7 +46,7 @@ const PermissionList = () => {
       <Table className="mt-5">
         <TableHeader>
           <TableRow>
-            <TableCaption>Image</TableCaption>
+            <TableHead>Image</TableHead>
             <TableHead>Abbreviation</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>

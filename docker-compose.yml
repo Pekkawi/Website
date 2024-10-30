@@ -3,13 +3,13 @@ services:
     container_name: nextjs
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     env_file:
       - .env.local
-    environment:
-      - VIRTUAL_HOST=myapp.thecores.xyz
-      - LETSENCRYPT_HOST=myapp.thecores.xyz
-      - LETSENCRYPT_EMAIL=edlie22@student.sdu.dk
+    #    environment:
+    #      - VIRTUAL_HOST=myapp.thecores.xyz
+    #      - LETSENCRYPT_HOST=myapp.thecores.xyz
+    #      - LETSENCRYPT_EMAIL=edlie22@student.sdu.dk
     restart: always
 
   # nginx:

@@ -1,11 +1,9 @@
 import { connectToDatabase } from '@/lib/mongoose';
-import { GridFSBucket, ObjectId } from 'mongodb';
+import { Db, GridFSBucket, ObjectId } from 'mongodb';
 import { NextRequest } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<Response> {
   try {
-    await connectToDatabase();
-
     // Extract fileId from the URL
     const fileId = request.nextUrl.pathname.split('/').pop();
 
@@ -14,35 +12,42 @@ export async function GET(request: NextRequest) {
     }
 
     const db = await connectToDatabase();
-    const bucket = new GridFSBucket(db, { bucketName: 'images' });
 
-    const downloadStream = bucket.openDownloadStream(new ObjectId(fileId));
+    if (db instanceof Db) {
+      const bucket = new GridFSBucket(db, { bucketName: 'images' });
 
-    let imageData = Buffer.from([]);
+      // Convert the stream to buffer using async/await
+      return new Promise<Response>((resolve, reject) => {
+        const chunks: Buffer[] = [];
+        const downloadStream = bucket.openDownloadStream(new ObjectId(fileId));
 
-    downloadStream.on('data', (chunk) => {
-      imageData = Buffer.concat([imageData, chunk]);
-    });
+        downloadStream.on('data', (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
 
-    downloadStream.on('error', (err) => {
-      console.error('Error downloading image:', err);
-      return new Response('Failed to fetch image', { status: 500 });
-    });
+        downloadStream.on('error', (error: Error) => {
+          console.error('Error downloading image:', error);
+          resolve(new Response('Failed to fetch image', { status: 500 }));
+        });
 
-    return new Promise((resolve, reject) => {
-      downloadStream.on('end', () => {
-        resolve(
-          new Response(imageData, {
-            headers: {
-              'Content-Type': 'image/jpeg', // Use appropriate content type
-            },
-            status: 200,
-          })
-        );
+        downloadStream.on('end', () => {
+          const buffer = Buffer.concat(chunks as unknown as Uint8Array[]);
+          resolve(
+            new Response(buffer, {
+              headers: {
+                'Content-Type': 'image/jpeg',
+                'Cache-Control': 'public, max-age=31536000',
+              },
+              status: 200,
+            })
+          );
+        });
       });
-    });
-  } catch (err) {
-    console.error('Error fetching image:', err);
-    return new Response('Failed to fetch image', { status: 500 });
+    } else {
+      return new Response('Bad Database connection', { status: 500 });
+    }
+  } catch (error) {
+    console.error('Error in GET handler:', error);
+    return new Response('Internal Server Error', { status: 500 });
   }
 }

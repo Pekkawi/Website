@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+'use client';
 
-const SerialNumberSelect = () => {
+import React, { useEffect, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { getPermissions } from '@/hooks/permissionHooks';
+import { useQuery } from 'react-query';
+import { IPerm } from '@/interfaces/database.interfaces';
+
+const PermissionsTypeSelect = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const raspberryPiSerials = [
-    { id: '1000000063421f91', desc: 'Raspberry Pi 4 Model B - 8GB' },
-    { id: '10000000a3b2cf82', desc: 'Raspberry Pi 4 Model B - 4GB' },
-    { id: '100000002c45da73', desc: 'Raspberry Pi 4 Model B - 4GB' },
-    { id: '10000000f5d31b64', desc: 'Raspberry Pi 4 Model B - 2GB' },
-    { id: '1000000047e92a55', desc: 'Raspberry Pi 4 Model B - 2GB' },
-    { id: '100000008bf61c46', desc: 'Raspberry Pi 3 Model B+' },
-    { id: '10000000d9a74d37', desc: 'Raspberry Pi 3 Model B+' },
-    { id: '10000000ec183e28', desc: 'Raspberry Pi 3 Model B' },
-  ];
+  const { data: perms, status } = useQuery('permissions', getPermissions, {
+    staleTime: Infinity,
+  });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (isOpen && !event.target.closest('[data-select]')) {
         setIsOpen(false);
@@ -30,14 +28,14 @@ const SerialNumberSelect = () => {
     <div className="relative w-full" data-select>
       <div className="relative">
         <div className="absolute -top-2 left-2 z-[1] bg-white px-1 text-xs text-gray-700 dark:bg-dark-300 dark:text-gray-400">
-          Serial Number
+          Machine Type
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="background-light900_dark300 flex w-full items-center justify-between rounded border border-gray-300 px-3 py-2 text-left hover:border-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:hover:border-gray-500"
         >
           <span className="text-dark100_light900">
-            {selected ? selected.desc : 'Select Raspberry Pi'}
+            {selected ? `${selected.abbreviation} ` : 'Select Machine Type'}
           </span>
           <ChevronDown
             size={16}
@@ -49,19 +47,20 @@ const SerialNumberSelect = () => {
       </div>
       {isOpen && (
         <div className="absolute z-[100] mt-1 max-h-[180px] w-full overflow-y-auto rounded border border-gray-300 bg-white shadow-lg dark:border-gray-600 dark:bg-dark-300">
-          {raspberryPiSerials.map((pi) => (
+          {perms.map((perm: IPerm) => (
             <div
-              key={pi.id}
+              key={perm.name}
               className={`cursor-pointer px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-700
-                ${selected?.id === pi.id ? 'bg-gray-50 dark:bg-gray-800' : ''}
+                ${selected?.name === perm.name ? 'bg-gray-50 dark:bg-gray-800' : ''}
               `}
               onClick={() => {
-                setSelected(pi);
+                setSelected(perm);
                 setIsOpen(false);
               }}
             >
-              <p className="text-dark100_light900 font-medium">{pi.desc}</p>
-              <p className="text-sm text-gray-500">SN: {pi.id}</p>
+              <p className="text-dark100_light900 font-medium">
+                {perm.abbreviation} {perm.name}
+              </p>
             </div>
           ))}
         </div>
@@ -70,4 +69,4 @@ const SerialNumberSelect = () => {
   );
 };
 
-export default SerialNumberSelect;
+export default PermissionsTypeSelect;
