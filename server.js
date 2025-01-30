@@ -1,21 +1,34 @@
-import { createServer } from "node:http";
+import { createServer } from "http";
 import next from "next";
 import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
-// when using middleware `hostname` and `port` must be provided below
+
 const app = next({ dev, hostname, port });
-const handler = app.getRequestHandler();
+const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
-  const httpServer = createServer(handler);
-
+  const httpServer = createServer(handle);
   const io = new Server(httpServer);
 
   io.on("connection", (socket) => {
-    console.log("YIPEE A NEW USER HAS CONNECTED")
+    console.log("YIPEE A NEW USER HAS CONNECTED");
+    
+    // Handle new messages
+    socket.on("message", (data) => {
+      // Broadcast the message to all connected clients
+      io.emit("message", {
+        text: data.text,
+        userId: socket.id,
+        timestamp: new Date().toISOString()
+      });
+    });
+
+    socket.on("disconnect", () => {
+      console.log("User disconnected");
+    });
   });
 
   httpServer
