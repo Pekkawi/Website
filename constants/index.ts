@@ -30,4 +30,9 @@ export const sidebarLinks: SidebarLink[] = [
     label: 'Permissions',
     imgURL: '/assets/icons/permissions.svg',
   },
+  {
+    route: '/test_ws',
+    label: 'WebSocket Connect',
+    imgURL:'/assets/icons/socket.svg'
+  }
 ];
