@@ -1,15 +1,12 @@
 // http:localhost:3000/api/users
 
-import User from "@/database/user.model";
-import { connectToDatabase } from "@/lib/mongoose";
-import { NextRequest } from "next/server";
-
+import User from '@/database/user.model';
+import { connectToDatabase } from '@/lib/mongoose';
+import { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-   
-
-    await connectToDatabase();    // const some = await Permissions.find({}); // This is just to make sure that the model is registered with Mongoose.
+    await connectToDatabase();
     const users = await User.find({}); // Fetch all the users
     users.sort((a, b) => {
       if (a.first_name < b.first_name) {
@@ -23,8 +20,6 @@ export async function GET(request: NextRequest) {
 
     return new Response(JSON.stringify(users), { status: 200 });
   } catch (err) {
-    return new Response("Failed to fetch Users", { status: 500 });
+    return new Response('Failed to fetch Users', { status: 500 });
   }
 }
-
-

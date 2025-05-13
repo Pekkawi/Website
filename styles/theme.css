@@ -199,6 +199,10 @@
     background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
   }
 
+  .form-header {
+    @apply absolute -top-0.5 left-2 z-[1] bg-white px-1 text-xs text-gray-700 dark:bg-gray-300 dark:text-gray-400;
+  }
+
   .dark-gradient {
     background: linear-gradient(
       232deg,

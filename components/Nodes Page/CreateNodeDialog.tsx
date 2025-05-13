@@ -11,12 +11,55 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import SerialNumberSelect from './SerialNumberSelect';
+// import SerialNumberSelect from './SerialNumberSelect';
 import PermissionsTypeSelect from './PermissionsTypeSelect';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
+import { useForm } from 'react-hook-form';
+import {
+  createNodeFormData,
+  createNodeFormSchema,
+} from '@/zodSchemas/createNodeFormSchema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery, useQueryClient } from 'react-query';
+import { getPermissions } from '@/hooks/permissionHooks';
+import { IPerm } from '@/interfaces/database.interfaces';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 const CreateNodeDialog = () => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  const {
+    data: perms,
+    status,
+    refetch,
+  } = useQuery('permissions', getPermissions, {
+    staleTime: Infinity,
+    onSuccess: (data) => {
+      // Pre-populate the query cache with individual permissions
+      data.forEach((perm: IPerm) => {
+        queryClient.setQueryData(['permission', perm._id], perm);
+      });
+    },
+  });
+
+  const form = useForm<createNodeFormData>({
+    resolver: zodResolver(createNodeFormSchema(perms)),
+  });
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -29,7 +72,7 @@ const CreateNodeDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="fixed bottom-10 right-14 size-14 rounded-full bg-orange-500 p-0 shadow-xl transition-colors hover:bg-orange-600">
+        <Button className="fixed bottom-10 right-5 size-14 rounded-full bg-orange-500 p-0 shadow-xl transition-colors hover:bg-orange-600">
           <Plus className="size-6 text-white" />
         </Button>
       </DialogTrigger>
@@ -41,21 +84,55 @@ const CreateNodeDialog = () => {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="mt-6 space-y-6">
-          <div className="relative">
-            <div className="absolute -top-2 left-2 z-[1] bg-white px-1 text-xs text-gray-700 dark:bg-dark-300 dark:text-gray-400">
-              Machine name
-            </div>
-            <Input
-              id="name"
-              placeholder="Enter name"
-              className="background-light900_dark300 text-dark100_light900 border-2 border-gray-300 px-3 py-2 hover:border-gray-400 focus:border-blue-500 focus:ring-white dark:border-gray-600 dark:hover:border-gray-500 dark:focus:ring-black"
-            />
-          </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="relative">
+                    <FormLabel className="form-header"> Name </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="background-light900_dark300 text-dark100_light900"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
 
-          <SerialNumberSelect />
-          <PermissionsTypeSelect />
-        </div>
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem className="relative">
+                    <FormLabel className="form-header -top-2">Machine Type</FormLabel>
+                    <Select onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="background-light900_dark300 text-dark100_light900">
+                          <SelectValue placeholder="Select a Machine Type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="background-light900_dark300 text-dark100_light900">
+                        {perms.map((perm: IPerm) => {
+                          return (
+                            <SelectItem value={perm.abbreviation} key={perm.abbreviation}>
+                              {perm.abbreviation}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </form>
+        </Form>
 
         <DialogFooter className="mt-8">
           <Button

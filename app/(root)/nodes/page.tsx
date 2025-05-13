@@ -14,6 +14,10 @@ export interface nodeInterface {
   occupied: string;
   MACAddress: string;
   SerialNumber: string;
+  timeLeft?: string;
+  filenName?: string;
+  estimatedTime?: string;
+  material?: string;
 }
 
 const data: nodeInterface[] = [
@@ -25,13 +29,7 @@ const data: nodeInterface[] = [
     MACAddress: '00:1B:44:11:3A:B7',
     SerialNumber: 'BX1C2401-0584',
   },
-  {
-    name: 'Bambu X1C-2',
-    status: 'Maintenance',
-    occupied: 'None',
-    MACAddress: '00:1B:44:11:3A:C8',
-    SerialNumber: 'BX1C2401-0585',
-  },
+
   {
     name: 'Laser Cutter 1',
     status: 'Locked',
@@ -48,33 +46,26 @@ const data: nodeInterface[] = [
     MACAddress: 'B8:27:EB:AA:BB:CC',
     SerialNumber: 'PMK4-2023-2584',
   },
-  {
-    name: 'Prusa MK4-2',
-    status: 'Ready',
-    occupied: 'None',
-    MACAddress: 'B8:27:EB:AA:BB:CD',
-    SerialNumber: 'PMK4-2023-2585',
-  },
 
   // Laser Cutters
 
   {
     name: 'Glowforge Pro-1',
     status: 'Locked',
-    occupied: 'Emma Smith',
+    occupied: 'Eduard Liehn',
     MACAddress: 'A4:C3:F0:85:7B:D3',
     SerialNumber: 'GFPRO-2024-0140',
   },
-
-  // CNC Machines
-  {
-    name: 'Snapmaker 2-1',
-    status: 'Ready',
-    occupied: 'None',
-    MACAddress: 'CC:50:E3:2D:9A:B1',
-    SerialNumber: 'SM2A350-2401-0892',
-  },
 ];
+// const data: nodeInterface[] = [
+//   {
+//     name: 'Printer 1',
+//     status: 'Ready',
+//     occupied: 'None',
+//     MACAddress: '00:1B:44:11:3A:B7',
+//     SerialNumber: 'BX1C2401-0584',
+//   },
+// ];
 
 const Nodes = () => {
   // const { user, isLoaded } = useUser();
@@ -114,7 +105,7 @@ const Nodes = () => {
           {
             // Go through all the nodes ,right now just havea dummy node
             // nodes.map((node)=>{...})  Display all nodes from the datbase
-            <section className="mt-7 rounded-sm border border-gray-200 bg-white shadow-md shadow-gray-300 dark:border-dark-400 dark:bg-dark-300 dark:shadow-gray-500">
+            <section className="mt-7 rounded-sm border border-gray-200 bg-white shadow-md shadow-gray-300 dark:border-gray-400 dark:bg-gray-300 dark:shadow-gray-500">
               {data.map((node: nodeInterface) => {
                 return (
                   <div key={node.name}>

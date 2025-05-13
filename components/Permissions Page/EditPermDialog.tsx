@@ -35,7 +35,10 @@ import { ImageCropper } from '@/components/Permissions Page/ImageCropper';
 import { useDropzone } from 'react-dropzone';
 import { Types } from 'mongoose';
 import { FileWithPreview } from '@/interfaces/permissionpage.interfaces';
-import { PermissionFormData, permissionFormSchema } from '@/schemas/permissionFormSchema';
+import {
+  PermissionFormData,
+  permissionFormSchema,
+} from '@/zodSchemas/permissionFormSchema';
 import { updatePermission } from '@/hooks/permissionHooks';
 import { IPerm } from '@/interfaces/database.interfaces';
 import { Textarea } from '../ui/textarea';
@@ -97,9 +100,6 @@ const EditPermissionDialog = ({
     if (!newOpen) {
       // Wait for dialog close animation (300ms is standard for shadcn/ui before resseting form)
       setTimeout(() => {
-        setCroppedImage(null);
-        setSelectedFile(null);
-        setCurrentImage(initialData.image.toString());
         form.reset({
           name: initialData.name,
           abbreviation: initialData.abbreviation,
@@ -207,8 +207,8 @@ const EditPermissionDialog = ({
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-dark100_light900">Name</FormLabel>
+                  <FormItem className="relative">
+                    <FormLabel className="form-header">Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -224,8 +224,8 @@ const EditPermissionDialog = ({
                 control={form.control}
                 name="abbreviation"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-dark100_light900">Abbreviation</FormLabel>
+                  <FormItem className="relative mb-2">
+                    <FormLabel className="form-header">Abbreviation</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -243,8 +243,8 @@ const EditPermissionDialog = ({
               control={form.control}
               name="description"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-dark100_light900">Description</FormLabel>
+                <FormItem className="relative -top-1">
+                  <FormLabel className="form-header">Description</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
@@ -261,8 +261,8 @@ const EditPermissionDialog = ({
               control={form.control}
               name="scheduling"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-dark100_light900">Scheduling</FormLabel>
+                <FormItem className="relative">
+                  <FormLabel className="form-header -top-2">Scheduling</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className="background-light900_dark300 text-dark100_light900">
@@ -283,8 +283,8 @@ const EditPermissionDialog = ({
               control={form.control}
               name="permission"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-dark100_light900">Permission</FormLabel>
+                <FormItem className="relative">
+                  <FormLabel className="form-header -top-2">Permission</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value} // Use value instead of defaultValue
@@ -311,7 +311,6 @@ const EditPermissionDialog = ({
               name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-dark100_light900">Image</FormLabel>
                   <FormControl>
                     <div
                       {...getRootProps()}

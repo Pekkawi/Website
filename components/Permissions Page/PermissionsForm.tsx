@@ -27,7 +27,10 @@ import { FileWithPreview } from '@/interfaces/permissionpage.interfaces';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import { useMutation, useQueryClient } from 'react-query';
-import { permissionFormSchema, PermissionFormData } from '@/schemas/permissionFormSchema';
+import {
+  permissionFormSchema,
+  PermissionFormData,
+} from '@/zodSchemas/permissionFormSchema';
 
 const PermissionsForm: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<FileWithPreview | null>(null);
@@ -119,8 +122,8 @@ const PermissionsForm: React.FC = () => {
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem className="">
-                <FormLabel className="text-dark100_light900">Name</FormLabel>
+              <FormItem className="relative">
+                <FormLabel className="form-header">Name</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -135,8 +138,8 @@ const PermissionsForm: React.FC = () => {
             control={form.control}
             name="abbreviation"
             render={({ field }) => (
-              <FormItem className="">
-                <FormLabel className="text-dark100_light900">Abbreviation</FormLabel>
+              <FormItem className="relative">
+                <FormLabel className="form-header top-[0px]">Abbreviation</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -154,8 +157,8 @@ const PermissionsForm: React.FC = () => {
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-dark100_light900">Description</FormLabel>
+            <FormItem className="relative">
+              <FormLabel className="form-header -top-2.5">Description</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
@@ -171,8 +174,8 @@ const PermissionsForm: React.FC = () => {
           control={form.control}
           name="scheduling"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-dark100_light900">Scheduling</FormLabel>
+            <FormItem className="relative">
+              <FormLabel className="form-header -top-2">Scheduling</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="background-light900_dark300 text-dark100_light900">
@@ -193,8 +196,8 @@ const PermissionsForm: React.FC = () => {
           control={form.control}
           name="permission"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-dark100_light900">Permission</FormLabel>
+            <FormItem className="relative">
+              <FormLabel className="form-header -top-2">Permission</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="background-light900_dark300 text-dark100_light900">
@@ -215,8 +218,7 @@ const PermissionsForm: React.FC = () => {
           control={form.control}
           name="image"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-dark100_light900">Image</FormLabel>
+            <FormItem className="relative">
               <FormControl>
                 <div
                   {...getRootProps()}

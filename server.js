@@ -22,9 +22,15 @@ app.prepare().then(() => {
       io.emit("message", {
         text: data.text,
         userId: socket.id,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        username:data.username
       });
     });
+  
+    socket.on('deviceInfo',(data)=>{
+      registerNode(data,socket.io);
+      
+    })
 
     socket.on("disconnect", () => {
       console.log("User disconnected");

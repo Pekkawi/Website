@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/button';
-import { Switch } from '../ui/switch';
 import NodeHistoryDialog from './NodeHistoryDialog';
+import EditConnection from './EditConnection';
 
 const NodeDropDown = ({
   serialNumber,
@@ -23,31 +23,52 @@ const NodeDropDown = ({
       transition={{ duration: 0.2, ease: 'easeInOut' }}
       className="relative overflow-hidden  border-b-2 border-gray-200"
     >
-      <div className="relative grid grid-cols-1 justify-items-start px-4 pb-7 md:items-baseline mmd:grid-cols-3 mmd:grid-rows-1">
+      <div className="mmd:grid-cols-3 mmd:grid-rows-1 relative grid grid-cols-1 justify-items-start px-4 pb-7 md:items-baseline">
         <div className="col-span-1">
           <div className="mt-2">
-            <h4 className="text-dark100_light900">Serial Number</h4>
+            <h4 className="text-dark100_light900">MAC Address</h4>
             <p className="font-extralight text-gray-400 dark:text-gray-600">
               {serialNumber}
             </p>
           </div>
           <div className="mb-5 mt-6">
-            <h4 className="text-dark100_light900">MAC Address</h4>
-            <p className="font-extralight text-gray-400 dark:text-gray-600">
-              {MACAddress}
-            </p>
+            <h4 className="text-dark100_light900">IP Address</h4>
+            <div className="mb-[-1rem] flex items-center justify-between">
+              <p className="font-extralight text-gray-400 dark:text-gray-600">
+                10.126.128.24
+              </p>
+              <EditConnection
+                initialData={{
+                  name: 'Printer 1',
+                  accessCode: '12345678',
+                  serialNumber: 'SN1234123451234',
+                  IP: '192.168.101.1',
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="mb-5 mt-6">
+            <h4 className="text-dark100_light900">File Name</h4>
+            <p className="font-extralight text-gray-400 dark:text-gray-600">ceva.3mf</p>
           </div>
         </div>
 
         <div className="col-span-2 justify-self-start">
           {/* To be added when node is finished */}
+
           <div className="mt-2">
-            <h4 className="text-dark100_light900">Created</h4>
-            <p className="font-extralight text-gray-400 dark:text-gray-600">2 days ago</p>
+            <h4 className="text-dark100_light900">Total Time</h4>
+            <p className="font-extralight text-gray-400 dark:text-gray-600">1h36min</p>
+          </div>
+
+          <div className="mb-5 mt-6">
+            <h4 className="text-dark100_light900">Time Left</h4>
+            <p className="font-extralight text-gray-400 dark:text-gray-600">5h21min</p>
           </div>
           <div className="mb-5 mt-6">
-            <h4 className="text-dark100_light900">Blink LED</h4>
-            <Switch className="background-light900_dark300 data-[state=checked]:bg-orange-500 data-[state=unchecked]:bg-gray-200 dark:data-[state=unchecked]:bg-gray-700 [&_span[data-state]]:bg-white" />{' '}
+            <h4 className="text-dark100_light900">Material</h4>
+            <p className="font-extralight text-gray-400 dark:text-gray-600">???</p>
           </div>
         </div>
 
