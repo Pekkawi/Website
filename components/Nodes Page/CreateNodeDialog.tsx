@@ -10,9 +10,9 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 // import SerialNumberSelect from './SerialNumberSelect';
-import PermissionsTypeSelect from './PermissionsTypeSelect';
+// import PermissionsTypeSelect from './PermissionsTypeSelect';
 import {
   Form,
   FormControl,
@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import Loader from './Loader';
 
 const CreateNodeDialog = () => {
   const [open, setOpen] = useState(false);
@@ -45,8 +46,8 @@ const CreateNodeDialog = () => {
 
   const {
     data: perms,
-    status,
-    refetch,
+    // status,
+    // refetch,
   } = useQuery('permissions', getPermissions, {
     staleTime: Infinity,
     onSuccess: (data) => {
@@ -57,8 +58,12 @@ const CreateNodeDialog = () => {
     },
   });
 
+  const schema = useMemo(() => {
+    return createNodeFormSchema(perms);
+  }, [perms]);
+
   const form = useForm<createNodeFormData>({
-    resolver: zodResolver(createNodeFormSchema(perms)),
+    resolver: zodResolver(schema),
   });
 
   const handleSubmit = async () => {
@@ -108,25 +113,22 @@ const CreateNodeDialog = () => {
                 control={form.control}
                 name="type"
                 render={({ field }) => (
-                  <FormItem className="relative">
-                    <FormLabel className="form-header -top-2">Machine Type</FormLabel>
-                    <Select onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger className="background-light900_dark300 text-dark100_light900">
-                          <SelectValue placeholder="Select a Machine Type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="background-light900_dark300 text-dark100_light900">
-                        {perms.map((perm: IPerm) => {
-                          return (
-                            <SelectItem value={perm.abbreviation} key={perm.abbreviation}>
-                              {perm.abbreviation}
-                            </SelectItem>
-                          );
-                        })}
+                  <FormItem>
+                    <FormLabel>Machine Type</FormLabel>
+                    {/* No FormControl around the SelectTrigger */}
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Machine Type" />
+                      </SelectTrigger>
+                      <SelectContent className="background-light900_dark300">
+                        {perms.map((perm: IPerm) => (
+                          <SelectItem key={perm.abbreviation} value={perm.abbreviation}>
+                            {perm.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage className="text-red-500" />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -149,22 +151,7 @@ const CreateNodeDialog = () => {
           >
             {isLoading ? (
               <>
-                <svg className="mr-2 size-4 animate-spin" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
+                <Loader />
                 Creating...
               </>
             ) : (

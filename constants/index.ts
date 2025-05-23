@@ -17,7 +17,7 @@ export const sidebarLinks: SidebarLink[] = [
   },
   {
     route: '/nodes',
-    label: 'Machines',
+    label: 'Nodes',
     imgURL: '/assets/icons/nodes.svg',
   },
   {

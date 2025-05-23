@@ -13,8 +13,9 @@ export const createNodeFormSchema = (permissions: IPerm[]) => {
     type: z.enum(permissionTypes as [string, ...string[]]),
   });
 
-  const fdmSchema = z.object({
-    type: z.literal('FDM'),
+  // Schema for BAM (Bambu printer)
+  const bambuPrinterSchema = z.object({
+    type: z.literal('BAM'),
     IP: z
       .string()
       .regex(
@@ -28,9 +29,23 @@ export const createNodeFormSchema = (permissions: IPerm[]) => {
         'Must be a valid Bambu Lab printer serial number (15 alphanumeric characters)'
       ),
     accessCode: z.string().regex(/^\d{8}$/, 'Access code must be exactly 8 digits'),
+    owner: z.string(),
   });
 
-  return z.discriminatedUnion('type', [fdmSchema.merge(baseSchema.omit({ type: true }))]);
+  // Schema for BCP (control panel)
+  const controlPanelSchema = z.object({
+    type: z.literal('BCP'),
+    raspBerry: z.string(),
+  });
+
+  // Combine schemas based on type
+  return z.discriminatedUnion('type', [
+    bambuPrinterSchema.merge(baseSchema.omit({ type: true })),
+    controlPanelSchema.merge(baseSchema.omit({ type: true })),
+  ]);
+
+  // If you'd like to add a new type of schema for a new type of device, simply make a const schema
+  // add it as part of the discrimination union schema
 };
 
 export type createNodeFormData = z.infer<ReturnType<typeof createNodeFormSchema>>;
