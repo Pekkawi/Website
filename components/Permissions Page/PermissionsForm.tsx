@@ -72,7 +72,6 @@ const PermissionsForm: React.FC = () => {
       if (croppedImage) {
         data.image = croppedImage;
       }
-      console.log(data);
       const response = await fetch('/api/permissions', {
         method: 'POST',
         headers: {
@@ -83,7 +82,6 @@ const PermissionsForm: React.FC = () => {
       if (!response.ok) {
         throw new Error('Failed to submit form');
       }
-      console.log('Form submitted sucessfully');
       form.reset();
       setCroppedImage(null);
       setSelectedFile(null);
@@ -139,7 +137,7 @@ const PermissionsForm: React.FC = () => {
             name="abbreviation"
             render={({ field }) => (
               <FormItem className="relative">
-                <FormLabel className="form-header top-[0px]">Abbreviation</FormLabel>
+                <FormLabel className="form-header top-0">Abbreviation</FormLabel>
                 <FormControl>
                   <Input
                     {...field}

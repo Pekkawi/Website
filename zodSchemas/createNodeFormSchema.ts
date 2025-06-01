@@ -1,9 +1,14 @@
-import { IPerm } from '@/interfaces/database.interfaces';
+import { IDevice, IPerm } from '@/interfaces/database.interfaces';
 
 import * as z from 'zod';
 
-export const createNodeFormSchema = (permissions: IPerm[]) => {
+export const createNodeFormSchema = (permissions: IPerm[], devices: IDevice[]) => {
   const permissionTypes = permissions.map((perm) => perm.abbreviation);
+  const deviceSerials = devices.map((device) => device.serial_number);
+
+  const deviceEnum = deviceSerials.length
+    ? z.enum(deviceSerials as [string, ...string[]])
+    : z.string();
 
   const baseSchema = z.object({
     name: z
@@ -35,13 +40,19 @@ export const createNodeFormSchema = (permissions: IPerm[]) => {
   // Schema for BCP (control panel)
   const controlPanelSchema = z.object({
     type: z.literal('BCP'),
-    raspBerry: z.string(),
+    Device: deviceEnum,
+  });
+
+  const laserCutterSchema = z.object({
+    type: z.literal('LAS'),
+    Device: deviceEnum,
   });
 
   // Combine schemas based on type
   return z.discriminatedUnion('type', [
     bambuPrinterSchema.merge(baseSchema.omit({ type: true })),
     controlPanelSchema.merge(baseSchema.omit({ type: true })),
+    laserCutterSchema.merge(baseSchema.omit({ type: true })),
   ]);
 
   // If you'd like to add a new type of schema for a new type of device, simply make a const schema

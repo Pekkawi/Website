@@ -1,5 +1,5 @@
 'use client';
-import { Plus } from 'lucide-react';
+import { Circle, Plus } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useMemo, useState } from 'react';
-// import SerialNumberSelect from './SerialNumberSelect';
-// import PermissionsTypeSelect from './PermissionsTypeSelect';
 import {
   Form,
   FormControl,
@@ -21,15 +19,15 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   createNodeFormData,
   createNodeFormSchema,
 } from '@/zodSchemas/createNodeFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { getPermissions } from '@/hooks/permissionHooks';
-import { IPerm } from '@/interfaces/database.interfaces';
+import { IDevice, IPerm } from '@/interfaces/database.interfaces';
 import {
   Select,
   SelectContent,
@@ -38,40 +36,88 @@ import {
   SelectValue,
 } from '../ui/select';
 import Loader from './Loader';
+import { getDevices } from '@/hooks/deviceHooks';
+import clsx from 'clsx';
 
 const CreateNodeDialog = () => {
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const queryClient = useQueryClient();
 
-  const {
-    data: perms,
-    // status,
-    // refetch,
-  } = useQuery('permissions', getPermissions, {
+  const { data: perms = [] } = useQuery('permissions', getPermissions, {
     staleTime: Infinity,
     onSuccess: (data) => {
-      // Pre-populate the query cache with individual permissions
       data.forEach((perm: IPerm) => {
         queryClient.setQueryData(['permission', perm._id], perm);
       });
     },
   });
 
-  const schema = useMemo(() => {
-    return createNodeFormSchema(perms);
-  }, [perms]);
+  const { data: devices = [] } = useQuery('devices', getDevices, {
+    staleTime: Infinity,
+    onSuccess: (data) => {
+      data.forEach((device: IDevice) => {
+        queryClient.setQueryData(['device', device._id], device);
+      });
+    },
+  });
+
+  const schema = useMemo(() => createNodeFormSchema(perms, devices), [perms, devices]);
 
   const form = useForm<createNodeFormData>({
     resolver: zodResolver(schema),
   });
 
-  const handleSubmit = async () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setOpen(false);
-    }, 2000);
+  const selectedType = form.watch('type');
+
+  const addNewNodeMutation = useMutation(
+    (data: createNodeFormData) => submitNodeForm(data),
+    {
+      onMutate: () => {
+        setIsSubmitting(true);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries('nodes');
+        setIsSubmitting(false);
+        setOpen(false);
+        form.reset();
+      },
+      onError: () => {
+        setIsSubmitting(false);
+      },
+    }
+  );
+
+  const submitNodeForm = async (data: createNodeFormData) => {
+    try {
+      const response = await fetch('/api/nodes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const response2 = await fetch('/api/devices/[id]', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body:JSON.stringify(data.)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
+      form.reset();
+    } catch (error) {
+      console.error('Error submitting form: ', error);
+    }
+  };
+
+  const handleSubmit: SubmitHandler<createNodeFormData> = (data) => {
+    addNewNodeMutation.mutate(data);
   };
 
   return (
@@ -91,74 +137,216 @@ const CreateNodeDialog = () => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 gap-4">
+            {/* Name Field */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage className="text-red-500" />
+                </FormItem>
+              )}
+            />
+
+            {/* Type Select */}
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Machine Type</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a Machine Type" />
+                    </SelectTrigger>
+                    <SelectContent className="background-light900_dark300">
+                      {perms.map((perm: IPerm) => (
+                        <SelectItem key={perm.abbreviation} value={perm.abbreviation}>
+                          {perm.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-red-500" />
+                </FormItem>
+              )}
+            />
+
+            {/* Conditional Fields for BAM */}
+            {selectedType === 'BAM' && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="IP"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>IP Address</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="SerialNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Serial Number</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="accessCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Access Code</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="owner"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Controll Panel Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+
+            {/* Conditional Field for BCP */}
+            {selectedType === 'BCP' && (
               <FormField
                 control={form.control}
-                name="name"
+                name="Device"
                 render={({ field }) => (
-                  <FormItem className="relative">
-                    <FormLabel className="form-header"> Name </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="background-light900_dark300 text-dark100_light900"
-                      />
-                    </FormControl>
+                  <FormItem>
+                    <FormLabel>Device</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose a device" />
+                      </SelectTrigger>
+                      <SelectContent className="background-light900_dark300">
+                        {devices.map((device: IDevice) => {
+                          const inUse = Boolean(device.node);
+
+                          return (
+                            <SelectItem
+                              key={device.serial_number}
+                              value={device.serial_number}
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span>
+                                  {device.serial_number} · {device.application_name}
+                                </span>
+
+                                {/* status dot */}
+                                <Circle
+                                  fill="currentColor"
+                                  className={clsx(
+                                    'size-3 shrink-0',
+                                    inUse ? 'text-red-500' : 'text-green-500'
+                                  )}
+                                />
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
                     <FormMessage className="text-red-500" />
                   </FormItem>
                 )}
               />
+            )}
 
+            {/* Conditional Field for LAS */}
+            {selectedType === 'LAS' && (
               <FormField
                 control={form.control}
-                name="type"
+                name="Device"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Machine Type</FormLabel>
-                    {/* No FormControl around the SelectTrigger */}
+                    <FormLabel>Device</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a Machine Type" />
+                        <SelectValue placeholder="Choose a device" />
                       </SelectTrigger>
                       <SelectContent className="background-light900_dark300">
-                        {perms.map((perm: IPerm) => (
-                          <SelectItem key={perm.abbreviation} value={perm.abbreviation}>
-                            {perm.name}
-                          </SelectItem>
-                        ))}
+                        {devices.map((device: IDevice) => {
+                          const inUse = Boolean(device.node);
+
+                          return (
+                            <SelectItem
+                              key={device.serial_number}
+                              value={device.serial_number}
+                            >
+                              <div className="flex w-full items-center justify-between gap-3">
+                                <span className="truncate">
+                                  {device.serial_number} · {device.application_name}
+                                </span>
+
+                                {/* status dot */}
+                                <Circle
+                                  fill="currentColor"
+                                  className={clsx(
+                                    'size-3 shrink-0',
+                                    inUse ? 'text-red-500' : 'text-green-500'
+                                  )}
+                                />
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage className="text-red-500" />
                   </FormItem>
                 )}
               />
-            </div>
+            )}
+
+            <DialogFooter className="mt-4">
+              <Button variant="outline" type="button" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-orange-500 font-medium text-white hover:bg-orange-600"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader />
+                    Creating...
+                  </>
+                ) : (
+                  'Create Node'
+                )}
+              </Button>
+            </DialogFooter>
           </form>
         </Form>
-
-        <DialogFooter className="mt-8">
-          <Button
-            variant="outline"
-            className="font-medium"
-            onClick={() => setOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            className="bg-orange-500 font-medium text-white transition-colors hover:bg-orange-600"
-            onClick={handleSubmit}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Loader />
-                Creating...
-              </>
-            ) : (
-              'Create Node'
-            )}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

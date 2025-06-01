@@ -8,6 +8,8 @@ export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
     const users = await User.find({}); // Fetch all the users
+
+    // sort users alphabetically by name
     users.sort((a, b) => {
       if (a.first_name < b.first_name) {
         return -1;

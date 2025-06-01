@@ -1,22 +1,18 @@
 // function to veirfy the api key
 
-import NewNode from "@/database/node.model";
-import { connectToDatabase } from "@/lib/mongoose";
-import { NextRequest, NextResponse } from "next/server";
-
-
+import NewNode from '@/database/newnode.model';
+import { connectToDatabase } from '@/lib/mongoose';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest, response: NextResponse) {
   try {
-  
-
     await connectToDatabase();
     const requestBody = await request.json();
 
     const { SerialNumber, MACAddress, os } = requestBody;
 
     if (!SerialNumber || !MACAddress || !os) {
-      return new Response(JSON.stringify({ error: "Invalid Request" }), {
+      return new Response(JSON.stringify({ error: 'Invalid Request' }), {
         status: 400,
       });
     }
@@ -26,7 +22,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     });
 
     if (existingNode) {
-      return new Response(JSON.stringify({ message: "Node already exists" }), {
+      return new Response(JSON.stringify({ message: 'Node already exists' }), {
         status: 200,
       });
     }
@@ -34,7 +30,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     const CreatingNode = new NewNode({
       SerialNumber,
       MACAddress,
-      Status: "Open",
+      Status: 'Open',
       os,
     });
 
@@ -45,7 +41,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     });
   } catch (err) {
     console.log(err);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
       status: 500,
     });
   }
