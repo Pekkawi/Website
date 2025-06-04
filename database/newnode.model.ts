@@ -14,10 +14,6 @@ const baseNodeSchema = new Schema({
     ref: 'permission',
     // required: true,
   },
-  SN: {
-    type: String,
-    // required: true,
-  },
   device: {
     type: Schema.Types.ObjectId,
     ref: 'devices',
@@ -34,6 +30,9 @@ const baseNodeSchema = new Schema({
   updated: {
     type: Date,
     default: Date.now,
+  },
+  occupiedBy: {
+    type: String,
   },
 });
 
@@ -58,11 +57,24 @@ const BAMSchema = new Schema({
     type: String,
     // required: true,
   },
-  AccessCode: {
+  accessCode: {
     type: String,
     // required: true,
   },
-  ownedBy: {
+  fileName: {
+    type: String,
+  },
+  timeLeft: {
+    type: String,
+  },
+  totalTime: {
+    type: String,
+  },
+  SerialNumber: {
+    type: String,
+    unique: true,
+  },
+  owner: {
     type: Schema.Types.ObjectId,
     ref: 'newnode',
     // required: true,
@@ -114,7 +126,6 @@ const BCPSchema = new Schema({
 const baseNode = models.newnode || model('newnode', baseNodeSchema);
 
 // If you have a new permissions that you want to add with certain cusqtom fields
-// ADD HERE
 
 const LaserNode =
   mongoose.models['Laser Cutter'] || baseNode.discriminator('Laser Cutter', LASSchema);

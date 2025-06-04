@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
-type Status = 'Ready' | 'Locked' | 'Maintenance';
+type Status = 'Maintenance' | 'Open' | 'Busy';
 
 interface StatusDropdownProps {
   status: Status;
@@ -19,7 +19,7 @@ interface NodeDetailsProps {
 const StatusDropdown = ({ status, index = 0, onStatusChange }: StatusDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<Status>(status);
-  const statuses: Status[] = ['Ready', 'Locked', 'Maintenance'];
+  const statuses: Status[] = ['Open', 'Busy', 'Maintenance'];
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -93,9 +93,9 @@ const NodeDetails = ({
 
   const getStatusColor = (currentStatus: Status) => {
     switch (currentStatus) {
-      case 'Ready':
+      case 'Open':
         return 'bg-green-500';
-      case 'Locked':
+      case 'Busy':
         return 'bg-red-500';
       case 'Maintenance':
         return 'bg-orange-400';
@@ -106,7 +106,7 @@ const NodeDetails = ({
 
   const handleStatusChange = (newStatus: Status) => {
     // If changing from Locked to Ready or Maintenance, clear the occupier
-    if (status === 'Locked' && (newStatus === 'Ready' || newStatus === 'Maintenance')) {
+    if (status === 'Busy' && (newStatus === 'Open' || newStatus === 'Maintenance')) {
       setOccupied('None');
     }
     setStatus(newStatus);

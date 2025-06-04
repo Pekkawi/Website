@@ -23,7 +23,7 @@ const NodeDropDown = ({
       transition={{ duration: 0.2, ease: 'easeInOut' }}
       className="relative overflow-hidden  border-b-2 border-gray-200"
     >
-      <div className="mmd:grid-cols-3 mmd:grid-rows-1 relative grid grid-cols-1 justify-items-start px-4 pb-7 md:items-baseline">
+      <div className="relative grid grid-cols-1 justify-items-start px-4 pb-7 md:items-baseline mmd:grid-cols-3 mmd:grid-rows-1">
         <div className="col-span-1">
           <div className="mt-2">
             <h4 className="text-dark100_light900">MAC Address</h4>
@@ -33,7 +33,7 @@ const NodeDropDown = ({
           </div>
           <div className="mb-5 mt-6">
             <h4 className="text-dark100_light900">IP Address</h4>
-            <div className="mb-[-1rem] flex items-center justify-between">
+            <div className="-mb-4 flex items-center justify-between">
               <p className="font-extralight text-gray-400 dark:text-gray-600">
                 10.126.128.24
               </p>

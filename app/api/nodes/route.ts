@@ -1,9 +1,11 @@
+import Devices from '@/database/device.model';
 import {
   BambuControlPanelNode,
   BambuPrinterNode,
   baseNode,
   LaserNode,
 } from '@/database/newnode.model';
+import Permissions from '@/database/permission.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { NextRequest } from 'next/server';
 
@@ -20,25 +22,89 @@ export async function GET(request: NextRequest) {
 // add a new node to the database
 export async function POST(request: NextRequest) {
   try {
+    await connectToDatabase();
     const formData = await request.json();
-
-    const { type, ...payload } = formData;
+    const { type } = formData;
+    console.log(formData);
 
     let createdDoc;
 
     switch (type) {
-      case 'LAS': // Laser Cutter
-        createdDoc = await LaserNode.create(payload);
-        break;
+      case 'LAS': {
+        const serial = formData.Device || formData.SerialNumber;
+        if (!serial) return new Response('Serial number missing', { status: 400 });
 
-      case 'BAM': // Bambu Printer
-        createdDoc = await BambuPrinterNode.create(payload);
+        const [perm, device] = await Promise.all([
+          Permissions.findOne({ abbreviation: 'LAS' }),
+          Devices.findOne({ serial_number: serial }),
+        ]);
+
+        if (!perm) return new Response('Permission "LAS" not found', { status: 400 });
+        if (!device) return new Response(`Device "${serial}" not found`, { status: 400 });
+
+        const newNode = await new LaserNode({
+          name: formData.name,
+          permission: perm._id,
+          device: device._id,
+        }).save();
+
+        await Devices.updateOne({ _id: device._id }, { $set: { node: newNode._id } });
+        createdDoc = newNode; // so you can send it back
         break;
-      case 'BCP': // Bambu Control Panel
-        createdDoc = await BambuControlPanelNode.create(payload);
+      }
+
+      case 'BAM': {
+        // Bambu Printer
+        const serial = formData.Device || formData.SerialNumber;
+        if (!serial) return new Response('Serial number missing', { status: 400 });
+
+        const [perm, owner] = await Promise.all([
+          Permissions.findOne({ abbreviation: 'BAM' }),
+          baseNode.findOne({ name: formData.owner }),
+        ]);
+
+        if (!perm) return new Response('Permission "BAM" not found', { status: 400 });
+        if (!owner) return new Response('Failed to Fetch Owner', { status: 400 });
+
+        const newNode = await new BambuPrinterNode({
+          name: formData.name,
+          permission: perm._id,
+          IP: formData.IP,
+          SerialNumber: formData.SerialNumber,
+          accessCode: formData.accessCode,
+          owner: owner._id,
+        }).save();
+
+        await BambuControlPanelNode.updateOne(
+          { _id: owner._id },
+          { $push: { owns: newNode._id } }
+        );
+
+        createdDoc = newNode; // so you can send it back
         break;
-      default:
-        createdDoc = await baseNode.create(payload);
+      }
+      case 'BCP': {
+        const serial = formData.Device || formData.SerialNumber;
+        if (!serial) return new Response('Serial number missing', { status: 400 });
+
+        const [perm, device] = await Promise.all([
+          Permissions.findOne({ abbreviation: 'BCP' }),
+          Devices.findOne({ serial_number: serial }),
+        ]);
+
+        if (!perm) return new Response('Permission "BCP" not found', { status: 400 });
+        if (!device) return new Response(`Device "${serial}" not found`, { status: 400 });
+
+        const newNode = await new BambuControlPanelNode({
+          name: formData.name,
+          permission: perm._id,
+          device: device._id,
+        }).save();
+
+        await Devices.updateOne({ _id: device._id }, { $set: { node: newNode._id } });
+        createdDoc = newNode; // so you can send it back
+        break;
+      }
     }
 
     return new Response(JSON.stringify(createdDoc), { status: 201 });

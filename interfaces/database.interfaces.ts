@@ -1,17 +1,5 @@
 import { Types } from 'mongoose';
 
-// Interface for a Node
-// export interface INode {
-//   _id: Types.ObjectId;
-//   SerialNumber: string;
-//   MACAddress: string;
-//   DeviceName: string;
-//   History: string;
-//   device?: Types.ObjectId;
-//   Status: string;
-//   os: string;
-// }
-
 export interface IDevice {
   _id: Types.ObjectId;
   device_model: string;

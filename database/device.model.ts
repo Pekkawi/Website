@@ -25,6 +25,6 @@ const deviceSchema = new Schema({
   },
 });
 
-const Devices = models.device || model('devices', deviceSchema, 'devices'); // Check if the model already exists , otherwise create a model based on the Schema
+const Devices = models.devices || model('devices', deviceSchema); // Check if the model already exists , otherwise create a model based on the Schema
 
 export default Devices;

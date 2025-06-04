@@ -54,9 +54,6 @@ export const createNodeFormSchema = (permissions: IPerm[], devices: IDevice[]) =
     controlPanelSchema.merge(baseSchema.omit({ type: true })),
     laserCutterSchema.merge(baseSchema.omit({ type: true })),
   ]);
-
-  // If you'd like to add a new type of schema for a new type of device, simply make a const schema
-  // add it as part of the discrimination union schema
 };
 
 export type createNodeFormData = z.infer<ReturnType<typeof createNodeFormSchema>>;

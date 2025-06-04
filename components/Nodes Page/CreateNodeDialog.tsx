@@ -38,6 +38,8 @@ import {
 import Loader from './Loader';
 import { getDevices } from '@/hooks/deviceHooks';
 import clsx from 'clsx';
+import { NodeType } from '@/interfaces/nodes.interface';
+import { getNodes } from '@/hooks/nodeHooks';
 
 const CreateNodeDialog = () => {
   const [open, setOpen] = useState(false);
@@ -47,21 +49,26 @@ const CreateNodeDialog = () => {
 
   const { data: perms = [] } = useQuery('permissions', getPermissions, {
     staleTime: Infinity,
-    onSuccess: (data) => {
-      data.forEach((perm: IPerm) => {
-        queryClient.setQueryData(['permission', perm._id], perm);
-      });
-    },
   });
 
   const { data: devices = [] } = useQuery('devices', getDevices, {
     staleTime: Infinity,
-    onSuccess: (data) => {
-      data.forEach((device: IDevice) => {
-        queryClient.setQueryData(['device', device._id], device);
-      });
-    },
   });
+
+  const { data: nodes = [] } = useQuery('nodes', getNodes, {
+    staleTime: Infinity,
+  });
+
+  const controlPanels = useMemo(() => {
+    console.log('hello');
+    return nodes.filter((node: NodeType) => {
+      // Assume each node has a `.permission` object with `abbreviation` and `_id`
+      const perm = node.permission;
+      if (!perm) return false;
+
+      return perm.toString() === '682dd93042e8a66e632744d5'; // hard coded value for the _id of the Bambu Control Panel in the db
+    });
+  }, [nodes]);
 
   const schema = useMemo(() => createNodeFormSchema(perms, devices), [perms, devices]);
 
@@ -79,6 +86,7 @@ const CreateNodeDialog = () => {
       },
       onSuccess: () => {
         queryClient.invalidateQueries('nodes');
+        queryClient.invalidateQueries('devices');
         setIsSubmitting(false);
         setOpen(false);
         form.reset();
@@ -89,27 +97,18 @@ const CreateNodeDialog = () => {
     }
   );
 
-  const submitNodeForm = async (data: createNodeFormData) => {
+  const submitNodeForm = async (formData: createNodeFormData) => {
     try {
       const response = await fetch('/api/nodes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(formData),
       });
 
-      const response2 = await fetch('/api/devices/[id]', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body:JSON.stringify(data.)
-      });
+      if (!response.ok) throw new Error('Failed to create node');
 
-      if (!response.ok) {
-        throw new Error('Failed to submit form');
-      }
       form.reset();
     } catch (error) {
       console.error('Error submitting form: ', error);
@@ -223,10 +222,19 @@ const CreateNodeDialog = () => {
                   name="owner"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Controll Panel Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
+                      <FormLabel>Control-panel owner</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose a control panel" />
+                        </SelectTrigger>
+                        <SelectContent className="background-light900_dark300">
+                          {controlPanels.map((panel: NodeType) => (
+                            <SelectItem key={panel._id} value={panel.name}>
+                              {panel.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage className="text-red-500" />
                     </FormItem>
                   )}

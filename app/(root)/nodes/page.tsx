@@ -1,93 +1,43 @@
 'use client';
 
+import BambuControlPanelDetails from '@/components/Nodes Page/BambuControlPanelDetails';
+import BambuPrinterDetails from '@/components/Nodes Page/BambuPrinterDetails';
 import CreateNodeDialog from '@/components/Nodes Page/CreateNodeDialog';
+import LaserNodeDetails from '@/components/Nodes Page/LaserNodeDetails';
 import NodeDetails from '@/components/Nodes Page/NodeDetails';
-import NodeDropDown from '@/components/Nodes Page/NodeDropDown';
+import PageLoader from '@/components/shared/PageLoader';
+import { getNodes } from '@/hooks/nodeHooks';
+import {
+  BambuControlPanelNode,
+  BambuPrinterNode,
+  LaserNode,
+  NodeType,
+} from '@/interfaces/nodes.interface';
 // import { RestrictedAccess } from '@/components/shared/RestrictedAccess';
 // import { useUser } from '@clerk/nextjs';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState } from 'react';
-
-export interface nodeInterface {
-  name: string;
-  status: 'Ready' | 'Locked' | 'Maintenance';
-  occupied: string;
-  MACAddress: string;
-  SerialNumber: string;
-  timeLeft?: string;
-  filenName?: string;
-  estimatedTime?: string;
-  material?: string;
-}
-
-const data: nodeInterface[] = [
-  // 3D Printers - Bambu Lab
-  {
-    name: 'Bambu X1C-1',
-    status: 'Ready',
-    occupied: 'None',
-    MACAddress: '00:1B:44:11:3A:B7',
-    SerialNumber: 'BX1C2401-0584',
-  },
-
-  {
-    name: 'Laser Cutter 1',
-    status: 'Locked',
-    occupied: 'Pablo Perez',
-    MACAddress: '00:1B:44:12:4B:D9',
-    SerialNumber: 'BP1P2312-1024',
-  },
-
-  // 3D Printers - Prusa
-  {
-    name: 'Prusa MK4-1',
-    status: 'Ready',
-    occupied: 'None',
-    MACAddress: 'B8:27:EB:AA:BB:CC',
-    SerialNumber: 'PMK4-2023-2584',
-  },
-
-  // Laser Cutters
-
-  {
-    name: 'Glowforge Pro-1',
-    status: 'Locked',
-    occupied: 'Eduard Liehn',
-    MACAddress: 'A4:C3:F0:85:7B:D3',
-    SerialNumber: 'GFPRO-2024-0140',
-  },
-];
-// const data: nodeInterface[] = [
-//   {
-//     name: 'Printer 1',
-//     status: 'Ready',
-//     occupied: 'None',
-//     MACAddress: '00:1B:44:11:3A:B7',
-//     SerialNumber: 'BX1C2401-0584',
-//   },
-// ];
+import { useQuery } from 'react-query';
 
 const Nodes = () => {
-  // const { user, isLoaded } = useUser();
   const [nodeOpen, setnodeOpen] = useState(''); // initially an empty string
 
   // makes sure that only one drop down is opened at a time
   const handleToggle = (deviceName: string) => {
     if (deviceName === nodeOpen) {
-      console.log('YO');
       setnodeOpen('');
     } else {
-      console.log('SUP');
       setnodeOpen(deviceName);
     }
-    console.log('Clicked on ' + deviceName);
   };
 
-  // const isAdmin = user?.publicMetadata?.role === 'Admin';
+  const { data: nodes = [], status: statusNodes } = useQuery('nodes', getNodes, {
+    staleTime: Infinity,
+  });
 
-  // if (!isLoaded) {
-  //   return <div>Loading...</div>;
-  // }
+  if (statusNodes === 'loading') {
+    return <PageLoader />;
+  }
 
   return (
     <div className="background background-light900_dark300 mb-2 h-auto">
@@ -103,27 +53,49 @@ const Nodes = () => {
           </p>
 
           {
-            // Go through all the nodes ,right now just havea dummy node
-            // nodes.map((node)=>{...})  Display all nodes from the datbase
             <section className="mt-7 rounded-sm border border-gray-200 bg-white shadow-md shadow-gray-300 dark:border-gray-400 dark:bg-gray-300 dark:shadow-gray-500">
-              {data.map((node: nodeInterface) => {
+              {nodes.map((node: NodeType) => {
                 return (
-                  <div key={node.name}>
-                    <div onClick={() => handleToggle(node.name)}>
+                  <div key={node._id}>
+                    <div onClick={() => handleToggle(node._id)}>
                       <NodeDetails
                         name={node.name}
-                        status={node.status}
-                        occupied={node.occupied}
-                        clicked={node.name === nodeOpen}
+                        status={node.Status}
+                        occupied={node.occupiedBy}
+                        clicked={node._id === nodeOpen}
                       />
                     </div>
                     <AnimatePresence>
-                      {node.name === nodeOpen && (
+                      <motion.div
+                        initial="collapsed"
+                        animate="open"
+                        exit="collapsed"
+                        variants={{
+                          open: { opacity: 1, height: 'auto' },
+                          collapsed: { opacity: 0, height: 0 },
+                        }}
+                        transition={{ duration: 0.2, ease: 'easeInOut' }}
+                        className="relative overflow-hidden  border-b-2 border-gray-200"
+                      >
+                        {/* Depending on the discriminator key (__t), render the correct detail component */}
+                        {node.__t === 'Laser Cutter' && node._id === nodeOpen && (
+                          <LaserNodeDetails node={node as LaserNode} />
+                        )}
+                        {node.__t === 'Bambu Printer' && node._id === nodeOpen && (
+                          <BambuPrinterDetails node={node as BambuPrinterNode} />
+                        )}
+                        {node.__t === 'Bambu Control Panel' && node._id === nodeOpen && (
+                          <BambuControlPanelDetails
+                            node={node as BambuControlPanelNode}
+                          />
+                        )}
+                        {/* {node._id === nodeOpen && (
                         <NodeDropDown
                           serialNumber={node.SerialNumber}
                           MACAddress={node.MACAddress}
                         />
-                      )}
+                      )} */}
+                      </motion.div>
                     </AnimatePresence>
                   </div>
                 );
