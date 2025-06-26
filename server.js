@@ -1,44 +1,50 @@
-import { createServer } from "http";
-import next from "next";
-import { Server } from "socket.io";
+// This is a socketio webserver. It is used in the Nodes Page to constantly stream the data from the different machines on the website
+// for more information on how this was implemented check: https://socket.io/how-to/use-with-nextjs
+//
 
-const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
+import { createServer } from 'http';
+import next from 'next';
+import { Server } from 'socket.io';
+
+const dev = process.env.NODE_ENV !== 'production';
+const hostname = 'localhost';
 const port = 3000;
 
 const app = next({ dev, hostname, port });
-const handle = app.getRequestHandler();
+const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
-  const httpServer = createServer(handle);
-  const io = new Server(httpServer);
+  const httpServer = createServer(handler);
+  const io = new Server(httpServer, {
+    cors: { origin: '*' }, // allow connections from Python script & browsers
+  });
 
-  io.on("connection", (socket) => {
-    console.log("YIPEE A NEW USER HAS CONNECTED");
-    
-    // Handle new messages
-    socket.on("message", (data) => {
-      // Broadcast the message to all connected clients
-      io.emit("message", {
+  io.on('connection', (socket) => {
+    console.log('👤 New client connected:', socket.id);
+
+    // 1) Forward any "printerStatus" from any client (Python or front-end)
+    socket.on('printerStatus', (payload) => {
+      // Re-broadcast to *all* connected clients (browsers, Python, etc.)
+      io.emit('printerStatus', payload);
+    });
+
+    // … your existing handlers …
+    socket.on('message', (data) => {
+      io.emit('message', {
         text: data.text,
         userId: socket.id,
         timestamp: new Date().toISOString(),
-        username:data.username
+        username: data.username,
       });
     });
-  
-    socket.on('deviceInfo',(data)=>{
-      registerNode(data,socket.io);
-      
-    })
 
-    socket.on("disconnect", () => {
-      console.log("User disconnected");
+    socket.on('disconnect', () => {
+      console.log('⚠️ Client disconnected:', socket.id);
     });
   });
 
   httpServer
-    .once("error", (err) => {
+    .once('error', (err) => {
       console.error(err);
       process.exit(1);
     })
