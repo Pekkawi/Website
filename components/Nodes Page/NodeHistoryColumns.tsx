@@ -6,6 +6,7 @@ import { ColumnDef } from '@tanstack/react-table';
 export type History = {
   name: string;
   email: string;
+  fileName: string;
   date: Date;
 };
 
@@ -17,6 +18,10 @@ export const columns: ColumnDef<History>[] = [
   {
     accessorKey: 'email',
     header: 'Email',
+  },
+  {
+    accessorKey: 'fileName',
+    header: 'File Name',
   },
   {
     accessorKey: 'date',

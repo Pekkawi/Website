@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useMutation, useQueryClient } from 'react-query';
+import React, { useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { BambuPrinterNode } from '@/interfaces/nodes.interface';
 import { Button } from '../ui/button';
 import {
@@ -16,63 +16,87 @@ import {
 } from '../ui/dialog';
 import { Types } from 'mongoose';
 import { socket } from '@/app/socket';
+import NodeHistoryDialog from './NodeHistoryDialog';
 
 interface BambuPrinterNodeDetailsProps {
   node: BambuPrinterNode;
 }
 
-// shape of status updates from socket
 interface PrinterStatus {
-  _id: string;
-  fileName?: string;
-  progress?: number;
-  printTime?: string;
+  printTime: string;
+  fileName: string;
+  progress: number;
 }
 
 const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node }) => {
-  const [printTime, setPrintTime] = useState<string>(node.totalTime ?? '???');
-  const [fileName, setFileName] = useState<string>(node.fileName ?? '???');
-  const [progress, setProgress] = useState<number>(0);
+  const queryClient = useQueryClient();
 
-  const queryClient = useQueryClient(); // for delete
+  // Initial fallback values taken from node props
+  const initialStatus: PrinterStatus = {
+    printTime: node.totalTime ?? '???',
+    fileName: node.fileName ?? '???',
+    progress: 0,
+  };
 
+  const formatTime = (time: string | number): string => {
+    const totalMinutes = typeof time === 'number' ? time : parseInt(time.toString(), 10);
+    if (isNaN(totalMinutes)) return time.toString();
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours} h ${minutes} min`;
+  };
+
+  // Keep cache updated when socket emits
   useEffect(() => {
-    const handleStatusUpdate = (payload: PrinterStatus | PrinterStatus[]) => {
+    const handleStatusUpdate = (payload: any | any[]) => {
       const statuses = Array.isArray(payload) ? payload : [payload];
       const myStatus = statuses.find((s) => s._id === node._id);
       if (!myStatus) return;
-      if (myStatus.fileName !== undefined) setFileName(myStatus.fileName);
-      if (myStatus.progress !== undefined) setProgress(myStatus.progress);
-      if (myStatus.printTime !== undefined) setPrintTime(myStatus.printTime);
+      queryClient.setQueryData<PrinterStatus>(['printerStatus', node._id], (old) => ({
+        printTime: myStatus.printTime ?? old?.printTime ?? initialStatus.printTime,
+        fileName: myStatus.fileName ?? old?.fileName ?? initialStatus.fileName,
+        progress: myStatus.progress ?? old?.progress ?? initialStatus.progress,
+      }));
     };
 
     socket.on('printerStatus', handleStatusUpdate);
     return () => {
       socket.off('printerStatus', handleStatusUpdate);
     };
-  }, [node._id]);
+  }, [
+    node._id,
+    queryClient,
+    initialStatus.printTime,
+    initialStatus.fileName,
+    initialStatus.progress,
+  ]);
 
+  // Retrieve live status from global cache (or initial fallback)
+  const { data: status } = useQuery<PrinterStatus>(
+    ['printerStatus', node._id],
+    () =>
+      (queryClient.getQueryData(['printerStatus', node._id]) as PrinterStatus) ??
+      initialStatus,
+    {
+      initialData: initialStatus,
+      staleTime: Infinity,
+    }
+  );
+
+  // Delete mutation
   const deleteNodeMutation = useMutation<void, Error, string>(
-    (nodeId: string) =>
+    (nodeId) =>
       fetch(`/api/nodes/${nodeId}`, { method: 'DELETE' }).then((res) => {
-        if (!res.ok) {
-          throw new Error('Failed to delete node');
-        }
+        if (!res.ok) throw new Error('Failed to delete node');
       }),
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries('nodes');
-      },
-      onError: () => {
-        console.error('Error deleting node');
-      },
+      onSuccess: () => queryClient.invalidateQueries('nodes'),
+      onError: () => console.error('Error deleting node'),
     }
   );
 
   const handleConfirmDelete = () => {
-    if (node._id) {
-      deleteNodeMutation.mutate(node._id);
-    }
+    if (node._id) deleteNodeMutation.mutate(node._id);
   };
 
   const allNodes = queryClient.getQueryData<BambuPrinterNode[]>('nodes') ?? [];
@@ -82,6 +106,7 @@ const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node
 
   return (
     <div className="relative grid grid-cols-1 justify-items-start px-4 pb-7 md:items-baseline mmd:grid-cols-3 mmd:grid-rows-1">
+      {/* LEFT COLUMN */}
       <div className="col-span-1">
         <div className="mt-2">
           <h4 className="text-dark100_light900">Owner</h4>
@@ -107,24 +132,32 @@ const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node
         </div>
       </div>
 
+      {/* RIGHT COLUMN – live status */}
       <div className="col-span-1">
         <div className="mt-2">
           <h4 className="text-dark100_light900">File Name</h4>
-          <p className="font-extralight text-gray-400 dark:text-gray-600">{fileName}</p>
+          <p className="font-extralight text-gray-400 dark:text-gray-600">
+            {status.fileName}
+          </p>
         </div>
-
         <div className="mb-5 mt-6">
           <h4 className="text-dark100_light900">Percentage</h4>
-          <p className="font-extralight text-gray-400 dark:text-gray-600">{progress}</p>
+          <p className="font-extralight text-gray-400 dark:text-gray-600">
+            {status.progress}%
+          </p>
         </div>
-
         <div className="mb-5 mt-6">
           <h4 className="text-dark100_light900">Time Left</h4>
-          <p className="font-extralight text-gray-400 dark:text-gray-600">{printTime}</p>
+          <p className="font-extralight text-gray-400 dark:text-gray-600">
+            {formatTime(status.printTime)}
+          </p>
         </div>
       </div>
 
+      {/* DELETE BUTTON */}
       <div className="absolute bottom-5 right-10 flex gap-2">
+        <NodeHistoryDialog nodeId={node._id} />
+
         <Dialog>
           <DialogTrigger asChild>
             <Button

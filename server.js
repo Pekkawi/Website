@@ -1,4 +1,4 @@
-// This is a socketio webserver. It is used in the Nodes Page to constantly stream the data from the different machines on the website
+// This is a socketio webserver. It is used in the Nodes Page to stream the data from the different machines on the website
 // for more information on how this was implemented check: https://socket.io/how-to/use-with-nextjs
 //
 
@@ -26,6 +26,25 @@ app.prepare().then(() => {
     socket.on('printerStatus', (payload) => {
       // Re-broadcast to *all* connected clients (browsers, Python, etc.)
       io.emit('printerStatus', payload);
+    });
+
+    socket.on('updateHistory', async (payload) => {
+      const nodeId = payload._id;
+
+      const res = await fetch(`http://${hostname}:${port}/api/nodes/${nodeId}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          printTime: payload.printTime,
+          fileName: payload.fileName,
+          name: payload.name,
+        }),
+      });
+      if (!res.ok) {
+        console.error(`Failed to update history: ${res.status}`);
+      }
     });
 
     // … your existing handlers …

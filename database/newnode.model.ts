@@ -36,21 +36,7 @@ const baseNodeSchema = new Schema({
   },
 });
 
-const LASSchema = new Schema({
-  history: {
-    type: [
-      {
-        student_name: { type: String, required: true },
-        student_email: { type: String, required: true },
-        date: {
-          type: Date, // required: true,
-          default: Date.now,
-        },
-      },
-    ],
-    // required: true,
-  },
-});
+const LASSchema = new Schema({});
 
 const BAMSchema = new Schema({
   IP: {
@@ -79,39 +65,9 @@ const BAMSchema = new Schema({
     ref: 'newnode',
     // required: true,
   },
-  history: {
-    type: [
-      {
-        student_name: { type: String, required: true },
-        student_email: { type: String, required: true },
-        file_name: { type: String, required: true },
-        duration: { type: String, required: true },
-        date: {
-          type: Date, // required: true,
-          default: Date.now,
-        },
-      },
-    ],
-    // required: true,
-  },
 });
 
 const BCPSchema = new Schema({
-  history: {
-    type: [
-      {
-        printer: { type: Schema.Types.ObjectId },
-        student_name: { type: String, required: true },
-        student_email: { type: String, required: true },
-        file_name: { type: String, required: true },
-        duration: { type: String, required: true },
-        date: {
-          type: Date, // required: true,
-          default: Date.now,
-        },
-      },
-    ],
-  },
   owns: {
     type: [
       {

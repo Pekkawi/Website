@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     // Construct and return the response with user details and permissions.
     return new Response(
       JSON.stringify({
-        displayName: user.display_name,
+        display_name: user.display_name,
         role: user.role,
         LASPermission: hasLASPermission,
         FDMPermission: hasFDMPermission,

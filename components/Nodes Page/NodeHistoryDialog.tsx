@@ -12,115 +12,54 @@ import { Button } from '../ui/button';
 import { useState } from 'react';
 import { columns, History } from './NodeHistoryColumns';
 import { HistoryTable } from './NodeHistoryTable';
+import { Types } from 'mongoose';
+import { useQuery } from 'react-query';
+import { getNodeHistory } from '@/hooks/historyHooks';
 
 // dummy data for the history dialog
-export const data: History[] = [
-  {
-    name: 'Emma Thompson',
-    email: 'emma.t@gmail.com',
-    date: new Date(2024, 10, 24, 23, 45),
-  },
-  {
-    name: 'Liu Wei',
-    email: 'l.wei@gmail.com',
-    date: new Date(2024, 10, 24, 22, 30),
-  },
-  {
-    name: 'Marcus Anderson',
-    email: 'manderson@gmail.com',
-    date: new Date(2024, 10, 24, 21, 15),
-  },
-  {
-    name: 'Sofia Rodriguez',
-    email: 'srodri@gmail.com',
-    date: new Date(2024, 10, 24, 20, 0),
-  },
-  {
-    name: 'Yuki Tanaka',
-    email: 'ytanaka@gmail.com',
-    date: new Date(2024, 10, 24, 18, 45),
-  },
-  {
-    name: 'Hassan Ali',
-    email: 'hali@gmail.com',
-    date: new Date(2024, 10, 24, 17, 30),
-  },
-  {
-    name: 'Clara Schmidt',
-    email: 'c.schmidt@gmail.com',
-    date: new Date(2024, 10, 24, 16, 15),
-  },
-  {
-    name: 'Oscar Nielsen',
-    email: 'o.nielsen@gmail.com',
-    date: new Date(2024, 10, 24, 15, 0),
-  },
-  {
-    name: 'Priya Patel',
-    email: 'ppatel@gmail.com',
-    date: new Date(2024, 10, 24, 13, 45),
-  },
-  {
-    name: 'Antoine Dubois',
-    email: 'adubois@gmail.com',
-    date: new Date(2024, 10, 24, 12, 30),
-  },
-  {
-    name: 'Maya Johnson',
-    email: 'mjohnson@gmail.com',
-    date: new Date(2024, 10, 24, 11, 15),
-  },
-  {
-    name: 'Lars Andersen',
-    email: 'landersen@gmail.com',
-    date: new Date(2024, 10, 24, 10, 0),
-  },
-  {
-    name: 'Isabella Santos',
-    email: 'i.santos@gmail.com',
-    date: new Date(2024, 10, 24, 8, 45),
-  },
-  {
-    name: 'Aleksander Kowalski',
-    email: 'akowal@gmail.com',
-    date: new Date(2024, 10, 24, 7, 30),
-  },
-  {
-    name: 'Nina Chen',
-    email: 'nchen@gmail.com',
-    date: new Date(2024, 10, 24, 6, 15),
-  },
-  {
-    name: 'Mohammed Ahmed',
-    email: 'm.ahmed@gmail.com',
-    date: new Date(2024, 10, 24, 5, 0),
-  },
-  {
-    name: "Sarah O'Connor",
-    email: 'soconnor@gmail.com',
-    date: new Date(2024, 10, 24, 3, 45),
-  },
-  {
-    name: 'Kim Min-ji',
-    email: 'kmj@gmail.com',
-    date: new Date(2024, 10, 24, 2, 30),
-  },
-  {
-    name: 'Gabriel Silva',
-    email: 'gsilva@gmail.com',
-    date: new Date(2024, 10, 24, 1, 15),
-  },
-  {
-    name: 'Anastasia Popov',
-    email: 'apopov@gmail.com',
-    date: new Date(2024, 10, 24, 0, 0),
-  },
-];
 
-const NodeHistoryDialog = ({ id }: { id: string }) => {
+const NodeHistoryDialog = ({ nodeId }: { nodeId: Types.ObjectId }) => {
   // The passed in id represents the id of the node
 
   const [open, setOpen] = useState(false);
+
+  const { data: rawHistory, status: statusNodeHistory } = useQuery<any[]>(
+    ['nodeHistory', nodeId],
+    () => getNodeHistory(nodeId),
+    {
+      staleTime: 400,
+    }
+  );
+
+  function castNodeHistoryData(uncastedNodeHistory: any[] | undefined): History[] {
+    console.log('Do you even go into it?');
+
+    if (!uncastedNodeHistory || !Array.isArray(uncastedNodeHistory.nodeHistory)) {
+      return [];
+    }
+
+    console.log('MIKASA?');
+
+    console.log(uncastedNodeHistory.nodeHistory);
+
+    const soka = uncastedNodeHistory.nodeHistory.map((item: any) => ({
+      name: item.user?.display_name ?? '',
+      email: item.user?.email ?? '',
+      fileName: item.fileName ?? '',
+      date: item.timeStamp instanceof Date ? item.timeStamp : new Date(item.timeStamp),
+    }));
+
+    console.log('Casted shit:', soka);
+    return soka;
+  }
+
+  if (statusNodeHistory === 'loading') {
+    // return <LoaderComponent />;
+  }
+
+  if (statusNodeHistory === 'error') {
+    // return <ErrorFetchingComponent/>
+  }
 
   return (
     <>
@@ -142,7 +81,7 @@ const NodeHistoryDialog = ({ id }: { id: string }) => {
             Here you can view the all the past entries in the past month
           </p>
 
-          <HistoryTable columns={columns} data={data} />
+          <HistoryTable columns={columns} data={castNodeHistoryData(rawHistory)} />
 
           <DialogFooter>
             <Button

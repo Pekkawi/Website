@@ -63,6 +63,7 @@ const Nodes = () => {
                         status={node.Status}
                         occupied={node.occupiedBy}
                         clicked={node._id === nodeOpen}
+                        nodeId={node._id}
                       />
                     </div>
                     <AnimatePresence>
