@@ -7,6 +7,8 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import DropDownLoading from './DropDownLoading';
 import RoleSelector from './RoleSelector';
 import UserCheckBox from './UserCheckBox';
+import { Button } from '../ui/button';
+import UserHistoryDialog from './UserHistoryDialog';
 
 const UserDetails = ({
   userId,
@@ -63,15 +65,19 @@ const UserDetails = ({
         <div className="absolute left-3 top-6">
           <RoleSelector userId={userId} userRole={data?.user?.role} roles={roles} />
         </div>
-        <button
-          className="absolute bottom-5 right-10 rounded bg-red-600 px-3 py-1 font-bold text-white hover:bg-red-700 md:px-4 md:py-2 xl:px-7 xl:py-2"
-          onClick={() => {
-            handleToggle(userId); // once a user has been delete close the dropdown
-            deleteUserMutation.mutate();
-          }}
-        >
-          Delete
-        </button>
+        <div className="absolute bottom-5 right-10 ">
+          <UserHistoryDialog userId={userId} />
+
+          <Button
+            className="m-1 rounded bg-red-600 px-3 py-1 font-bold text-white hover:bg-red-700 md:px-4 md:py-2 xl:px-7 xl:py-2"
+            onClick={() => {
+              handleToggle(userId); // once a user has been delete close the dropdown
+              deleteUserMutation.mutate();
+            }}
+          >
+            Delete
+          </Button>
+        </div>
         <div className="">
           <div className="mt-20">
             <h4 className="text-dark100_light900">Card number</h4>

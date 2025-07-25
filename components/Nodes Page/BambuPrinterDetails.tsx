@@ -137,19 +137,19 @@ const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node
         <div className="mt-2">
           <h4 className="text-dark100_light900">File Name</h4>
           <p className="font-extralight text-gray-400 dark:text-gray-600">
-            {status.fileName}
+            {status?.fileName}
           </p>
         </div>
         <div className="mb-5 mt-6">
           <h4 className="text-dark100_light900">Percentage</h4>
           <p className="font-extralight text-gray-400 dark:text-gray-600">
-            {status.progress}%
+            {status?.progress}%
           </p>
         </div>
         <div className="mb-5 mt-6">
           <h4 className="text-dark100_light900">Time Left</h4>
           <p className="font-extralight text-gray-400 dark:text-gray-600">
-            {formatTime(status.printTime)}
+            {formatTime(status?.printTime || 0)}
           </p>
         </div>
       </div>

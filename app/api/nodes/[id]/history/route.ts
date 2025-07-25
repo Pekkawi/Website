@@ -14,6 +14,9 @@ export async function GET(
 
     const users = await User.find(); // DO NOT REMOVE | Otherwise populating the user field will not work.
     const nodeHistory = await History.find({ node: nodeId }).populate('user');
+
+    nodeHistory.sort((a, b) => b.timeStamp - a.timeStamp);
+
     return new Response(
       JSON.stringify({ nodeHistory, message: 'Sucesfully fetched the History' }),
       { status: 200 }

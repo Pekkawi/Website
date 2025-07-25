@@ -73,7 +73,7 @@ const NodeDropDown = ({
         </div>
 
         <div className="absolute bottom-5 right-10 flex gap-2">
-          <NodeHistoryDialog id={serialNumber} />
+          <NodeHistoryDialog nodeId={serialNumber} />
           <Button className=" rounded bg-red-600 px-3 py-1 text-base  text-white hover:bg-red-700 md:px-4 md:py-2 xl:px-7 xl:py-2">
             Delete
           </Button>

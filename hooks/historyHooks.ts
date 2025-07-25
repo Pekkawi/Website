@@ -1,6 +1,6 @@
-import { Types } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 
-export async function getNodeHistory(nodeId: Types.ObjectId) {
+export async function getNodeHistory(nodeId: string) {
   try {
     const res = await fetch(`/api/nodes/${nodeId}/history`, {
       method: 'GET',
@@ -12,7 +12,28 @@ export async function getNodeHistory(nodeId: Types.ObjectId) {
     const data = await res.json();
     console.log(data);
     return data;
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function getUserHistory(userId: Types.ObjectId) {
+  try {
+    const res = await fetch(`/api/users/${userId}/history`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await res.json();
+
+    return data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
 export async function addNodeHistory(nodeHistory: any, nodeId: String) {

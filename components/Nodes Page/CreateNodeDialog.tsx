@@ -60,7 +60,6 @@ const CreateNodeDialog = () => {
   });
 
   const controlPanels = useMemo(() => {
-    console.log('hello');
     return nodes.filter((node: NodeType) => {
       // Assume each node has a `.permission` object with `abbreviation` and `_id`
       const perm = node.permission;
