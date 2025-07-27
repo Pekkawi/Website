@@ -9,6 +9,7 @@ stages:
 
 variables:
   IMAGE_NAME: $CI_REGISTRY_IMAGE/thecore-docker:latest
+  DOCKER_HOST: tcp://thedockerhost:2375/
 
 build-image:
   stage: build
