@@ -6,6 +6,7 @@ import Permissions from '@/database/permission.model';
 import { IPerm } from '@/interfaces/database.interfaces';
 
 export async function GET(request: Request) {
+  console.log('Hello');
   const url = new URL(request.url); // create  a new URL object from the request URL
   const cardId = url.searchParams.get('cardId'); // get the cardId query parameter from the URL
 
@@ -33,6 +34,7 @@ export async function GET(request: Request) {
     );
 
     // Construct and return the response with user details and permissions.
+    console.log('display name is', user.display_name);
     return new Response(
       JSON.stringify({
         display_name: user.display_name,

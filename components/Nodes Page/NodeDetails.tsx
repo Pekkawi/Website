@@ -3,12 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useQuery, useQueryClient } from 'react-query';
 import { socket } from '@/app/socket';
 
-type Status = 'Maintenance' | 'Open' | 'Busy';
-
-// interface StatusDropdownProps {
-//   status: Status;
-//   index?: number;
-// }
+type Status = 'Maintenance' | 'Free' | 'Occupied' | 'Disconnected';
 
 interface NodeDetailsProps {
   name: string;
@@ -17,6 +12,104 @@ interface NodeDetailsProps {
   clicked: boolean;
   nodeId: String;
 }
+
+const NodeDetails = ({
+  name,
+  occupied: initialOccupied,
+  status: initialStatus,
+  clicked,
+  nodeId,
+}: NodeDetailsProps) => {
+  interface PrinterStatus {
+    name: string;
+    status: Status;
+  }
+
+  const defaultStatus: PrinterStatus = {
+    name: 'None',
+    status: 'Free',
+  };
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Enforce type safety
+    const handleStatusUpdate = (payload: any | any[]) => {
+      const printerStatusUpdatesArray = Array.isArray(payload) ? payload : [payload];
+      const printerStatus = printerStatusUpdatesArray.find((s) => s._id === nodeId);
+
+      if (!printerStatus) return;
+      queryClient.setQueryData<PrinterStatus | any>(
+        ['nodeUserStatus', nodeId],
+        (prev: PrinterStatus) => ({
+          name: printerStatus?.name ?? prev?.name ?? defaultStatus.name,
+          status: printerStatus?.status ?? prev?.status ?? defaultStatus.status,
+        })
+      );
+    };
+
+    socket.on('printerStatus', handleStatusUpdate);
+
+    return () => {
+      socket.off('printerStatus', handleStatusUpdate);
+    };
+  }, [nodeId, queryClient, defaultStatus.name, defaultStatus.status]);
+
+  const getStatusColor = (currentStatus: Status | undefined) => {
+    switch (currentStatus) {
+      case 'Free':
+        return 'bg-green-500';
+      case 'Occupied':
+        return 'bg-red-500';
+      case 'Maintenance':
+        return 'bg-orange-400';
+      default:
+        return 'bg-green-500';
+    }
+  };
+
+  const { data } = useQuery<PrinterStatus>(
+    ['nodeUserStatus', nodeId],
+    () =>
+      (queryClient.getQueryData(['nodeUserStatus', nodeId]) as PrinterStatus) ??
+      defaultStatus,
+    {
+      initialData: defaultStatus,
+      staleTime: Infinity,
+    }
+  );
+
+  return (
+    <div className={`w-full ${!clicked && 'border-b-2 border-gray-200'}`}>
+      <div className="flex cursor-pointer items-center px-6 py-4">
+        <div className="mr-6 shrink-0">
+          <div className={`size-6 rounded-full ${getStatusColor(data?.status)}`} />
+        </div>
+        <div className="flex-1">
+          <h4 className="text-sm font-medium text-gray-900">Name</h4>
+          <p className="text-sm text-gray-400">{name}</p>
+        </div>
+        <div className="flex-1">
+          <h4 className="text-sm font-medium text-gray-900">Current User</h4>
+          <p className="text-sm text-gray-400">{data?.name ?? 'None'}</p>
+        </div>
+        {/*
+        <div className="flex-1">
+          <StatusDropdown status={data.status} index={1} />
+        </div>
+      
+       */}
+        <span className={`ml-4 shrink-0 text-gray-400`}>
+          <ChevronDown
+            className={`size-6 transition-transform duration-200 ${clicked ? 'rotate-180' : ''}`}
+          />
+        </span>
+      </div>
+    </div>
+  );
+};
+
+export default NodeDetails;
 
 /*  
 
@@ -93,104 +186,3 @@ CAN BE USED WHEN WANTING TO CHANGE FROM FREE TO TAKEN OR FOR IT TO BE ON MAINTEN
 //     </div>
 //   );
 // };
-
-const NodeDetails = ({
-  name,
-  occupied: initialOccupied,
-  status: initialStatus,
-  clicked,
-  nodeId,
-}: NodeDetailsProps) => {
-  interface PrinterStatus {
-    name: string;
-    status: Status;
-  }
-
-  const defaultStatus: PrinterStatus = {
-    name: 'None',
-    status: 'Open',
-  };
-
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const handleStatusUpdate = (payload: any | any[]) => {
-      const statuses = Array.isArray(payload) ? payload : [payload];
-      const myStatus = statuses.find((s) => s._id === nodeId);
-      if (!myStatus) return;
-      queryClient.setQueryData<PrinterStatus>(['nodeUserStatus', nodeId], (old) => ({
-        name: myStatus.name ?? old?.name ?? defaultStatus.name,
-        status: statusConverter(myStatus.status) ?? old?.status ?? defaultStatus.status,
-      }));
-    };
-
-    const handleHistoryUpdate = (payload: any | any[]) => {};
-
-    socket.on('printerStatus', handleStatusUpdate);
-    socket.on('updateHistory', handleHistoryUpdate);
-    return () => {
-      socket.off('printerStatus', handleStatusUpdate);
-      socket.off('updateHistory', handleHistoryUpdate);
-    };
-  }, [nodeId, queryClient, defaultStatus.name, defaultStatus.status]);
-
-  const getStatusColor = (currentStatus: Status | undefined) => {
-    switch (currentStatus) {
-      case 'Open':
-        return 'bg-green-500';
-      case 'Busy':
-        return 'bg-red-500';
-      case 'Maintenance':
-        return 'bg-orange-400';
-      default:
-        return 'bg-green-500';
-    }
-  };
-
-  const statusConverter = (authState: boolean) => {
-    if (authState) return 'Busy';
-    return 'Open';
-  };
-
-  const { data } = useQuery<PrinterStatus>(
-    ['nodeUserStatus', nodeId],
-    () =>
-      (queryClient.getQueryData(['nodeUserStatus', nodeId]) as PrinterStatus) ??
-      defaultStatus,
-    {
-      initialData: defaultStatus,
-      staleTime: Infinity,
-    }
-  );
-
-  return (
-    <div className={`w-full ${!clicked && 'border-b-2 border-gray-200'}`}>
-      <div className="flex cursor-pointer items-center px-6 py-4">
-        <div className="mr-6 shrink-0">
-          <div className={`size-6 rounded-full ${getStatusColor(data?.status)}`} />
-        </div>
-        <div className="flex-1">
-          <h4 className="text-sm font-medium text-gray-900">Name</h4>
-          <p className="text-sm text-gray-400">{name}</p>
-        </div>
-        <div className="flex-1">
-          <h4 className="text-sm font-medium text-gray-900">Current User</h4>
-          <p className="text-sm text-gray-400">{data?.name ?? 'None'}</p>
-        </div>
-        {/*
-        <div className="flex-1">
-          <StatusDropdown status={data.status} index={1} />
-        </div>
-      
-       */}
-        <span className={`ml-4 shrink-0 text-gray-400`}>
-          <ChevronDown
-            className={`size-6 transition-transform duration-200 ${clicked ? 'rotate-180' : ''}`}
-          />
-        </span>
-      </div>
-    </div>
-  );
-};
-
-export default NodeDetails;

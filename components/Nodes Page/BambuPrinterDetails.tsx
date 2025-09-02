@@ -18,6 +18,8 @@ import { Types } from 'mongoose';
 import { socket } from '@/app/socket';
 import NodeHistoryDialog from './NodeHistoryDialog';
 
+type Status = 'Maintenance' | 'Free' | 'Occupied' | 'Disconnected';
+
 interface BambuPrinterNodeDetailsProps {
   node: BambuPrinterNode;
 }
@@ -26,6 +28,7 @@ interface PrinterStatus {
   printTime: string;
   fileName: string;
   progress: number;
+  status: Status;
 }
 
 const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node }) => {
@@ -36,6 +39,7 @@ const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node
     printTime: node.totalTime ?? '???',
     fileName: node.fileName ?? '???',
     progress: 0,
+    status: 'Free',
   };
 
   const formatTime = (time: string | number): string => {
@@ -53,9 +57,21 @@ const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node
       const myStatus = statuses.find((s) => s._id === node._id);
       if (!myStatus) return;
       queryClient.setQueryData<PrinterStatus>(['printerStatus', node._id], (old) => ({
-        printTime: myStatus.printTime ?? old?.printTime ?? initialStatus.printTime,
-        fileName: myStatus.fileName ?? old?.fileName ?? initialStatus.fileName,
-        progress: myStatus.progress ?? old?.progress ?? initialStatus.progress,
+        printTime:
+          myStatus.status === 'Free'
+            ? '???'
+            : (myStatus.printTime ?? initialStatus.printTime),
+
+        fileName:
+          myStatus.status === 'Free'
+            ? '???'
+            : (myStatus.fileName ?? initialStatus.fileName),
+        progress:
+          myStatus.status === 'Free' ? 0 : (myStatus.progress ?? initialStatus.progress),
+        status: myStatus.status ?? initialStatus.status,
+        // printTime: myStatus.printTime ?? old?.printTime ?? initialStatus.printTime,
+        // fileName: myStatus.fileName ?? old?.fileName ?? initialStatus.fileName,
+        // progress: myStatus.progress ?? old?.progress ?? initialStatus.progress,
       }));
     };
 

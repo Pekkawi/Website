@@ -25,6 +25,7 @@ app.prepare().then(() => {
     // 1) Forward any "printerStatus" from any client (Python or front-end)
     socket.on('printerStatus', (payload) => {
       // Re-broadcast to *all* connected clients (browsers, Python, etc.)
+      console.log('A message has been received');
       io.emit('printerStatus', payload);
     });
 

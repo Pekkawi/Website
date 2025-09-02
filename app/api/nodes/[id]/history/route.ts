@@ -11,7 +11,6 @@ export async function GET(
   try {
     await connectToDatabase();
     const nodeId = params.id;
-
     const users = await User.find(); // DO NOT REMOVE | Otherwise populating the user field will not work.
     const nodeHistory = await History.find({ node: nodeId }).populate('user');
 
@@ -36,10 +35,12 @@ export async function POST(
     await connectToDatabase();
 
     const { printTime, fileName, name } = await request.json();
+    console.log('Entering here');
 
     // [TO FIX] THIS CAN INTRODUCE BUGS IN CASE YOU ARE REGISTERED WITH YOUR WORK EMAIL + STUDENT EMAIL | ONE OF THEM WILL NEED TO BE DELETED
+    console.log(name);
     const user = await User.findOne({ display_name: name });
-
+    console.log('Found the user');
     // if this is not from a printer node
     if (printTime === 'N/A') {
       const newHistory = await new History({
@@ -56,5 +57,7 @@ export async function POST(
       }).save();
       return new Response(JSON.stringify(newHistory), { status: 201 });
     }
-  } catch (err) {}
+  } catch (err) {
+    return new Response(err, { status: 500 });
+  }
 }

@@ -6,7 +6,7 @@ export interface BaseNode {
   name: string;
   permission: Types.ObjectId;
   device: Types.ObjectId;
-  Status: 'Open' | 'Busy' | 'Maintenance';
+  Status: 'Free' | 'Occupied' | 'Maintenance';
   created: string; // or Date, depending on how you parse it
   updated: string;
   __t: 'Laser Cutter' | 'Bambu Printer' | 'Bambu Control Panel';
