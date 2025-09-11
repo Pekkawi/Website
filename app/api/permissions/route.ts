@@ -1,13 +1,16 @@
 import Permissions from '@/database/permission.model';
 import { connectToDatabase } from '@/lib/mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { Db, GridFSBucket } from 'mongodb';
 // import { Readable } from 'stream';
 import { Types } from 'mongoose';
+import { auth } from '@/auth';
 // import { decode } from 'base64-arraybuffer';
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
     const permissions = await Permissions.find({});
 
@@ -28,6 +31,8 @@ export async function GET(request: NextRequest) {
 // Create a new permission
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const db = await connectToDatabase();
     const formData = await request.json();
     const { name, abbreviation, description, scheduling, permission, image } = formData;

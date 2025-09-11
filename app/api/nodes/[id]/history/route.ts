@@ -1,14 +1,17 @@
 import { History } from '@/database/history.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Types } from 'mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import User from '@/database/user.model';
+import { auth } from '@/auth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: Types.ObjectId } }
 ) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
     const nodeId = params.id;
     const users = await User.find(); // DO NOT REMOVE | Otherwise populating the user field will not work.
@@ -16,14 +19,15 @@ export async function GET(
 
     nodeHistory.sort((a, b) => b.timeStamp - a.timeStamp);
 
-    return new Response(
-      JSON.stringify({ nodeHistory, message: 'Sucesfully fetched the History' }),
+    return NextResponse.json(
+      { nodeHistory, message: 'Sucesfully fetched the History' },
       { status: 200 }
     );
   } catch (err) {
-    return new Response(JSON.stringify({ err, message: 'Failed to fetch node' }), {
-      status: 500,
-    });
+    return NextResponse.json(
+      { error: err, message: 'Failed to fetch node' },
+      { status: 500 }
+    );
   }
 }
 
@@ -32,6 +36,8 @@ export async function POST(
   { params }: { params: { id: Types.ObjectId } }
 ) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
 
     const { printTime, fileName, name } = await request.json();
@@ -47,7 +53,7 @@ export async function POST(
         user: user._id,
         node: params.id,
       }).save();
-      return new Response(JSON.stringify(newHistory), { status: 201 });
+      return NextResponse.json(newHistory, { status: 201 });
     } else {
       const newHistory = await new History({
         user: user._id,
@@ -55,9 +61,10 @@ export async function POST(
         printDuration: printTime,
         fileName,
       }).save();
-      return new Response(JSON.stringify(newHistory), { status: 201 });
+      // return new Response(JSON.stringify(newHistory), { status: 201 });
+      return NextResponse.json(newHistory, { status: 201 });
     }
   } catch (err) {
-    return new Response(err, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

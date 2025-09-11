@@ -5,11 +5,14 @@ import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { connectToDatabase } from './lib/mongoose';
 import UserCredentials from './database/usercredential.model';
+import { MongoDBAdapter } from '@auth/mongodb-adapter';
+import client from './lib/db';
 
 await connectToDatabase();
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   ...authConfig,
+  adapter: MongoDBAdapter(client),
   providers: [
     Credentials({
       name: 'Credentials',
@@ -53,5 +56,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (session.user) (session.user as any).id = token.uid as string | undefined;
       return session;
     },
+  },
+  session: { strategy: 'jwt' },
+  jwt: {
+    // The maximum age of the NextAuth.js issued JWT in seconds
+    maxAge: 60 * 60 * 24,
   },
 });

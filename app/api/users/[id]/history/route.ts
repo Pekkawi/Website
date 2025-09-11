@@ -1,14 +1,17 @@
 import { History } from '@/database/history.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Types } from 'mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { baseNode } from '@/database/newnode.model';
+import { auth } from '@/auth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: Types.ObjectId } }
 ) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
     const userId = params.id;
 

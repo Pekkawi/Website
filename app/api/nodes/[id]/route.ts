@@ -1,15 +1,18 @@
+import { auth } from '@/auth';
 import Devices from '@/database/device.model';
 import { baseNode } from '@/database/newnode.model';
 import { NodeType } from '@/interfaces/nodes.interface';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Types } from 'mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: Types.ObjectId } }
 ) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const nodeId = params.id;
     await connectToDatabase(); // connect to MongoDB
 

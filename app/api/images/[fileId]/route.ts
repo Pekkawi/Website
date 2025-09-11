@@ -1,9 +1,12 @@
+import { auth } from '@/auth';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Db, GridFSBucket, ObjectId } from 'mongodb';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest): Promise<Response> {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     // Extract fileId from the URL
     const fileId = request.nextUrl.pathname.split('/').pop();
 

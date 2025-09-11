@@ -1,9 +1,12 @@
+import { auth } from '@/auth';
 import Devices from '@/database/device.model';
 import { connectToDatabase } from '@/lib/mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
     const devices = await Devices.find({}); // fetches all the devices
 

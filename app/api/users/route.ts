@@ -2,10 +2,14 @@
 
 import User from '@/database/user.model';
 import { connectToDatabase } from '@/lib/mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/auth';
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     await connectToDatabase();
     const users = await User.find({}); // Fetch all the users
 
@@ -20,8 +24,11 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    return new Response(JSON.stringify(users), { status: 200 });
+    return NextResponse.json(users, { status: 200 });
   } catch (err) {
-    return new Response('Failed to fetch Users', { status: 500 });
+    return NextResponse.json(
+      { error: err, message: 'Failed to fetch User' },
+      { status: 500 }
+    );
   }
 }

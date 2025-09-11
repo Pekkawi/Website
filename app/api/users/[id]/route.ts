@@ -1,13 +1,17 @@
+import { auth } from '@/auth';
 import User from '@/database/user.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Types } from 'mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: Types.ObjectId } }
 ) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const userId = params.id;
     await connectToDatabase(); // attempt connecting to the DB first
 
@@ -23,11 +27,17 @@ export async function GET(
   }
 }
 
+// Role based access???
+
+// Only allow them to fetch a user
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: Types.ObjectId } }
 ) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const userId = params.id;
     await connectToDatabase(); // attempt connecting to the DB first
 

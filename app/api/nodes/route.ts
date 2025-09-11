@@ -1,3 +1,4 @@
+import { auth } from '@/auth';
 import Devices from '@/database/device.model';
 import {
   BambuControlPanelNode,
@@ -7,11 +8,13 @@ import {
 } from '@/database/newnode.model';
 import Permissions from '@/database/permission.model';
 import { connectToDatabase } from '@/lib/mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // fetch all the nodes from the database
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
     const nodes = await baseNode.find({});
 
@@ -22,6 +25,8 @@ export async function GET(request: NextRequest) {
 // add a new node to the database
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
     const formData = await request.json();
     const { type } = formData;

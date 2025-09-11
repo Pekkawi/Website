@@ -6,7 +6,7 @@ import MobileNav from './MobileNav';
 
 import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { PowerIcon } from '@heroicons/react/24/outline';
+import { PowerIcon, ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline';
 
 const Navbar = () => {
   // async function doSignOut() {
@@ -22,24 +22,11 @@ const Navbar = () => {
         </p>
       </Link>
       <div className="flex-between gap-5">
-        {/* To be added when dark mode adjustments are finished  <Theme />  */}
-        {/* <form
-          action={async () => {
-            'use server';
-
-            await signOut({ redirectTo: '/' });
-          }}
-        >
-          <Button className="flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
-            <PowerIcon className="w-6" />
-            <div className="hidden md:block">Sign Out</div>
-          </Button>
-        </form> */}
         <Button
           onClick={() => signOut({ callbackUrl: '/' })}
-          className="flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3"
+          className="flex h-[48px] grow items-center justify-center gap-1  active:border-orange-300  text-orange-400 rounded-md  p-3 text-sm font-medium hover:bg-orange-50 hover:text-orange-500 active:bg-orange-50 active:text-orange-300 md:flex-none md:justify-start md:p-2 md:px-3"
         >
-          <PowerIcon className="w-6" />
+          <ArrowRightEndOnRectangleIcon className="w-6" />
           <div className="hidden md:block">Sign Out</div>
         </Button>
         <MobileNav />
