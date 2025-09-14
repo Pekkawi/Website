@@ -3,11 +3,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 
-interface PermissionsErrorProps {
+interface UserCredentialsErrorProps {
   onRetry: () => void;
 }
 
-const PermissionsError: React.FC<PermissionsErrorProps> = ({ onRetry }) => {
+const UserCredentialsError: React.FC<UserCredentialsErrorProps> = ({ onRetry }) => {
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -41,14 +41,14 @@ const PermissionsError: React.FC<PermissionsErrorProps> = ({ onRetry }) => {
         className="mb-2 text-2xl font-bold text-gray-800 dark:text-gray-200"
         variants={childVariants}
       >
-        Error Fetching Permissions
+        Error Fetching User Credentials
       </motion.h2>
 
       <motion.p
         className="mb-6 text-gray-600 dark:text-gray-400"
         variants={childVariants}
       >
-        We could not fetch the permissions. This might be due to a network issue or a
+        We could not fetch the user credentials. This might be due to a network issue or a
         problem with our servers.
       </motion.p>
 
@@ -66,4 +66,4 @@ const PermissionsError: React.FC<PermissionsErrorProps> = ({ onRetry }) => {
   );
 };
 
-export default PermissionsError;
+export default UserCredentialsError;

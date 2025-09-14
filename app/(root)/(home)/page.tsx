@@ -8,7 +8,7 @@ import React from 'react';
 const Home = () => {
   return (
     <>
-      <div className="background background-light900_dark300 h-[70vh]">
+      <div className="background background-light900_dark300 h-[70vh] mt-[-30px]">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

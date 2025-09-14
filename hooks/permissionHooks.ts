@@ -1,5 +1,5 @@
 import { IPerm } from '@/interfaces/database.interfaces';
-import { Types } from 'mongoose';
+import { ObjectId } from 'mongoose';
 
 export async function getPermissions() {
   try {
@@ -20,7 +20,7 @@ export async function getPermissions() {
   }
 }
 
-export async function deletePermission(permId: Types.ObjectId) {
+export async function deletePermission(permId: ObjectId) {
   try {
     const res = await fetch(`/api/permissions/${permId}`, {
       method: 'DELETE',
@@ -34,7 +34,7 @@ export async function deletePermission(permId: Types.ObjectId) {
   }
 }
 
-export async function updatePermission(permId: Types.ObjectId, data: Partial<IPerm>) {
+export async function updatePermission(permId: ObjectId, data: Partial<IPerm>) {
   const response = await fetch(`/api/permissions/${permId}`, {
     method: 'PATCH',
     headers: {

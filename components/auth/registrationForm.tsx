@@ -20,15 +20,18 @@ import {
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import PageLoader from '@/components/shared/PageLoader';
+import Loader from '../shared/utility/Loader';
 
 export default function RegistrationForm() {
   const [error, setError] = useState<string>();
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const ref = useRef<HTMLFormElement>(null);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
   const handleSubmit = async (formData: FormData) => {
+    setIsLoading(true);
     const r = await register({
       email: formData.get('email'),
 
@@ -36,7 +39,7 @@ export default function RegistrationForm() {
 
       name: formData.get('name'),
     });
-
+    setIsLoading(false);
     ref.current?.reset();
 
     if (r?.error) {
@@ -49,7 +52,15 @@ export default function RegistrationForm() {
   return (
     <section className="flex flex-row justify-center items-center md:h-screen ">
       <Suspense fallback={<PageLoader />}>
-        <form ref={ref} action={handleSubmit} className="space-y-3">
+        <form
+          ref={ref}
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            handleSubmit(formData);
+          }}
+          className="space-y-3"
+        >
           <Card className="mx-auto max-w-sm">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl font-bold">Register</CardTitle>
@@ -108,7 +119,13 @@ export default function RegistrationForm() {
                   type="submit"
                   className="w-full bg-orange-500 text-white hover:bg-orange-400 active:bg-orange-300  click"
                 >
-                  Register
+                  {isLoading && (
+                    <>
+                      <Loader />
+                      Registering...
+                    </>
+                  )}
+                  {!isLoading && 'Register'}
                 </Button>
                 <div>
                   <p className="text-gray-400">

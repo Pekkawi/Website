@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import Loader from './Loader';
+import Loader from '../shared/utility/Loader';
 import { getDevices } from '@/hooks/deviceHooks';
 import clsx from 'clsx';
 import { NodeType } from '@/interfaces/nodes.interface';

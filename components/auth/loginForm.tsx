@@ -23,6 +23,7 @@ import { Form } from '../ui/form';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import Link from 'next/link';
+import Loader from '../shared/utility/Loader';
 
 export default function LoginForm({}) {
   const searchParams = useSearchParams();
@@ -75,7 +76,13 @@ export default function LoginForm({}) {
                 type="submit"
                 className="w-full bg-orange-500 text-white hover:bg-orange-400 active:bg-orange-300  click"
               >
-                Login
+                {isPending && (
+                  <>
+                    <Loader />
+                    Login...
+                  </>
+                )}
+                {!isPending && 'Login'}
               </Button>
               <div>
                 <p className="text-gray-400">

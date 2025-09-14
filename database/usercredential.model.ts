@@ -1,15 +1,16 @@
 import mongoose, { Schema } from 'mongoose';
 
-export interface UserCredentialDocument {
+export interface IUserCredential {
   _id: string;
   email: string;
   password: string;
   name: string;
   createdAt: Date;
   updatedAt: Date;
+  role: 'User' | 'Admin' | 'Staff';
 }
 
-const UserCredentialSchema = new Schema<UserCredentialDocument>(
+const UserCredentialSchema = new Schema<IUserCredential>(
   {
     email: {
       type: String,
@@ -25,6 +26,11 @@ const UserCredentialSchema = new Schema<UserCredentialDocument>(
       type: String,
       required: [true, 'Name is required'],
     },
+    role: {
+      type: String,
+      default: 'User',
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -33,7 +39,7 @@ const UserCredentialSchema = new Schema<UserCredentialDocument>(
 
 const UserCredentials =
   mongoose.models.userCredentials ||
-  mongoose.model<UserCredentialDocument>('userCredentials', UserCredentialSchema);
+  mongoose.model<IUserCredential>('userCredentials', UserCredentialSchema);
 
 // Check if the model already exists , otherwise create a model based on the schema
 

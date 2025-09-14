@@ -60,6 +60,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   session: { strategy: 'jwt' },
   jwt: {
     // The maximum age of the NextAuth.js issued JWT in seconds
-    maxAge: 60 * 60 * 24,
+    // maxAge: 60 * 60 * 24,
+    maxAge: 30,
   },
 });

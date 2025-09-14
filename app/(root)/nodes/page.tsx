@@ -40,7 +40,7 @@ const Nodes = () => {
   }
 
   return (
-    <div className="background background-light900_dark300 mb-2 h-auto">
+    <div className="background background-light900_dark300 mb-2 h-auto mt-[-30px]">
       <>
         <motion.div
           initial={{ opacity: 0, y: -20 }}

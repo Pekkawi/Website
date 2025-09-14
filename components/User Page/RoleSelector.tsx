@@ -1,46 +1,50 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {  Types } from "mongoose";
-import { useMutation, useQueryClient } from "react-query";
-
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Types } from 'mongoose';
+import { useMutation, useQueryClient } from 'react-query';
 
 const updateUserRole = async (userId: Types.ObjectId, role: string) => {
+  const response = await fetch(`/api/users/${userId}/role`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ role }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update user role');
+  }
+  return response.json();
+};
 
-    const response = await fetch(`/api/users/${userId}/role`,{
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({role})
-    });
-    if(!response.ok){
-        throw new Error('Failed to update user role');
-    }
-    return response.json();
-
-}
-
-const RoleSelector = ({ userId,userRole,roles}:{userId:Types.ObjectId, userRole:string,roles:string[]}) => {
+const RoleSelector = ({
+  userId,
+  userRole,
+  roles,
+}: {
+  userId: Types.ObjectId;
+  userRole: string;
+  roles: string[];
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(
-    userRole?.charAt(0).toUpperCase() + userRole?.slice(1) || "User"
+    userRole?.charAt(0).toUpperCase() + userRole?.slice(1) || 'User'
   );
   const queryClient = useQueryClient();
-  
-  const mutation = useMutation( (newRole:string) => updateUserRole(userId,newRole),{
-    onSuccess: () =>{
-        queryClient.invalidateQueries(['DetailsUser',userId]);
-    }
-  } )
 
-  const handleRoleChange = (role:string) =>{
+  const mutation = useMutation((newRole: string) => updateUserRole(userId, newRole), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['DetailsUser', userId]);
+    },
+  });
+
+  const handleRoleChange = (role: string) => {
     setSelectedRole(role);
     setIsOpen(false);
     mutation.mutate(role.toLowerCase());
-    
-  }
+  };
 
   return (
     <div className="mx-auto w-auto xss:min-w-[300px] lg:min-w-[320px]">
@@ -56,7 +60,7 @@ const RoleSelector = ({ userId,userRole,roles}:{userId:Types.ObjectId, userRole:
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <motion.svg
               className={`size-5 text-gray-400 dark:text-gray-500${
-                isOpen ? "rotate-180" : "rotate-0"
+                isOpen ? 'rotate-180' : 'rotate-0'
               }`}
               viewBox="0 0 20 20"
               fill="currentColor"
