@@ -1,7 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
-// import { RestrictedAccess } from '@/components/shared/RestrictedAccess';
-// import { useUser } from '@clerk/nextjs';
+
 import { FaUserShield, FaTools, FaPlusCircle } from 'react-icons/fa';
 import React from 'react';
 

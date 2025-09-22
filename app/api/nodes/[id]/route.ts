@@ -6,10 +6,8 @@ import { connectToDatabase } from '@/lib/mongoose';
 import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: Types.ObjectId } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

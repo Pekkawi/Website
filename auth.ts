@@ -16,6 +16,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       name: 'Credentials',
+
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
@@ -34,13 +35,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           const usercredentials = await UserCredentials.findOne({
             email,
           }).select('+password');
-
           if (!usercredentials) return null;
 
           const passwordsMatch = await bcrypt.compare(password, usercredentials.password);
           if (!passwordsMatch) return null;
 
-          return usercredentials;
+          return {
+            id: usercredentials._id.toString(),
+            name: usercredentials.name,
+            email: usercredentials.email,
+            role: usercredentials.role,
+          };
         }
 
         return null;
@@ -49,11 +54,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.uid = (user as any).id;
+      if (user) {
+        token.uid = (user as any).id;
+        token.role = (user as any).role;
+      }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) (session.user as any).id = token.uid as string | undefined;
+      if (session.user) {
+        (session.user as any).role = token.role;
+        (session.user as any).id = token.uid;
+      }
       return session;
     },
   },
@@ -61,6 +72,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   jwt: {
     // The maximum age of the NextAuth.js issued JWT in seconds
     // maxAge: 60 * 60 * 24,
-    maxAge: 30,
+    maxAge: 60 * 60 * 24,
   },
 });

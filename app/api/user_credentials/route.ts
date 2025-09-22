@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
 
-    const usercreds = await UserCredentials.find({}, 'name email role');
+    const usercreds = await UserCredentials.find({}, 'name email role access');
 
     return NextResponse.json(usercreds, { status: 200 });
   } catch (err) {

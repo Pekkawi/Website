@@ -11,8 +11,6 @@ const queryClient = new QueryClient();
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <header></header>
-
       <main className="background-light850_dark100 relative">
         <Navbar />
 

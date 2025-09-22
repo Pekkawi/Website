@@ -4,10 +4,8 @@ import { connectToDatabase } from '@/lib/mongoose';
 import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: Types.ObjectId } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -31,10 +29,8 @@ export async function GET(
 
 // Only allow them to fetch a user
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: Types.ObjectId } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

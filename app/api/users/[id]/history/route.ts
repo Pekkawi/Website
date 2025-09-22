@@ -5,10 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { baseNode } from '@/database/newnode.model';
 import { auth } from '@/auth';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: Types.ObjectId } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

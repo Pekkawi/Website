@@ -8,6 +8,7 @@ export interface IUserCredential {
   createdAt: Date;
   updatedAt: Date;
   role: 'User' | 'Admin' | 'Staff';
+  access: 'Pending' | 'Granted' | 'Denied';
 }
 
 const UserCredentialSchema = new Schema<IUserCredential>(
@@ -29,6 +30,12 @@ const UserCredentialSchema = new Schema<IUserCredential>(
     role: {
       type: String,
       default: 'User',
+      required: true,
+    },
+    access: {
+      type: String,
+      enum: ['Pending', 'Granted', 'Denied'],
+      default: 'Pending',
       required: true,
     },
   },

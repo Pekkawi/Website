@@ -4,10 +4,8 @@ import { Db, GridFSBucket } from 'mongodb';
 import { Types } from 'mongoose';
 import { NextRequest } from 'next/server';
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: Types.ObjectId } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+  const params = await props.params;
   try {
     const permId = params.id;
     const db = await connectToDatabase(); // attempt connecting to the DB first
@@ -35,10 +33,8 @@ export async function DELETE(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: Types.ObjectId } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+  const params = await props.params;
   try {
     const permId = params.id;
     const db = await connectToDatabase();

@@ -40,7 +40,7 @@ export async function editUserCredentialRole(newRole: string, userCredentialId: 
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(newRole),
+    body: JSON.stringify({ role: newRole }),
   });
   if (!res.ok) {
     throw new Error('Could not edit user role');
