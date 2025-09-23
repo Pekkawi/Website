@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
     const session = await auth();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await connectToDatabase();
+    console.log('Is this even real???');
 
     const usercreds = await UserCredentials.find({}, 'name email role access');
 

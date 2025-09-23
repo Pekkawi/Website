@@ -9,11 +9,6 @@ import { Button } from '@/components/ui/button';
 import { PowerIcon, ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline';
 
 const Navbar = () => {
-  // async function doSignOut() {
-  //   'use server';
-  //   await signOut({ redirectTo: '/' });
-  // }
-
   return (
     <nav className="flex-between background-light900_dark200 fixed z-50 w-full gap-5 overflow-hidden p-6 shadow-light-300 dark:shadow-none sm:px-12">
       <Link href="/" className="flex items-center gap-1">

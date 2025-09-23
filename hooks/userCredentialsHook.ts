@@ -20,7 +20,7 @@ export async function getUserCredentials() {
   }
 }
 
-export async function deleteUserCredentials(userCredentialId: ObjectId) {
+export async function deleteUserCredentials(userCredentialId: string) {
   try {
     const res = await fetch(`/api/user_credentials/${userCredentialId}`, {
       method: 'DELETE',
@@ -41,6 +41,20 @@ export async function editUserCredentialRole(newRole: string, userCredentialId: 
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ role: newRole }),
+  });
+  if (!res.ok) {
+    throw new Error('Could not edit user role');
+  }
+  return res.json();
+}
+
+export async function updateUserAccess(access: string, userCredentialId: string) {
+  const res = await fetch(`/api/user_credentials/${userCredentialId}/access`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ access: access }),
   });
   if (!res.ok) {
     throw new Error('Could not edit user role');

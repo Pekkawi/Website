@@ -7,6 +7,7 @@ export interface SidebarLink {
   imgURL: string;
   route: string;
   label: string;
+  allowedRoles: string[];
 }
 
 export const sidebarLinks: SidebarLink[] = [
@@ -14,31 +15,30 @@ export const sidebarLinks: SidebarLink[] = [
     route: '/',
     label: 'Home',
     imgURL: '/assets/icons/home.svg',
+    allowedRoles: ['User', 'Admin'],
   },
   {
     route: '/nodes',
     label: 'Nodes',
     imgURL: '/assets/icons/nodes.svg',
+    allowedRoles: ['Admin'],
   },
   {
     route: '/users',
     label: 'Users',
     imgURL: '/assets/icons/users.svg',
+    allowedRoles: ['Admin'],
   },
   {
     route: '/permissions',
     label: 'Permissions',
     imgURL: '/assets/icons/permissions.svg',
+    allowedRoles: ['Admin'],
   },
   {
     route: '/authorization',
     label: 'Authorization',
     imgURL: '/assets/icons/user-shield.svg',
+    allowedRoles: ['Admin'],
   },
-
-  // {
-  //   route: '/test_ws',
-  //   label: 'WebSocket Connect',
-  //   imgURL:'/assets/icons/socket.svg'
-  // }
 ];

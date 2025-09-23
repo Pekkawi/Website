@@ -45,6 +45,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             name: usercredentials.name,
             email: usercredentials.email,
             role: usercredentials.role,
+            access: usercredentials.access,
           };
         }
 
@@ -52,22 +53,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.uid = (user as any).id;
-        token.role = (user as any).role;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.uid;
-      }
-      return session;
-    },
-  },
+
   session: { strategy: 'jwt' },
   jwt: {
     // The maximum age of the NextAuth.js issued JWT in seconds

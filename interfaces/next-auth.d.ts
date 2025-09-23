@@ -5,6 +5,7 @@ import NextAuth from 'next-auth';
 export type AuthUser = {
   id?: string;
   role?: string;
+  access?: string;
 } & DefaultSession['user'];
 
 declare module 'next-auth' {
@@ -15,6 +16,7 @@ declare module 'next-auth' {
   declare module 'next-auth/jwt' {
     interface JWT {
       role?: string;
+      access?: string;
     }
   }
 }

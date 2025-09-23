@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -11,7 +11,12 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { IUserCredential } from '@/database/usercredential.model';
 import PageLoader from '../shared/PageLoader';
 import UserCredentialsError from './UserCredentialsError';
-import { editUserCredentialRole, getUserCredentials } from '@/hooks/userCredentialsHook';
+import {
+  deleteUserCredentials,
+  editUserCredentialRole,
+  getUserCredentials,
+  updateUserAccess,
+} from '@/hooks/userCredentialsHook';
 import {
   Select,
   SelectContent,
@@ -19,10 +24,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Trash } from 'lucide-react';
+import { X, Check, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import DeleteUserCredentialDialog from './DeleteUserCredentialDialog';
+
+// Toast Notification Component
+const Toast = ({
+  message,
+  type,
+  onClose,
+}: {
+  message: string;
+  type: 'success' | 'error';
+  onClose: () => void;
+}) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div
+      className={`
+        fixed bottom-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg
+        transform transition-all duration-300 animate-slide-in
+        ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}
+      `}
+    >
+      {type === 'success' ? (
+        <CheckCircle className="w-5 h-5" />
+      ) : (
+        <XCircle className="w-5 h-5" />
+      )}
+      <span className="font-medium">{message}</span>
+      <button onClick={onClose} className="ml-2 hover:opacity-80 transition-opacity">
+        <X className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
 
 const AuthroizationList = () => {
   const queryClient = useQueryClient();
+  const [toast, setToast] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
+  const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
 
   const {
     data: userCredentials,
@@ -40,9 +90,58 @@ const AuthroizationList = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('userCredentials');
+        setToast({ message: 'Role updated successfully', type: 'success' });
+      },
+      onError: () => {
+        setToast({ message: 'Failed to update role', type: 'error' });
       },
     }
   );
+
+  // Mutation for granting access
+  const AccessPendingMutation = useMutation(
+    ({ access, id }: { access: 'Granted' | 'Denied'; id: string }) =>
+      updateUserAccess(access, id),
+    {
+      onMutate: ({ id }) => {
+        setLoadingUserId(id);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries('userCredentials');
+        setToast({ message: 'Access granted successfully', type: 'success' });
+        setLoadingUserId(null);
+      },
+      onError: (error) => {
+        console.error('Error updating access:', error);
+        setToast({ message: 'Failed to grant access', type: 'error' });
+        setLoadingUserId(null);
+      },
+    }
+  );
+
+  const DeleteUserMutation = useMutation((id: string) => deleteUserCredentials(id), {
+    onMutate: (id) => {
+      setLoadingUserId(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries('userCredentials');
+      setToast({ message: 'User deleted successfully', type: 'success' });
+      setLoadingUserId(null);
+    },
+    onError: (error) => {
+      console.error('Error deleting user:', error);
+      setToast({ message: 'Failed to delete user', type: 'error' });
+      setLoadingUserId(null);
+    },
+  });
+
+  const handleDenyAccess = (id: string) => {
+    DeleteUserMutation.mutate(id);
+  };
+
+  const handleGrantAccess = (id: string) => {
+    AccessPendingMutation.mutate({ access: 'Granted', id });
+  };
 
   if (status === 'loading') {
     return <PageLoader />;
@@ -58,14 +157,17 @@ const AuthroizationList = () => {
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
-            <TableHead className="justify-center">Access</TableHead>
+            <TableHead className="text-center">Access</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {userCredentials &&
+          {userCredentials && userCredentials.length > 0 ? (
             userCredentials.map((cred: IUserCredential) => (
-              <TableRow key={cred.email}>
+              <TableRow
+                key={cred.email}
+                className={loadingUserId === cred._id ? 'opacity-50' : ''}
+              >
                 <TableCell>{cred.name}</TableCell>
                 <TableCell>{cred.email}</TableCell>
                 <TableCell>
@@ -75,6 +177,7 @@ const AuthroizationList = () => {
                       onValueChange={(role) =>
                         RoleChangeMutation.mutate({ role, id: cred._id })
                       }
+                      disabled={loadingUserId === cred._id || cred.access !== 'Granted'}
                     >
                       <SelectTrigger id="role" className="w-24 group">
                         <SelectValue placeholder={cred.role} />
@@ -86,25 +189,89 @@ const AuthroizationList = () => {
                     </Select>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   {cred.access === 'Pending' && (
-                    <p className="text-yellow-500"> Pending</p>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      Pending
+                    </span>
                   )}
                   {cred.access === 'Granted' && (
-                    <p className="text-green-500"> Granted</p>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Granted
+                    </span>
                   )}
-                  {cred.access === 'Denied' && <p className="text-red-500"> Denied</p>}
+                  {cred.access === 'Denied' && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      Denied
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell>
-                  <button className="rounded-full p-2 hover:bg-gray-100 transition">
-                    <Trash className="size-5 text-gray-400" />
-                  </button>
+                  {cred.access === 'Granted' && (
+                    <DeleteUserCredentialDialog credId={cred._id} />
+                  )}
+                  {cred.access === 'Pending' && (
+                    <div className="flex items-center space-x-1">
+                      {loadingUserId === cred._id ? (
+                        <div className="flex size-9 items-center justify-center">
+                          <Loader2 className="size-5 text-gray-400 animate-spin" />
+                        </div>
+                      ) : (
+                        <>
+                          <button
+                            className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-green-100 group"
+                            onClick={() => handleGrantAccess(cred._id)}
+                            disabled={loadingUserId !== null}
+                            title="Grant Access"
+                          >
+                            <Check className="size-5 text-gray-400 group-hover:text-green-600" />
+                          </button>
+                          <button
+                            className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-red-100 group"
+                            onClick={() => handleDenyAccess(cred._id)}
+                            disabled={loadingUserId !== null}
+                            title="Deny Access & Delete"
+                          >
+                            <X className="size-5 text-gray-400 group-hover:text-red-600" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </TableCell>
               </TableRow>
-            ))}
-          {userCredentials === undefined && <p> There are no users on the platform</p>}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                There are no users on the platform
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+      )}
+
+      {/* Add these styles to your global CSS or create a separate CSS module */}
+      <style jsx>{`
+        @keyframes slide-in {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        .animate-slide-in {
+          animation: slide-in 0.3s ease-out;
+        }
+      `}</style>
     </>
   );
 };

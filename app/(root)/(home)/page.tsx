@@ -1,10 +1,20 @@
 'use client';
 import { motion } from 'framer-motion';
-
-import { FaUserShield, FaTools, FaPlusCircle } from 'react-icons/fa';
+import {
+  FaUserShield,
+  FaTools,
+  FaPlusCircle,
+  FaLock,
+  FaExclamationTriangle,
+} from 'react-icons/fa';
 import React from 'react';
+import { useSession } from 'next-auth/react';
 
 const Home = () => {
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+  const isUser = userRole === 'User';
+
   return (
     <>
       <div className="background background-light900_dark300 h-[70vh] mt-[-30px]">
@@ -13,10 +23,25 @@ const Home = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h1 className="h1-bold text-dark100_light900">About this page </h1>
+          <h1 className="h1-bold text-dark100_light900">About this page</h1>
           <p className="mb-6 text-gray-700">
             The official webpage of the student workshop at SDU Sønderborg.
           </p>
+
+          {/* Simple warning for Users only */}
+          {isUser && (
+            <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-500 rounded">
+              <div className="flex items-center gap-2">
+                <FaExclamationTriangle className="text-orange-600 text-lg" />
+                <p className="font-medium text-orange-800 dark:text-orange-400">
+                  Limited Access - Waiting for Admin Approval
+                </p>
+              </div>
+              <p className="text-sm text-orange-700 dark:text-orange-500 mt-1 ml-6">
+                Contact a workshop administrator to get full access to the webpage.
+              </p>
+            </div>
+          )}
 
           <div className="mt-10 flex flex-col space-y-6">
             <div className="flex items-center space-x-4">
