@@ -6,6 +6,42 @@ To deploy the website you would first flash a new image of Raspberry PI Lite on 
 
 afterwards there are a couple of steps that we will go over
 
+1. Connect to your raspberry pi using a monitor and find out the IP of it
+
+enter it using ssh pi@<...>
+
+enter the password you had previously set
+
+```
+sudo-apt get update
+sudo-apt get upgrade
+curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | sudo bash
+sudo apt-get install git docker docker.io gitlab-runner -y
+```
+
+great now that you have installed all of this go into the GitLab Repository
+
+--> go to settings ---> CI/CD ---> Click on Runners --->
+Create project runner the tags will be
+
+build and deploy for now
+if you ever plan on adding other stages make sure to edit the runner for this setup :D
+
+"
+stages:
+
+- build
+- deploy
+  "
+
+When prompted on adding a
+Enter the GitLab instance URL (for example, https://gitlab.com/): [Don't write anything, just press enter]
+
+When prompted what executor write
+docker
+what version?
+docker:latest
+
 1. Cloning the repository
 
 2. Downloading the necessary libraries to run the website
