@@ -40,11 +40,11 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
 # Create non-root user
-RUN addgroup --system --gid 1001 appgroup && \
-    adduser --system --uid 1001 --ingroup appgroup appuser && \
-    chown -R appuser:appgroup .
+# RUN addgroup --system --gid 1001 appgroup && \
+#     adduser --system --uid 1001 --ingroup appgroup appuser && \
+#     chown -R appuser:appgroup .
 
-USER appuser
+# USER appuser
 
 EXPOSE 3000
 
