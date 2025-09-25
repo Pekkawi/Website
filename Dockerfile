@@ -25,7 +25,8 @@ COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 
 # Install basics and build
-RUN  npm run build
+RUN apk add --no-cache libc6-compat
+CMD ["npm","build"]
 
 # Production image, copy all the files and run next
 FROM node:20.12-alpine AS runner
