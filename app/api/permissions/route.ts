@@ -10,7 +10,14 @@ import { auth } from '@/auth';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
+
+    // If someone is not logged in, block their request
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // If the user who is logged in is not an admin
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     await connectToDatabase();
     const permissions = await Permissions.find({});
 
@@ -32,7 +39,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
+
+    // If someone is not logged in, block their request
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // If the user who is logged in is not an admin
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     const db = await connectToDatabase();
     const formData = await request.json();
     const { name, abbreviation, description, scheduling, permission, image } = formData;

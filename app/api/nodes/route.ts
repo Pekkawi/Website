@@ -14,7 +14,14 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
+
+    // If someone is not logged in, block their request
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // If the user who is logged in is not an admin
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     await connectToDatabase();
     const nodes = await baseNode.find({});
 
@@ -30,7 +37,6 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
     const formData = await request.json();
     const { type } = formData;
-    console.log(formData);
 
     let createdDoc;
 

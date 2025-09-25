@@ -2,16 +2,55 @@
 
 import { sidebarLinks } from '@/constants';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
+const SidebarSkeleton = () => {
+  return (
+    <section className="background-light900_dark200 light-border custom-scrollbar shadow-light-300 sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 max-sm:hidden lg:w-[266px] dark:shadow-none">
+      <div className="flex flex-1 flex-col gap-6">
+        {[...Array(5)].map((_, index) => (
+          <div key={index} className="flex items-center gap-4 p-4 shimmer">
+            {/* Icon skeleton */}
+            <div className="w-7 h-7 bg-gray-300 dark:bg-gray-700 rounded"></div>
+            {/* Text skeleton */}
+            <div className="w-20 h-4 bg-gray-300 dark:bg-gray-700 rounded max-lg:hidden"></div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
 const LeftSidebar = () => {
-  const { data: session } = useSession();
+  // ALL HOOKS MUST BE AT THE TOP, BEFORE ANY CONDITIONS OR RETURNS
+  const { data: session, status, update } = useSession();
+  const pathname = usePathname();
+
   const role = session?.user?.role;
 
-  const pathname = usePathname();
+  // Enhanced debugging
+  console.log('🔍 Debug Info:');
+  console.log('Status:', status);
+  console.log('Session:', session);
+  console.log('Session exists:', !!session);
+  console.log('User:', session?.user);
+  console.log('Role:', session?.user?.role);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      update();
+      setTimeout(() => console.log('Updating....'), 100);
+    }
+  });
+
+  // NOW we can do conditional returns, AFTER all hooks have been called
+  if (status === 'loading' || status === 'unauthenticated') {
+    return <SidebarSkeleton />;
+  }
+
   return (
     <section className="background-light900_dark200 light-border custom-scrollbar shadow-light-300 sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 max-sm:hidden lg:w-[266px] dark:shadow-none">
       <div className="flex flex-1 flex-col gap-6 ">

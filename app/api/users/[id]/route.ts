@@ -4,24 +4,36 @@ import { connectToDatabase } from '@/lib/mongoose';
 import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+export async function GET(
+  request: NextRequest,
+  props: { params: Promise<{ id: Types.ObjectId }> }
+) {
   const params = await props.params;
   try {
     const session = await auth();
+
+    // If someone is not logged in, block their request
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // If the user who is logged in is not an admin
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const userId = params.id;
     await connectToDatabase(); // attempt connecting to the DB first
 
     const user = await User.where({ _id: userId }).findOne();
-    return new Response(
-      JSON.stringify({ user, message: 'Succesfully fetched the user' }),
+    return NextResponse.json(
+      { user, message: 'Succesfully fetched the user' },
       { status: 200 }
     );
   } catch (err) {
-    return new Response(JSON.stringify({ err, message: 'Failed to fetch user' }), {
-      status: 500,
-    });
+    return NextResponse.json(
+      { err, message: 'Failed to fetch user' },
+      {
+        status: 500,
+      }
+    );
   }
 }
 
@@ -29,22 +41,38 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: T
 
 // Only allow them to fetch a user
 
-export async function DELETE(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+export async function DELETE(
+  request: NextRequest,
+  props: { params: Promise<{ id: Types.ObjectId }> }
+) {
   const params = await props.params;
   try {
     const session = await auth();
+
+    // If someone is not logged in, block their request
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // If the user who is logged in is not an admin
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     const userId = params.id;
     await connectToDatabase(); // attempt connecting to the DB first
 
     await User.where({ _id: userId }).deleteOne();
 
-    return new Response(JSON.stringify({ message: 'Succesfully deleted the user' }), {
-      status: 200,
-    });
+    return NextResponse.json(
+      { message: 'Succesfully deleted the user' },
+      {
+        status: 200,
+      }
+    );
   } catch (err) {
-    return new Response(JSON.stringify({ err, message: 'Failed to delete user' }), {
-      status: 500,
-    });
+    return NextResponse.json(
+      { err, message: 'Failed to delete user' },
+      {
+        status: 500,
+      }
+    );
   }
 }

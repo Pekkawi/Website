@@ -15,12 +15,6 @@ export const metadata: Metadata = {
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  console.log(session);
-  if (!session) {
-    console.log('No session atm');
-  } else {
-    console.log("The user of the session's current role is:", session?.user?.role);
-  }
 
   return (
     <html lang="en">

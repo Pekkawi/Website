@@ -13,7 +13,6 @@ export async function getUserCredentials() {
       return undefined;
     }
     const data = await res.json();
-    console.log(data);
     return data;
   } catch (err) {
     return undefined;

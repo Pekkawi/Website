@@ -11,15 +11,25 @@ export async function PATCH(
 ) {
   try {
     const session = await auth();
+
+    // If someone is not logged in, block their request
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // If the user who is logged in is not an admin block their request
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     await connectToDatabase();
     const userId = params.id;
     const { permissionId } = await request.json();
     const user = await User.findById(userId);
     if (!user) {
-      return new Response(JSON.stringify({ error: 'User not found' }), {
-        status: 404,
-      });
+      return NextResponse.json(
+        { error: 'User not found' },
+        {
+          status: 404,
+        }
+      );
     }
 
     if (user.permissions.includes(permissionId)) {
@@ -31,8 +41,11 @@ export async function PATCH(
     }
     return NextResponse.json(await user.save(), { status: 200 });
   } catch (err) {
-    return new Response(JSON.stringify({ err }), {
-      status: 500,
-    });
+    return NextResponse.json(
+      { err },
+      {
+        status: 500,
+      }
+    );
   }
 }

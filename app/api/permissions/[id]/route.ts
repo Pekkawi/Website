@@ -4,7 +4,10 @@ import { Db, GridFSBucket } from 'mongodb';
 import { Types } from 'mongoose';
 import { NextRequest } from 'next/server';
 
-export async function DELETE(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+export async function DELETE(
+  request: NextRequest,
+  props: { params: Promise<{ id: Types.ObjectId }> }
+) {
   const params = await props.params;
   try {
     const permId = params.id;
@@ -13,8 +16,7 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
       const bucket = new GridFSBucket(db, { bucketName: 'images' }); // create a GridFs bucket
       const perm = await Permissions.findOne({ _id: permId });
       const fileId = perm.image;
-      //  console.log(perm); // Debug
-      // console.log(fileId); // Debug
+
       await bucket.delete(fileId); // delete an image from the GridFS bucket (chunkcs and files collection)
       await Permissions.findOneAndDelete({ _id: permId }); // delete the permission
 
@@ -33,7 +35,10 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
   }
 }
 
-export async function PATCH(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+export async function PATCH(
+  request: NextRequest,
+  props: { params: Promise<{ id: Types.ObjectId }> }
+) {
   const params = await props.params;
   try {
     const permId = params.id;
@@ -89,14 +94,11 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
               });
               uploadStream.end(buffer);
             });
-
-            // console.log('New fileId:', fileId); // Debug
           } catch (error) {
             console.error('Image processing error:', error); // Debug
             throw error;
           }
         } else {
-          // console.log('Using existing image URL'); // Debug
         }
       }
 

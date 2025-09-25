@@ -10,7 +10,6 @@ export async function getNodeHistory(nodeId: string) {
     });
 
     const data = await res.json();
-    console.log(data);
     return data;
   } catch (err) {
     console.error(err);

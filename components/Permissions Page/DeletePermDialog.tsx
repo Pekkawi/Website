@@ -15,13 +15,13 @@ import { useMutation, useQueryClient } from 'react-query';
 import { Types } from 'mongoose';
 import { deletePermission } from '@/hooks/permissionHooks';
 
-const DeletePermissionDialog = ({ permId }: { permId: Types.ObjectId }) => {
+const DeletePermissionDialog = ({ permId }: { permId: string }) => {
   const [open, setOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
   const deletePermMutation = useMutation(
-    (permissionId: Types.ObjectId) => deletePermission(permissionId),
+    (permissionId: string) => deletePermission(permissionId),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('permissions');

@@ -26,15 +26,11 @@ export const authConfig = {
           return NextResponse.redirect(new URL('/', nextUrl));
         }
       }
-      console.log(access);
-      console.log(nextUrl.pathname);
 
       if (access === 'Pending') {
         if (PendingApprovalAllowedPaths.some((p) => nextUrl.pathname === p)) {
           return true;
         } else {
-          console.log('or here');
-
           return NextResponse.redirect(new URL('/pending-approval', nextUrl));
         }
       }

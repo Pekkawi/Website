@@ -20,7 +20,7 @@ export async function getPermissions() {
   }
 }
 
-export async function deletePermission(permId: ObjectId) {
+export async function deletePermission(permId: string) {
   try {
     const res = await fetch(`/api/permissions/${permId}`, {
       method: 'DELETE',
@@ -34,7 +34,7 @@ export async function deletePermission(permId: ObjectId) {
   }
 }
 
-export async function updatePermission(permId: ObjectId, data: Partial<IPerm>) {
+export async function updatePermission(permId: string, data: Partial<IPerm>) {
   const response = await fetch(`/api/permissions/${permId}`, {
     method: 'PATCH',
     headers: {

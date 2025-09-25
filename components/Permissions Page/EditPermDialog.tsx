@@ -49,7 +49,7 @@ const EditPermissionDialog = ({
   permId,
   initialData,
 }: {
-  permId: Types.ObjectId;
+  permId: string;
   initialData: IPerm;
 }) => {
   const [open, setOpen] = useState(false);
@@ -136,7 +136,6 @@ const EditPermissionDialog = ({
   // UPDATE MUTATION (EXECUTES WHEN FORM IS SUBMITTED)
   const updatePermMutation = useMutation(
     async (formData: PermissionFormData) => {
-      console.log('formData', formData);
       return updatePermission(permId, {
         scheduling: formData.scheduling,
         name: formData.name,

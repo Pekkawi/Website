@@ -5,11 +5,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { baseNode } from '@/database/newnode.model';
 import { auth } from '@/auth';
 
-export async function GET(request: NextRequest, props: { params: Promise<{ id: Types.ObjectId }> }) {
+export async function GET(
+  request: NextRequest,
+  props: { params: Promise<{ id: Types.ObjectId }> }
+) {
   const params = await props.params;
   try {
     const session = await auth();
+
+    // If someone is not logged in, block their request
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // If the user who is logged in is not an admin block their request
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     await connectToDatabase();
     const userId = params.id;
 
@@ -18,13 +28,16 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: T
 
     userHistory.sort((a, b) => b.timeStamp - a.timeStamp);
 
-    return new Response(
-      JSON.stringify({ userHistory, message: 'Sucesfully fetched User History' }),
+    return NextResponse.json(
+      { userHistory, message: 'Sucesfully fetched User History' },
       { status: 200 }
     );
   } catch (err) {
-    return new Response(JSON.stringify({ err, message: 'Failed to fetch node' }), {
-      status: 500,
-    });
+    return NextResponse.json(
+      { err, message: 'Failed to fetch node' },
+      {
+        status: 500,
+      }
+    );
   }
 }
