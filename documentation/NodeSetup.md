@@ -17,6 +17,20 @@ sudo-apt get update
 sudo-apt get upgrade
 curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | sudo bash
 sudo apt-get install git docker docker.io gitlab-runner -y
+
+```
+
+Enable the docker daemon
+
+```
+sudo service docker start
+sudo service docker status
+sudo groupadd docker
+sudo usermod -aG docker $USER
+docker run hello-world
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
+
 ```
 
 great now that you have installed all of this go into the GitLab Repository
@@ -41,6 +55,16 @@ When prompted what executor write
 docker
 what version?
 docker:latest
+
+Run
+
+```
+sudo nano /etc/gitlab-runner/config.toml
+and add the following command
+[[runners]]
+  [runners.docker]
+    volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]
+```
 
 1. Cloning the repository
 
@@ -77,3 +101,7 @@ Why specifically 3000 for a website? It's just a standard, you could run a websi
 # Add security
 
 [Here it would probably be a good idea to have an automated script to run the instructions like setting up a firewall, fail2ban etc. etc.]
+
+```
+
+```

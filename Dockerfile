@@ -2,7 +2,7 @@
 FROM node:20.12-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm --legacy-peer-deps ci
 
 # Rebuild the source code only when needed
 FROM node:20.12-alpine AS builder
