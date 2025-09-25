@@ -11,6 +11,15 @@ WORKDIR /app
 #Disable Telemetry
 ENV NEXT_TELEMETRY_DISABLED=1 
 
+# Add these lines before your RUN npm run build command
+ARG MONGODB_URL
+ARG AUTH_SECRET
+ARG NEXTAUTH_URL
+
+# Make them available as environment variables during build
+ENV MONGODB_URL=$MONGODB_URL
+ENV AUTH_SECRET=$AUTH_SECRET
+ENV NEXTAUTH_URL=$NEXTAUTH_URL
 
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
