@@ -6,10 +6,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: Types.ObjectId } },
-  response: NextResponse
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params;
+
     const session = await auth();
 
     // If someone is not logged in, block their request

@@ -1,12 +1,11 @@
 import { auth } from '@/auth';
 import User from '@/database/user.model';
 import { connectToDatabase } from '@/lib/mongoose';
-import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  props: { params: Promise<{ id: Types.ObjectId }> }
+  props: { params: Promise<{ id: String }> }
 ) {
   const params = await props.params;
   try {
@@ -43,7 +42,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  props: { params: Promise<{ id: Types.ObjectId }> }
+  props: { params: Promise<{ id: string }> }
 ) {
   const params = await props.params;
   try {

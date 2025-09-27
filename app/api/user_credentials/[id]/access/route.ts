@@ -1,7 +1,6 @@
 import { auth } from '@/auth';
 import UserCredentials from '@/database/usercredential.model';
 import { connectToDatabase } from '@/lib/mongoose';
-import { access } from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PATCH(

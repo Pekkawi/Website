@@ -2,11 +2,11 @@ import Permissions from '@/database/permission.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Db, GridFSBucket } from 'mongodb';
 import { Types } from 'mongoose';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE(
   request: NextRequest,
-  props: { params: Promise<{ id: Types.ObjectId }> }
+  props: { params: Promise<{ id: string }> }
 ) {
   const params = await props.params;
   try {
@@ -37,7 +37,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  props: { params: Promise<{ id: Types.ObjectId }> }
+  props: { params: Promise<{ id: string }> }
 ) {
   const params = await props.params;
   try {
@@ -99,6 +99,7 @@ export async function PATCH(
             throw error;
           }
         } else {
+          return NextResponse.json({ message: 'Error' }, { status: 500 });
         }
       }
 

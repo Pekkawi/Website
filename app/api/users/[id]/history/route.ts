@@ -1,13 +1,12 @@
 import { History } from '@/database/history.model';
 import { connectToDatabase } from '@/lib/mongoose';
-import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 import { baseNode } from '@/database/newnode.model';
 import { auth } from '@/auth';
 
 export async function GET(
   request: NextRequest,
-  props: { params: Promise<{ id: Types.ObjectId }> }
+  props: { params: Promise<{ id: string }> }
 ) {
   const params = await props.params;
   try {

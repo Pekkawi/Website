@@ -3,12 +3,11 @@ import Devices from '@/database/device.model';
 import { baseNode } from '@/database/newnode.model';
 import { NodeType } from '@/interfaces/nodes.interface';
 import { connectToDatabase } from '@/lib/mongoose';
-import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE(
   request: NextRequest,
-  props: { params: Promise<{ id: Types.ObjectId }> }
+  props: { params: Promise<{ id: string }> }
 ) {
   const params = await props.params;
   try {
