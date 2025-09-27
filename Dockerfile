@@ -17,7 +17,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+RUN npm run build --prod
 # Install basics and build
 # RUN apk add --no-cache libc6-compat
 
