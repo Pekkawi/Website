@@ -84,7 +84,9 @@ import next from 'next';
 import { Server } from 'socket.io';
 
 const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev });
+const hostname = '0.0.0.0';
+const port = 3000;
+const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
@@ -95,7 +97,7 @@ app.prepare().then(() => {
   const io = new Server(httpServer, {
     cors: {
       origin: '*',
-      methods: ['GET', 'POST'],
+      methods: ['GET', 'POST', 'DELETE', 'PATCH'],
       credentials: true,
     },
     transports: ['websocket', 'polling'],
@@ -105,7 +107,6 @@ app.prepare().then(() => {
     console.log('✅ Socket connected:', socket.id);
   });
 
-  const port = process.env.PORT || 3000;
   httpServer.listen(port, '0.0.0.0', () => {
     console.log(`🚀 Server listening on http://0.0.0.0:${port}`);
   });
