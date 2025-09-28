@@ -11,14 +11,16 @@ const hostname = process.env.HOSTNAME || '0.0.0.0'; // IMPORTANT: Use 0.0.0.0 fo
 const port = parseInt(process.env.PORT || '3000', 10);
 
 const app = next({ dev, hostname, port });
-const handler = app.getRequestHandler();
+const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
-  const httpServer = createServer(handler);
+  const httpServer = createServer((req, res) => {
+    // Let Next.js handle the request
+    handle(req, res);
+  });
   // const io = new Server(httpServer, {
   //   cors: { origin: '*' }, // allow connections from Python script & browsers
   // });
-
   const io = new Server(httpServer, {
     path: '/socket.io/',
     cors: {
@@ -27,6 +29,8 @@ app.prepare().then(() => {
       credentials: true,
     },
     transports: ['websocket', 'polling'],
+    pingTimeout: 60000,
+    pingInterval: 25000,
   });
 
   io.on('connection', (socket) => {
