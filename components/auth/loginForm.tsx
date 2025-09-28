@@ -4,10 +4,8 @@ import {
   AtSymbolIcon,
   KeyIcon,
   ExclamationCircleIcon,
-  EyeIcon,
-  EyeSlashIcon,
 } from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
+
 import { Button } from '../ui/button';
 import { useActionState } from 'react';
 import {
@@ -19,13 +17,12 @@ import {
 } from '@/components/ui/card';
 import { authenticate } from '@/lib/actions';
 import { useSearchParams } from 'next/navigation';
-import { Form } from '../ui/form';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import Link from 'next/link';
 import Loader from '../shared/utility/Loader';
 
-export default function LoginForm({}) {
+export default function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
   const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
@@ -46,7 +43,7 @@ export default function LoginForm({}) {
 
                 <div className="relative">
                   <Input
-                    className="peer block w-full rounded-md border ring-orange-300 border-gray-200 py-[9px] pl-10 text-sm  placeholder:text-gray-500"
+                    className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm ring-orange-300  placeholder:text-gray-500"
                     id="email"
                     type="email"
                     name="email"
@@ -60,7 +57,7 @@ export default function LoginForm({}) {
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
-                    className="peer block w-full rounded-md border ring-orange-300 border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                    className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 ring-orange-300 placeholder:text-gray-500"
                     id="password"
                     type="password"
                     name="password"
@@ -74,7 +71,7 @@ export default function LoginForm({}) {
               <Input type="hidden" name="redirectTo" value={callbackUrl} />
               <Button
                 type="submit"
-                className="w-full bg-orange-500 text-white hover:bg-orange-400 active:bg-orange-300  click"
+                className="click w-full bg-orange-500 text-white hover:bg-orange-400  active:bg-orange-300"
               >
                 {isPending && (
                   <>

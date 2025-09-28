@@ -50,7 +50,7 @@ export default function RegistrationForm() {
   };
 
   return (
-    <section className="flex flex-row justify-center items-center md:h-screen ">
+    <section className="flex flex-row items-center justify-center md:h-screen ">
       <Suspense fallback={<PageLoader />}>
         <form
           ref={ref}
@@ -75,7 +75,7 @@ export default function RegistrationForm() {
                   <Label htmlFor="name"> Name</Label>
                   <div className="relative">
                     <Input
-                      className="peer block w-full rounded-md border ring-orange-300 border-gray-200  py-[9px] pl-10 text-sm  placeholder:text-gray-500"
+                      className="peer block w-full rounded-md border border-gray-200 py-[9px]  pl-10 text-sm ring-orange-300  placeholder:text-gray-500"
                       id="name"
                       type="text"
                       name="name"
@@ -89,7 +89,7 @@ export default function RegistrationForm() {
                   <Label htmlFor="email"> Email</Label>
                   <div className="relative">
                     <Input
-                      className="peer block w-full rounded-md border ring-orange-300 border-gray-200 py-[9px] pl-10 text-sm  placeholder:text-gray-500"
+                      className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm ring-orange-300  placeholder:text-gray-500"
                       id="email"
                       type="email"
                       name="email"
@@ -103,7 +103,7 @@ export default function RegistrationForm() {
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Input
-                      className="peer block w-full rounded-md border ring-orange-300 border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                      className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 ring-orange-300 placeholder:text-gray-500"
                       id="password"
                       type="password"
                       name="password"
@@ -117,7 +117,7 @@ export default function RegistrationForm() {
                 <Input type="hidden" name="redirectTo" value={callbackUrl} />
                 <Button
                   type="submit"
-                  className="w-full bg-orange-500 text-white hover:bg-orange-400 active:bg-orange-300  click"
+                  className="click w-full bg-orange-500 text-white hover:bg-orange-400  active:bg-orange-300"
                 >
                   {isLoading && (
                     <>

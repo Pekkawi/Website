@@ -2,21 +2,21 @@
 
 import { sidebarLinks } from '@/constants';
 import Link from 'next/link';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
 const SidebarSkeleton = () => {
   return (
-    <section className="background-light900_dark200 light-border custom-scrollbar shadow-light-300 sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 max-sm:hidden lg:w-[266px] dark:shadow-none">
+    <section className="background-light900_dark200 light-border custom-scrollbar sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 shadow-light-300 dark:shadow-none max-sm:hidden lg:w-[266px]">
       <div className="flex flex-1 flex-col gap-6">
         {[...Array(5)].map((_, index) => (
-          <div key={index} className="flex items-center gap-4 p-4 shimmer">
+          <div key={index} className="flex items-center gap-4 p-4">
             {/* Icon skeleton */}
-            <div className="w-7 h-7 bg-gray-300 dark:bg-gray-700 rounded"></div>
+            <div className="size-7 rounded bg-gray-300 dark:bg-gray-700"></div>
             {/* Text skeleton */}
-            <div className="w-20 h-4 bg-gray-300 dark:bg-gray-700 rounded max-lg:hidden"></div>
+            <div className="h-4 w-20 rounded bg-gray-300 dark:bg-gray-700 max-lg:hidden"></div>
           </div>
         ))}
       </div>
@@ -31,14 +31,6 @@ const LeftSidebar = () => {
 
   const role = session?.user?.role;
 
-  // Enhanced debugging
-  console.log('🔍 Debug Info:');
-  console.log('Status:', status);
-  console.log('Session:', session);
-  console.log('Session exists:', !!session);
-  console.log('User:', session?.user);
-  console.log('Role:', session?.user?.role);
-
   useEffect(() => {
     if (status === 'unauthenticated') {
       update();
@@ -52,7 +44,7 @@ const LeftSidebar = () => {
   }
 
   return (
-    <section className="background-light900_dark200 light-border custom-scrollbar shadow-light-300 sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 max-sm:hidden lg:w-[266px] dark:shadow-none">
+    <section className="background-light900_dark200 light-border custom-scrollbar sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 shadow-light-300 dark:shadow-none max-sm:hidden lg:w-[266px]">
       <div className="flex flex-1 flex-col gap-6 ">
         {sidebarLinks.map((item) => {
           if (item.allowedRoles.includes(role)) {
@@ -65,7 +57,7 @@ const LeftSidebar = () => {
                 href={item.route}
                 className={`${
                   isActive
-                    ? 'primary-gradient text-light-900 rounded-lg'
+                    ? 'primary-gradient rounded-lg text-light-900'
                     : 'text-dark300_light900'
                 } flex items-center justify-start gap-4 bg-transparent p-4`}
               >
@@ -78,6 +70,12 @@ const LeftSidebar = () => {
                 />
                 <p className="base-medium max-lg:hidden">{item.label}</p>
               </Link>
+            );
+          } else {
+            return (
+              <>
+                <p>No routes for you</p>
+              </>
             );
           }
         })}
