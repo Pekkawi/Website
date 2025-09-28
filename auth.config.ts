@@ -1,6 +1,4 @@
 import type { NextAuthConfig } from 'next-auth';
-import { useSession } from 'next-auth/react';
-import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 
 export const authConfig = {
