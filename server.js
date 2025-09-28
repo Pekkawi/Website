@@ -17,7 +17,7 @@ app.prepare().then(() => {
   const httpServer = createServer(handler);
   const io = new Server(httpServer, {
     cors: {
-      origin: 'https://example.com',
+      origin: '*',
       methods: ['GET', 'POST'],
       allowedHeaders: ['content-type'],
       credentials: true,
