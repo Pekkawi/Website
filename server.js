@@ -6,17 +6,27 @@ import { createServer } from 'http';
 import next from 'next';
 import { Server } from 'socket.io';
 
-const dev = true;
-const hostname = 'localhost';
-const port = 3000;
+const dev = process.env.NODE_ENV !== 'production';
+const hostname = process.env.HOSTNAME || '0.0.0.0'; // IMPORTANT: Use 0.0.0.0 for Docker
+const port = parseInt(process.env.PORT || '3000', 10);
 
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
+  // const io = new Server(httpServer, {
+  //   cors: { origin: '*' }, // allow connections from Python script & browsers
+  // });
+
   const io = new Server(httpServer, {
-    cors: { origin: '*' }, // allow connections from Python script & browsers
+    path: '/socket.io/',
+    cors: {
+      origin: dev ? '*' : false, // In production, same origin only
+      methods: ['GET', 'POST'],
+      credentials: true,
+    },
+    transports: ['websocket', 'polling'],
   });
 
   io.on('connection', (socket) => {
@@ -32,7 +42,7 @@ app.prepare().then(() => {
     socket.on('updateHistory', async (payload) => {
       const nodeId = payload._id;
 
-      const res = await fetch(`http://${hostname}:${port}/api/nodes/${nodeId}/history`, {
+      const res = await fetch(`api/nodes/${nodeId}/history`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
