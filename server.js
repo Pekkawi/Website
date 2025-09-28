@@ -22,7 +22,7 @@ app.prepare().then(() => {
   const io = new Server(httpServer, {
     path: '/socket.io/',
     cors: {
-      origin: dev ? '*' : false, // In production, same origin only
+      origin: '*',
       methods: ['GET', 'POST'],
       credentials: true,
     },

@@ -8,7 +8,7 @@ const nextConfig = {
     return [
       {
         // Apply these headers to all API routes
-        source: '/api/:path*',
+        source: ['/api/:path*', '/socket.io'],
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
