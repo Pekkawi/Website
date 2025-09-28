@@ -10,22 +10,40 @@ services:
     image: website:latest
     env_file:
       - .env.local
-    #    environment:
-    #      - VIRTUAL_HOST=myapp.thecores.xyz
-    #      - LETSENCRYPT_HOST=myapp.thecores.xyz
-    #      - LETSENCRYPT_EMAIL=edlie22@student.sdu.dk
+    environment:
     restart: always
 
-  # nginx:
-  #   container_name: nginx
-  #   image: nginx:alpine
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - nextjs
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #   restart: always
+  nginx:
+    container_name: nginx-proxy
+    image: nginxproxy/nginx-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - nextjs
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    restart: always
+
+  nginx-proxy-acme:
+    container_name: nginx-proxy-acme
+    image: nginxproxy/acme-companion
+    environment:
+      - DEFAULT_EMAIL=eduard.dez@gmail.com
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./nginx/certs:/etc/nginx/certs:rw
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/acme.sh:/etc/acme.sh
+    depends_on:
+      - nginx-proxy
+    restart: always
 # services:
 #   nextjs:
 #     container_name: nextjs
