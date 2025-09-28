@@ -64,7 +64,6 @@ deploy-prod:
     # Pull latest image (so compose uses updated build)
     - docker pull $IMAGE_NAME
     # Make sure old containers are stopped & removed
-    - docker compose down
     # Start everything with the latest image
     - docker compose up -d
   only:
