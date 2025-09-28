@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const permissionsWithImageURL = permissions.map((perm) => {
       return {
         ...perm.toObject(),
-        image: `/api/images/${perm.image}`, // Image route for fetching
+        image: `${process.env.NEXTAUTH_URL}/api/images/${perm.image}`, // Image route for fetching
       };
     });
 
