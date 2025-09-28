@@ -12,6 +12,7 @@ await connectToDatabase();
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   ...authConfig,
+  trustHost: true,
   adapter: MongoDBAdapter(client),
   providers: [
     Credentials({
