@@ -368,6 +368,7 @@ const EditPermissionDialog = ({
                     alt="Permission"
                     width={144}
                     height={144}
+                    unoptimized={true}
                     className="cursor-pointer object-cover"
                     onClick={() => selectedFile && setDialogOpen(true)}
                   />
