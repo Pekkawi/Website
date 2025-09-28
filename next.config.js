@@ -4,14 +4,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true, // temporary fix for deploying with Docker for now
   },
-  async rewrites() {
-    return [
-      {
-        source: '/socket.io/:path*',
-        destination: 'http://10.126.128.117:3000/socket.io/:path*',
-      },
-    ];
-  },
+
   async headers() {
     return [
       {
