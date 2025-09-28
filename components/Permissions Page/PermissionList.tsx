@@ -66,6 +66,7 @@ const PermissionList = () => {
                   <Image
                     width={170}
                     height={170}
+                    unoptimized={true}
                     src={perm.image.toString()} // Use the full image URL returned from the GET route
                     alt={perm.name}
                     onError={(e) => (e.currentTarget.src = '/placeholder-image.jpg')} // Optionally add a fallback image
