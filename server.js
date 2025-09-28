@@ -11,26 +11,17 @@ const hostname = process.env.HOSTNAME || '0.0.0.0'; // IMPORTANT: Use 0.0.0.0 fo
 const port = parseInt(process.env.PORT || '3000', 10);
 
 const app = next({ dev, hostname, port });
-const handle = app.getRequestHandler();
+const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
-  const httpServer = createServer((req, res) => {
-    // Let Next.js handle the request
-    handle(req, res);
-  });
-  // const io = new Server(httpServer, {
-  //   cors: { origin: '*' }, // allow connections from Python script & browsers
-  // });
+  const httpServer = createServer(handler);
   const io = new Server(httpServer, {
-    path: '/socket.io/',
     cors: {
-      origin: '*',
+      origin: 'https://example.com',
       methods: ['GET', 'POST'],
+      allowedHeaders: ['content-type'],
       credentials: true,
     },
-    transports: ['websocket', 'polling'],
-    pingTimeout: 60000,
-    pingInterval: 25000,
   });
 
   io.on('connection', (socket) => {
@@ -46,7 +37,7 @@ app.prepare().then(() => {
     socket.on('updateHistory', async (payload) => {
       const nodeId = payload._id;
 
-      const res = await fetch(`api/nodes/${nodeId}/history`, {
+      const res = await fetch(`http://${hostname}:${port}/api/nodes/${nodeId}/history`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
