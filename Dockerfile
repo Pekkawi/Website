@@ -6,7 +6,7 @@ FROM node:24.9-alpine AS base
 FROM base as deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm --legacy-peer-deps ci
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM node:24.9-alpine  AS builder
@@ -14,10 +14,11 @@ WORKDIR /app
 
 #Disable Telemetry
 ENV NEXT_TELEMETRY_DISABLED=1 
+ENV MONGODB_URL = $MONGODB_URL
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build --prod
+RUN npm run build --production
 # Install basics and build
 # RUN apk add --no-cache libc6-compat
 
