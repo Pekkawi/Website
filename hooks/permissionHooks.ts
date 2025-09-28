@@ -1,5 +1,4 @@
 import { IPerm } from '@/interfaces/database.interfaces';
-import { ObjectId } from 'mongoose';
 
 export async function getPermissions() {
   try {

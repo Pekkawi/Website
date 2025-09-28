@@ -2,7 +2,6 @@
 import { deleteUser, getUserDetails } from '@/hooks/userHooks';
 import { IPerm } from '@/interfaces/database.interfaces';
 import { motion } from 'framer-motion';
-import { Types } from 'mongoose';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import DropDownLoading from './DropDownLoading';
 import RoleSelector from './RoleSelector';
@@ -17,11 +16,11 @@ const UserDetails = ({
   statusPermission,
   handleToggle,
 }: {
-  userId: Types.ObjectId;
+  userId: string;
   roles: string[];
   Permissions: IPerm[] | undefined;
   statusPermission: 'idle' | 'error' | 'loading' | 'success';
-  handleToggle: (userId: Types.ObjectId) => void;
+  handleToggle: (userId: string) => void;
 }) => {
   const { data, status } = useQuery<any>( // TODO: Fix any | temp fix
     ['DetailsUser', userId],

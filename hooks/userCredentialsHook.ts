@@ -1,6 +1,3 @@
-import { IUserCredential } from '@/database/usercredential.model';
-import { ObjectId } from 'mongoose';
-
 export async function getUserCredentials() {
   try {
     const res = await fetch('/api/user_credentials', {
@@ -53,7 +50,7 @@ export async function updateUserAccess(access: string, userCredentialId: string)
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ access: access }),
+    body: JSON.stringify({ access }),
   });
   if (!res.ok) {
     throw new Error('Could not edit user role');

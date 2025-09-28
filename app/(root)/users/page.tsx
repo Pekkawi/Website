@@ -4,8 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { UserType } from '@/interfaces/userpage.interfaces';
 import { useQuery } from 'react-query';
-import { Types } from 'mongoose';
-
 import PageLoader from '@/components/shared/PageLoader';
 import UserSearch from '@/components/User Page/UserSearch';
 import UserPagination from '@/components/User Page/UserPagination';
@@ -21,7 +19,7 @@ const User2 = () => {
   const roles = ['User', 'Maintainer', 'Admin'];
   const [filteredUsers, setFilteredUsers] = useState<UserType[] | undefined>();
   const [searchTerm, setSearchTerm] = useState('');
-  const [openUserId, setOpenUserId] = useState<Types.ObjectId | null>(null);
+  const [openUserId, setOpenUserId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
@@ -67,7 +65,7 @@ const User2 = () => {
     }
   );
 
-  const handleToggle = (userId: Types.ObjectId) => {
+  const handleToggle = (userId: string) => {
     setOpenUserId(openUserId !== userId ? userId : null);
   };
 
@@ -124,7 +122,7 @@ const User2 = () => {
                 >
                   <div
                     className="flex cursor-pointer items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-dark-200"
-                    onClick={() => handleToggle(user._id)}
+                    onClick={() => handleToggle(user._id.toString())}
                   >
                     <div className="flex flex-1 flex-col sm:flex-row sm:justify-between">
                       <p className="text-dark500_light700 font-medium">
@@ -137,7 +135,7 @@ const User2 = () => {
                     <motion.span
                       className={`ml-4 shrink-0 text-gray-400`}
                       initial={{ rotate: 0 }}
-                      animate={{ rotate: openUserId === user._id ? 180 : 0 }}
+                      animate={{ rotate: openUserId === user._id.toString() ? 180 : 0 }}
                       transition={{ duration: 0.2 }}
                     >
                       <svg
@@ -155,10 +153,10 @@ const User2 = () => {
                     </motion.span>
                   </div>
                   <AnimatePresence>
-                    {openUserId === user._id && (
+                    {openUserId === user._id.toString() && (
                       <UserDetails
                         handleToggle={handleToggle}
-                        userId={user._id}
+                        userId={user._id.toString()}
                         roles={roles}
                         Permissions={Permissions}
                         statusPermission={statusPermissions}

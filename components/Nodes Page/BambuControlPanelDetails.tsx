@@ -27,14 +27,13 @@ const BambuControlPanelDetails: React.FC<BambuControlPanelNodeDetailsProps> = ({
   });
 
   const deleteNodeMutation = useMutation<void, Error, string>(
-    (nodeId: string) => {
-      return fetch(`/api/nodes/${nodeId}`, {
+    async (nodeId: string) => {
+      const res = await fetch(`/api/nodes/${nodeId}`, {
         method: 'DELETE',
-      }).then((res) => {
-        if (!res.ok) {
-          throw new Error('Failed to delete node');
-        }
       });
+      if (!res.ok) {
+        throw new Error('Failed to delete node');
+      }
     },
     {
       onSuccess: () => {

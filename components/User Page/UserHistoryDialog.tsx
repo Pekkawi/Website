@@ -8,7 +8,6 @@ import {
   DialogTrigger,
 } from '../ui/dialog';
 import { Button } from '../ui/button';
-import { Types } from 'mongoose';
 import { columns } from './UserHistoryColumns';
 import { UserHistoryTable } from './UserHistoryTable';
 import type { History } from './UserHistoryColumns'; // 👈 ensures same exact type
@@ -16,7 +15,7 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { getUserHistory } from '@/hooks/historyHooks';
 
-const UserHistoryDialog = ({ userId }: { userId: Types.ObjectId }) => {
+const UserHistoryDialog = ({ userId }: { userId: string }) => {
   const [open, setOpen] = useState(false);
 
   const { data: rawHistory, status: statusNodeHistory } = useQuery<{

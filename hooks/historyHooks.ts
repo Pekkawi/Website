@@ -1,5 +1,3 @@
-import { ObjectId, Types } from 'mongoose';
-
 export async function getNodeHistory(nodeId: string) {
   try {
     const res = await fetch(`/api/nodes/${nodeId}/history`, {
@@ -17,7 +15,7 @@ export async function getNodeHistory(nodeId: string) {
   }
 }
 
-export async function getUserHistory(userId: Types.ObjectId) {
+export async function getUserHistory(userId: string) {
   try {
     const res = await fetch(`/api/users/${userId}/history`, {
       method: 'GET',

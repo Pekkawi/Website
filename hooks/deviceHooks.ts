@@ -1,5 +1,3 @@
-import { Types } from 'mongoose';
-
 export async function getDevices() {
   try {
     const res = await fetch('/api/devices', {
@@ -19,7 +17,7 @@ export async function getDevices() {
   }
 }
 
-export async function deleteDevice(deviceId: Types.ObjectId) {
+export async function deleteDevice(deviceId: string) {
   try {
     const res = await fetch(`/api/permissions/${deviceId}`, {
       method: 'DELETE',

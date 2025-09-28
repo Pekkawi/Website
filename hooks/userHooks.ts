@@ -1,6 +1,4 @@
-import { IUser } from '@/interfaces/database.interfaces';
 import { UserType } from '@/interfaces/userpage.interfaces';
-import { Types } from 'mongoose';
 
 export async function getUsers(): Promise<UserType[] | undefined> {
   try {
@@ -17,7 +15,7 @@ export async function getUsers(): Promise<UserType[] | undefined> {
   }
 }
 
-export async function deleteUser(id: Types.ObjectId): Promise<boolean> {
+export async function deleteUser(id: string): Promise<boolean> {
   try {
     const res = await fetch(`/api/users/${id}`, {
       method: 'DELETE',
@@ -31,7 +29,7 @@ export async function deleteUser(id: Types.ObjectId): Promise<boolean> {
   }
 }
 
-export async function getUserDetails(id: Types.ObjectId): Promise<IUser | undefined> {
+export async function getUserDetails(id: string) {
   try {
     const res = await fetch(`/api/users/${id}`, {
       method: 'GET',
