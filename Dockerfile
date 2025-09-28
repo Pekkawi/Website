@@ -14,7 +14,8 @@ WORKDIR /app
 
 #Disable Telemetry
 ENV NEXT_TELEMETRY_DISABLED=1 
-ENV MONGODB_URL = $MONGODB_URL
+ARG MONGODB_URL
+ENV MONGODB_URL=$MONGODB_URL
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
