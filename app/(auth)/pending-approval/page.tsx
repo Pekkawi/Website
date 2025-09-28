@@ -34,7 +34,6 @@ const PendingApprovalPage = () => {
       // Call an API endpoint to check current database status
       const response = await fetch('api/user_credentials');
       const data = await response.json();
-      console.log('The current data is:', data);
       if (data.access !== 'Pending') {
         // Update the session with new data
         await update({
@@ -63,29 +62,29 @@ const PendingApprovalPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 dark:bg-gray-900">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-md w-full"
+        className="w-full max-w-md"
       >
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+        <div className="rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-800">
           {/* Icon and Title */}
-          <div className="text-center mb-6">
-            <div className="mx-auto w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-4">
+          <div className="mb-6 text-center">
+            <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
               <FaUserClock className="text-4xl text-orange-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               Account Pending Approval
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
               Your registration was successful!
             </p>
           </div>
 
           {/* User Info */}
-          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
+          <div className="mb-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-700/50">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <FaEnvelope className="text-gray-500" />
@@ -107,11 +106,11 @@ const PendingApprovalPage = () => {
           </div>
 
           {/* Status Message */}
-          <div className="border-l-4 border-orange-400 bg-orange-50 dark:bg-orange-900/20 p-4 mb-6">
+          <div className="mb-6 border-l-4 border-orange-400 bg-orange-50 p-4 dark:bg-orange-900/20">
             <div className="flex items-start gap-3">
-              <FaClock className="text-orange-600 text-lg mt-0.5" />
+              <FaClock className="mt-0.5 text-lg text-orange-600" />
               <div>
-                <p className="font-semibold text-orange-800 dark:text-orange-400 mb-1">
+                <p className="mb-1 font-semibold text-orange-800 dark:text-orange-400">
                   Waiting for Administrator
                 </p>
                 <p className="text-sm text-orange-700 dark:text-orange-500">
@@ -124,7 +123,7 @@ const PendingApprovalPage = () => {
 
           {/* What happens next */}
           <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+            <h3 className="mb-3 font-semibold text-gray-900 dark:text-gray-100">
               What happens next?
             </h3>
             <ol className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
@@ -134,7 +133,7 @@ const PendingApprovalPage = () => {
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-semibold text-orange-600">2.</span>
-                <span>You'll either be approved or denied</span>
+                <span> You will either be approved or denied</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-semibold text-orange-600">3.</span>
@@ -148,7 +147,7 @@ const PendingApprovalPage = () => {
             <Button
               onClick={handleCheckStatus}
               disabled={isChecking}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+              className="w-full bg-orange-600 text-white hover:bg-orange-700"
             >
               {isChecking ? 'Checking...' : 'Check Status'}
             </Button>
@@ -158,7 +157,7 @@ const PendingApprovalPage = () => {
           </div>
 
           {/* Footer Note */}
-          <p className="text-center text-xs text-gray-500 dark:text-gray-500 mt-6">
+          <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-500">
             This usually takes less than 24 hours. If you need immediate access, please
             contact the workshop administrator directly.
           </p>
