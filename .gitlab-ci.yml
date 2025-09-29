@@ -1,39 +1,3 @@
-# image: docker
-
-# services:
-#   - docker:dind
-
-# stages:
-#   - build
-#   - deploy
-
-# variables:
-#   IMAGE_NAME: $CI_REGISTRY_IMAGE/thecore-docker:latest
-
-# build-image:
-#   stage: build
-#   script:
-#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-#     - docker build --build-arg MONGODB_URL=$MONGODB_URL . -t $IMAGE_NAME
-#     - docker push $IMAGE_NAME
-#   only:
-#     - main
-#   tags:
-#     - build
-
-# deploy-prod:
-#   stage: deploy
-#   script:
-#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-#     - docker pull $IMAGE_NAME
-#     - docker stop thecore-docker || true
-#     - docker rm thecore-docker || true
-#     - docker run -d --restart unless-stopped -p 3000:3000 -e AUTH_TRUST_HOST=$AUTH_TRUST_HOST -e AUTH_SECRET=$AUTH_SECRET -e NEXTAUTH_URL=$NEXTAUTH_URL -e MONGODB_URL=$MONGODB_URL --name thecore-docker $IMAGE_NAME
-#   only:
-#     - main
-#   tags:
-#     - deploy
-
 image: docker
 
 services:
@@ -61,12 +25,47 @@ deploy-prod:
   stage: deploy
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    # Pull latest image (so compose uses updated build)
     - docker pull $IMAGE_NAME
-    # Make sure old containers are stopped & removed
-    # Start everything with the latest image
-    - docker compose up -d
+    - docker stop thecore-docker || true
+    - docker rm thecore-docker || true
+    - docker run -d --restart unless-stopped -p 3000:3000 -e AUTH_TRUST_HOST=$AUTH_TRUST_HOST -e AUTH_SECRET=$AUTH_SECRET -e NEXTAUTH_URL=$NEXTAUTH_URL -e MONGODB_URL=$MONGODB_URL --name thecore-docker $IMAGE_NAME
   only:
     - main
   tags:
     - deploy
+# image: docker
+
+# services:
+#   - docker:dind
+
+# stages:
+#   - build
+#   - deploy
+
+# variables:
+#   IMAGE_NAME: $CI_REGISTRY_IMAGE/thecore-docker:latest
+
+# build-image:
+#   stage: build
+#   script:
+#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+#     - docker build --build-arg MONGODB_URL=$MONGODB_URL . -t $IMAGE_NAME
+#     - docker push $IMAGE_NAME
+#   only:
+#     - main
+#   tags:
+#     - build
+
+# deploy-prod:
+#   stage: deploy
+#   script:
+#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+#     # Pull latest image (so compose uses updated build)
+#     - docker pull $IMAGE_NAME
+#     # Make sure old containers are stopped & removed
+#     # Start everything with the latest image
+#     - docker compose up -d
+#   only:
+#     - main
+#   tags:
+#     - deploy
