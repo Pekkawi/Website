@@ -50,8 +50,8 @@ deploy-production:
     # Create certs directory with restricted permissions
     - mkdir -p certs
     - chmod 700 certs # Only owner can read/write/execute
-    - echo ${TLS_CERTIFICATE_B64} | base64 -d > ./certs/selfsigned.crt
-    - echo "$TLS_PRIVATE_KEY_B64" | base64 -d > ./certs/selfsigned.key
+    - echo ${TLS_CERTIFICATE_B64} | base64 -d > ./certs/selfsigned.crt 2> /dev/null || true
+    - echo "$TLS_PRIVATE_KEY_B64" | base64 -d > ./certs/selfsigned.key 2> /dev/null || true
     - chmod 600 ./certs/selfsigned.key # Private key: owner read/write only
     - chmod 644 ./certs/selfsigned.crt # Certificate: owner rw, others read
 
