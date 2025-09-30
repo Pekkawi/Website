@@ -53,7 +53,8 @@ deploy-production:
 
     # Decode and save TLS certs with restricted permissions
     - echo "${#TLS_CERTIFICATE_B64}"
-    - echo "$TLS_CERTIFICATE_B64" | base64 -d > ./certs/selfsigned.crt 2> /dev/null
+    - echo ${TLS_CERTIFICATE_B64}
+    - echo ${TLS_CERTIFICATE_B64} | base64 -d > ./certs/selfsigned.crt 2> /dev/null
     - echo "$TLS_PRIVATE_KEY_B64" | base64 -d > ./certs/selfsigned.key
     - chmod 600 ./certs/selfsigned.key # Private key: owner read/write only
     - chmod 644 ./certs/selfsigned.crt # Certificate: owner rw, others read
