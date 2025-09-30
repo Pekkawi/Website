@@ -47,9 +47,15 @@ stages:
 deploy-production:
   stage: deploy
   script:
-    # Decode and save TLS certs
+    # Create certs directory with restricted permissions
+    - mkdir -p certs
+    - chmod 700 certs # Only owner can read/write/execute
+
+    # Decode and save TLS certs with restricted permissions
     - echo "$TLS_CERTIFICATE_B64" | base64 -d > ./certs/selfsigned.crt
     - echo "$TLS_PRIVATE_KEY_B64" | base64 -d > ./certs/selfsigned.key
+    - chmod 600 ./certs/selfsigned.key # Private key: owner read/write only
+    - chmod 644 ./certs/selfsigned.crt # Certificate: owner rw, others read
 
     # Log in if you're pushing/pulling private images (optional)
     # - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -64,6 +70,10 @@ deploy-production:
 
     # Clean up dangling images only (won’t delete cached layers in use)
     - docker image prune -f
+
+  after_script:
+    # Always clean up certificate and private key, even if pipeline fails
+    - rm -rf certs
   only:
     - main
   tags:
