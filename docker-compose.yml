@@ -1,6 +1,9 @@
 services:
   nginx:
     image: nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     container_name: nginx-local
     ports:
       - '80:80'
