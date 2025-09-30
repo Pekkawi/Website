@@ -44,8 +44,17 @@ services:
 stages:
   - deploy
 
+variables:
+  MOUNT_POINT: /builds/$CI_PROJECT_PATH/docker-mounts
+
 deploy-production:
   stage: deploy
+
+  before_script:
+    - mkdir -p "$MOUNT_POINT/nginx"
+    - cp nginx/nginx.conf "$MOUNT_POINT/nginx/nginx.conf"
+    - ls -la "$MOUNT_POINT/nginx/" # Verify
+
   script:
     # Create certs directory with restricted permissions
     - mkdir -p certs
