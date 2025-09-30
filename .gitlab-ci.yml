@@ -54,9 +54,9 @@ deploy-production:
     - echo "$TLS_PRIVATE_KEY_B64" | base64 -d > ./certs/selfsigned.key 2> /dev/null || true
     - chmod 600 ./certs/selfsigned.key # Private key: owner read/write only
     - chmod 644 ./certs/selfsigned.crt # Certificate: owner rw, others read
-
+    - mkdir -p nginx
     - |
-      cat > nginx.conf << 'EOF'
+      cat > nginx/nginx.conf << 'EOF'
             events {
           worker_connections 1024;
       }
@@ -120,8 +120,8 @@ deploy-production:
     # - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
     # Stop old containers
-    - ls -l
-    - file nginx.conf
+    - ls -la nginx/
+    - cat nginx/nginx.conf
     - docker-compose down
 
     # Build + run, reusing cached layers if available
