@@ -20,6 +20,8 @@ services:
     ports:
       - '3000:3000'
     privileged: true
+    args:
+      - MONGODB_URL=$MONGODB_URL
     environment:
       - AUTH_SECRET=$AUTH_SECRET
       - AUTH_TRUST_HOST=$AUTH_TRUST_HOST
