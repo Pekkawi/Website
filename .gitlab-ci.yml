@@ -52,7 +52,7 @@ deploy-production:
     - chmod 700 certs # Only owner can read/write/execute
 
     # Decode and save TLS certs with restricted permissions
-    - echo "Length of TLS_CERTIFICATE_B64: ${#TLS_CERTIFICATE_B64}"
+    - echo "${#TLS_CERTIFICATE_B64}"
     - echo "$TLS_CERTIFICATE_B64" | base64 -d > ./certs/selfsigned.crt
     - echo "$TLS_PRIVATE_KEY_B64" | base64 -d > ./certs/selfsigned.key
     - chmod 600 ./certs/selfsigned.key # Private key: owner read/write only
