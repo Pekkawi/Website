@@ -2,11 +2,13 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx-local
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
       - '80:80'
       - '443:443'
     volumes:
-      - /builds/${CI_PROJECT_PATH}/docker-mounts/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./certs:/etc/nginx/certs:ro
     depends_on:
       - nextjs
