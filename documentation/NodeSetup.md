@@ -13,8 +13,8 @@ enter it using ssh pi@<...>
 enter the password you had previously set
 
 ```
-sudo-apt get update
-sudo-apt get upgrade
+sudo apt-get update
+sudo apt-get upgrade
 curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | sudo bash
 sudo apt-get install git docker docker.io gitlab-runner -y
 
@@ -22,14 +22,15 @@ sudo apt-get install git docker docker.io gitlab-runner -y
 
 Enable the docker daemon
 
+You might need to run some commands with sudo priviliges
+
 ```
-sudo service docker start
-sudo service docker status
 sudo groupadd docker
 sudo usermod -aG docker $USER
-docker run hello-world
 sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
+docker run hello-world
+
 
 ```
 
