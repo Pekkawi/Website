@@ -59,6 +59,10 @@ deploy-production:
     - chmod 600 ./certs/selfsigned.key # Private key: owner read/write only
     - chmod 644 ./certs/selfsigned.crt # Certificate: owner rw, others read
     # Log in if you're pushing/pulling private images (optional)
+    - ls -la
+    - test -f ./nginx.conf && echo "File exists" || echo "File NOT found 1"
+    - test -f .nginx.conf && echo "File exists" || echo "File NOT found 2"
+    - test -f nginx.conf && echo "File exists" || echo "File NOT found 3"
 
     - docker-compose down
 
