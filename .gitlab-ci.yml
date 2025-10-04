@@ -65,7 +65,7 @@ deploy-production:
     - test -f nginx.conf && echo "File exists" || echo "File NOT found 3"
     - cat nginx.conf || echo "No CAT for file"
     - cat ./nginx.conf || echo "No CAT for file2"
-
+    - ls -l ./nginx.conf
     - docker-compose down
 
     # Build + run, reusing cached layers if available
