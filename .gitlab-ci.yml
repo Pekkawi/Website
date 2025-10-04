@@ -50,11 +50,6 @@ variables:
 deploy-production:
   stage: deploy
 
-  # before_script:
-  #   - mkdir -p "$MOUNT_POINT/nginx"
-  #   - cp nginx/nginx.conf "$MOUNT_POINT/nginx/nginx.conf"
-  #   - ls -la "$MOUNT_POINT/nginx/" # Verify
-
   script:
     # Create certs directory with restricted permissions
     - mkdir -p certs
@@ -63,11 +58,7 @@ deploy-production:
     - echo "$TLS_PRIVATE_KEY_B64" | base64 -d > ./certs/selfsigned.key 2> /dev/null || true
     - chmod 600 ./certs/selfsigned.key # Private key: owner read/write only
     - chmod 644 ./certs/selfsigned.crt # Certificate: owner rw, others read
-    - ls -la
-    - sleep 10
-    - file nginx.conf
     # Log in if you're pushing/pulling private images (optional)
-    # - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
     - docker-compose down
 
