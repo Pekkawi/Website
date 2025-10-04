@@ -2,14 +2,12 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx-local
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
     ports:
       - '80:80'
       - '443:443'
     volumes:
       - ./certs:/etc/nginx/certs:ro
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
     depends_on:
       - nextjs
     restart: unless-stopped
