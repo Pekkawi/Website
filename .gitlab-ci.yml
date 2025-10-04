@@ -60,12 +60,6 @@ deploy-production:
     - chmod 644 ./certs/selfsigned.crt # Certificate: owner rw, others read
     # Log in if you're pushing/pulling private images (optional)
     - ls -la
-    - test -f ./nginx.conf && echo "File exists" || echo "File NOT found 1"
-    - test -f .nginx.conf && echo "File exists" || echo "File NOT found 2"
-    - test -f nginx.conf && echo "File exists" || echo "File NOT found 3"
-    - cat nginx.conf || echo "No CAT for file"
-    - cat ./nginx.conf || echo "No CAT for file2"
-    - ls -l ./nginx.conf
     - docker-compose down
 
     # Build + run, reusing cached layers if available
