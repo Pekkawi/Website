@@ -63,7 +63,8 @@ deploy-production:
     - echo "$TLS_PRIVATE_KEY_B64" | base64 -d > ./certs/selfsigned.key 2> /dev/null || true
     - chmod 600 ./certs/selfsigned.key # Private key: owner read/write only
     - chmod 644 ./certs/selfsigned.crt # Certificate: owner rw, others read
-
+    - ls -a
+    - sleep 10
     # Log in if you're pushing/pulling private images (optional)
     # - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
