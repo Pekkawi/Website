@@ -1,4 +1,9 @@
 # Install dependencies only when needed
+# According to this post: https://github.com/vercel/next.js/discussions/34599#discussioncomment-8406070 
+# How to run a custom server in standalone mode, there is some performance overhead since you don't get the 
+# Optimization from NextJS.
+# But it will allow us to use socket.io for sending status updates regarding the nodes to the website
+
 FROM node:24.9-alpine AS base
 
 
@@ -41,6 +46,8 @@ RUN mkdir .next
 RUN chown nextjs:nodejs .next
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+
+
 COPY --from=builder /app/server.js ./server.js
 COPY --from=builder /app/node_modules ./node_modules
 

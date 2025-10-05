@@ -9,9 +9,8 @@ services:
       - ./certs:/etc/nginx/ssl/certs:ro
       - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
-      - nextjs
-    privileged: true
-
+      nextjs:
+        condition: service_healthy
     restart: unless-stopped
 
   nextjs:
@@ -21,10 +20,8 @@ services:
         - MONGODB_URL=$MONGODB_URL
       context: .
       dockerfile: Dockerfile
-    ports:
-      - '3000:3000'
-    privileged: true
-
+    expose:
+      - '3000'
     environment:
       - AUTH_SECRET=$AUTH_SECRET
       - AUTH_TRUST_HOST=$AUTH_TRUST_HOST
