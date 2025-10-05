@@ -74,7 +74,13 @@ const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node
         // progress: myStatus.progress ?? old?.progress ?? initialStatus.progress,
       }));
     };
+    socket.on('connect_error', (err) => {
+      console.log('Message: ', err.message);
 
+      console.log('Error Cause:', err.cause);
+
+      console.log('Error Stack: ', err.stack);
+    });
     socket.on('printerStatus', handleStatusUpdate);
     return () => {
       socket.off('printerStatus', handleStatusUpdate);
@@ -85,6 +91,7 @@ const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node
     initialStatus.printTime,
     initialStatus.fileName,
     initialStatus.progress,
+    initialStatus.status,
   ]);
 
   // Retrieve live status from global cache (or initial fallback)
