@@ -1,4 +1,4 @@
-# Nginx + NextJS deployment
+# Nginx + NextJS deployment...
 
 services:
   nginx:
