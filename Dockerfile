@@ -41,6 +41,10 @@ RUN mkdir .next
 RUN chown nextjs:nodejs .next
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder ./server.js ./server.js
+COPY --from=builder ./app/node_modules ./app/node_modules
+
+
 USER nextjs
 EXPOSE 3000
 ENV PORT 3000
