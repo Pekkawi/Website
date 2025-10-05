@@ -27,6 +27,7 @@ app.prepare().then(() => {
   });
 
   io.on('connection', (socket) => {
+    console.log('Node env:', process.env.NODE_ENV);
     console.log('👤 New client connected:', socket.id);
 
     // 1) Forward any "printerStatus" from any client (Python or front-end)
