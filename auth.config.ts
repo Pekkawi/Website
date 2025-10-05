@@ -7,7 +7,7 @@ export const authConfig = {
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
-      const publicPaths = ['/register', '/login', '/socket.io'];
+      const publicPaths = ['/register', '/login'];
       const userAllowedPaths = ['/']; // the user will only be able to access the home route
       const PendingApprovalAllowedPaths = ['/pending-approval'];
       const isLoggedIn = !!auth?.user;
