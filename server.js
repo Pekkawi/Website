@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost'; // IMPORTANT: Use 0.0.0.0 for Docker
 const port = 3000;
-
+console.log('App is here');
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
