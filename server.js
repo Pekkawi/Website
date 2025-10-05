@@ -7,7 +7,7 @@ import next from 'next';
 import { Server } from 'socket.io';
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost'; // IMPORTANT: Use 0.0.0.0 for Docker
+const hostname = '0.0.0.0'; // IMPORTANT: Use 0.0.0.0 for Docker
 const port = 3000;
 
 const app = next({ dev, hostname, port });
