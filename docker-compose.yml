@@ -1,3 +1,5 @@
+# Nginx + NextJS deployment
+
 services:
   nginx:
     image: nginx:latest
