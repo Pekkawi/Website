@@ -7,7 +7,7 @@ import next from 'next';
 import { Server } from 'socket.io';
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = '0.0.0.0'; // IMPORTANT: Use 0.0.0.0 for Docker
+const hostname = 'localhost'; // IMPORTANT: Use 0.0.0.0 for Docker
 const port = 3000;
 
 const app = next({ dev, hostname, port });
@@ -17,9 +17,8 @@ app.prepare().then(() => {
   const httpServer = createServer(handler);
   const io = new Server(httpServer, {
     cors: {
-      origin: '*',
+      origin: ['http://10.126.128.51:3000', 'http:localhost:3000'],
       methods: ['GET', 'POST'],
-      credentials: true,
     },
   });
 
