@@ -39,17 +39,11 @@ COPY --from=builder /app/public ./public
 # Set the correct permission for prerender cache
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
-
-
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-
 USER nextjs
- 
 EXPOSE 3000
- 
 ENV PORT 3000
 ENV HOSTNAME="0.0.0.0"
-
 CMD ["node", "server.js"]
 
