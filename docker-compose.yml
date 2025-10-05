@@ -9,7 +9,7 @@ services:
       - '443:443'
     volumes:
       - ./certs:/etc/nginx/ssl/certs:ro
-      - ./nginx:/etc/nginx/conf.d:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
     depends_on:
       - nextjs
     restart: unless-stopped
