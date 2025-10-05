@@ -27,6 +27,11 @@ services:
       - AUTH_TRUST_HOST=$AUTH_TRUST_HOST
       - MONGODB_URL=$MONGODB_URL
       - NEXTAUTH_URL=$NEXTAUTH_URL
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/']
+      interval: 10s
+      timeout: 3s
+      retries: 10
     restart: unless-stopped
   # nextjs:
   #   build: .
