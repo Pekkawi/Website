@@ -72,7 +72,7 @@ deploy-production:
   after_script:
     # Always clean up certificate and private key, even if pipeline fails
     - docker image prune -f
-    - docker system prune -a --volumes -f
+    - docker system prune --volumes -f
     - rm -rf certs
   only:
     - main

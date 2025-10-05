@@ -2,14 +2,14 @@
 
 services:
   nginx:
-    image: nginx:latest
+    image: nginx
     container_name: nginx-local
     ports:
       - '80:80'
       - '443:443'
     volumes:
       - ./certs:/etc/nginx/ssl/certs:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - nextjs
     restart: unless-stopped
