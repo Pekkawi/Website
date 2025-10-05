@@ -1,5 +1,6 @@
 services:
   nextjs:
+    container_name: WebApp
     build:
       args:
         - MONGODB_URL=$MONGODB_URL
