@@ -9,7 +9,7 @@ export const config = {
   // the middleware will not run on paths such as the favicon or static images
 
   matcher: [
-    '/((?!api/images|api/auth|_next/static|_next/image|favicon.ico|public/.*|icons/.*|images/.*|assets/.*).*)',
+    '/((?!api/auth|api/iot|_next/static|_next/image|favicon.ico|public/.*|icons/.*|images/.*|assets/.*).*)',
   ],
   runtime: 'nodejs',
 };
