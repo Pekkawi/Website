@@ -177,8 +177,10 @@ const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node
         </div>
       </div>
 
-      {/* DELETE BUTTON */}
+      {/* BUTTON SECTION BELLOW THE DIV (Dialogs) */}
       <div className="absolute bottom-5 right-10 flex gap-2">
+        {/* <EditNodeDialog nodeId={node._id} /> */}
+
         <NodeHistoryDialog nodeId={node._id} />
 
         <Dialog>

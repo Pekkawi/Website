@@ -65,6 +65,10 @@ const BAMSchema = new Schema({
     ref: 'newnode',
     // required: true,
   },
+  orderNumber: {
+    type: Number,
+    unique: true,
+  },
 });
 
 const BCPSchema = new Schema({
