@@ -26,6 +26,7 @@ import {
 } from '../ui/select';
 import { X, Check, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import DeleteUserCredentialDialog from './DeleteUserCredentialDialog';
+import { useSession } from 'next-auth/react';
 
 // Toast Notification Component
 const Toast = ({
@@ -48,25 +49,28 @@ const Toast = ({
   return (
     <div
       className={`
-        fixed bottom-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg
-        transform transition-all duration-300 animate-slide-in
+        animate-slide-in fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-lg px-4 py-3
+        shadow-lg transition-all duration-300
         ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}
       `}
     >
       {type === 'success' ? (
-        <CheckCircle className="w-5 h-5" />
+        <CheckCircle className="size-5" />
       ) : (
-        <XCircle className="w-5 h-5" />
+        <XCircle className="size-5" />
       )}
       <span className="font-medium">{message}</span>
-      <button onClick={onClose} className="ml-2 hover:opacity-80 transition-opacity">
-        <X className="w-4 h-4" />
+      <button onClick={onClose} className="ml-2 transition-opacity hover:opacity-80">
+        <X className="size-4" />
       </button>
     </div>
   );
 };
 
 const AuthroizationList = () => {
+  const { data: session } = useSession();
+  const email = session?.user?.email;
+  const role = session?.user?.role;
   const queryClient = useQueryClient();
   const [toast, setToast] = useState<{
     message: string;
@@ -84,7 +88,6 @@ const AuthroizationList = () => {
       queryClient.setQueryData<IUserCredential[]>('userCredentials', userCredentials);
     },
   });
-
   const RoleChangeMutation = useMutation(
     ({ role, id }: { role: string; id: string }) => editUserCredentialRole(role, id),
     {
@@ -177,9 +180,14 @@ const AuthroizationList = () => {
                       onValueChange={(role) =>
                         RoleChangeMutation.mutate({ role, id: cred._id })
                       }
-                      disabled={loadingUserId === cred._id || cred.access !== 'Granted'}
+                      disabled={
+                        loadingUserId === cred._id ||
+                        cred.access !== 'Granted' ||
+                        cred.email === email ||
+                        role !== 'Admin'
+                      }
                     >
-                      <SelectTrigger id="role" className="w-24 group">
+                      <SelectTrigger id="role" className="group w-24">
                         <SelectValue placeholder={cred.role} />
                       </SelectTrigger>
                       <SelectContent className="bg-white">
@@ -191,35 +199,38 @@ const AuthroizationList = () => {
                 </TableCell>
                 <TableCell className="text-center">
                   {cred.access === 'Pending' && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
                       Pending
                     </span>
                   )}
                   {cred.access === 'Granted' && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                       Granted
                     </span>
                   )}
                   {cred.access === 'Denied' && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
                       Denied
                     </span>
                   )}
                 </TableCell>
                 <TableCell>
                   {cred.access === 'Granted' && (
-                    <DeleteUserCredentialDialog credId={cred._id} />
+                    <DeleteUserCredentialDialog
+                      credId={cred._id}
+                      disabled={cred.email === email}
+                    />
                   )}
                   {cred.access === 'Pending' && (
                     <div className="flex items-center space-x-1">
                       {loadingUserId === cred._id ? (
                         <div className="flex size-9 items-center justify-center">
-                          <Loader2 className="size-5 text-gray-400 animate-spin" />
+                          <Loader2 className="size-5 animate-spin text-gray-400" />
                         </div>
                       ) : (
                         <>
                           <button
-                            className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-green-100 group"
+                            className="group flex size-9 items-center justify-center rounded-full transition-colors hover:bg-green-100"
                             onClick={() => handleGrantAccess(cred._id)}
                             disabled={loadingUserId !== null}
                             title="Grant Access"
@@ -227,7 +238,7 @@ const AuthroizationList = () => {
                             <Check className="size-5 text-gray-400 group-hover:text-green-600" />
                           </button>
                           <button
-                            className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-red-100 group"
+                            className="group flex size-9 items-center justify-center rounded-full transition-colors hover:bg-red-100"
                             onClick={() => handleDenyAccess(cred._id)}
                             disabled={loadingUserId !== null}
                             title="Deny Access & Delete"
@@ -243,7 +254,7 @@ const AuthroizationList = () => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+              <TableCell colSpan={5} className="py-8 text-center text-gray-500">
                 There are no users on the platform
               </TableCell>
             </TableRow>

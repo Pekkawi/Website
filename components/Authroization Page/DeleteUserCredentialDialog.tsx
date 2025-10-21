@@ -12,7 +12,13 @@ import { Trash } from 'lucide-react';
 import { Button } from '../ui/button';
 import { deleteUserCredentials } from '@/hooks/userCredentialsHook';
 
-const DeleteUserCredentialDialog = ({ credId }: { credId: string }) => {
+const DeleteUserCredentialDialog = ({
+  credId,
+  disabled = false,
+}: {
+  credId: string;
+  disabled?: boolean;
+}) => {
   const [open, setOpen] = useState(false);
 
   const queryClient = useQueryClient();
@@ -31,8 +37,22 @@ const DeleteUserCredentialDialog = ({ credId }: { credId: string }) => {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger>
-          <div className=" rounded-full p-2 duration-150 hover:bg-gray-100">
-            <Trash className="size-5 text-gray-400 hover:cursor-pointer " />
+          <div
+            className={`rounded-full p-2 duration-150 ${
+              disabled
+                ? 'cursor-not-allowed opacity-50' // Disabled styles
+                : 'hover:cursor-pointer hover:bg-gray-100' // Active styles
+            }`}
+            onClick={(e) => {
+              if (disabled) {
+                e.preventDefault(); // Crucial: Prevents the dialog from opening
+              }
+            }}
+            title={disabled ? 'You cannot delete your own account' : 'Delete User'} // Tooltip for UX
+          >
+            <Trash
+              className={`size-5 text-gray-400  ${disabled ? 'cursor-not-allowed opacity-50' : 'hover:cursor-pointer'}`}
+            />
           </div>
         </DialogTrigger>
         <DialogContent className="background-light900_dark300 sm:max-w-[425px]">
