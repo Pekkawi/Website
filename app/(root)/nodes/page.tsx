@@ -45,7 +45,7 @@ const Nodes = () => {
   }
   if (session?.user?.role === 'Admin') {
     return (
-      <div className="background background-light900_dark300 mb-2 h-auto mt-[-30px]">
+      <div className="background background-light900_dark300 mb-2 mt-[-30px] h-auto">
         <>
           <motion.div
             initial={{ opacity: 0, y: -20 }}

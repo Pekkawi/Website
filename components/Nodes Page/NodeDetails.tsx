@@ -3,7 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useQuery, useQueryClient } from 'react-query';
 import { socket } from '@/app/socket';
 
-type Status = 'Maintenance' | 'Free' | 'Occupied' | 'Disconnected';
+type Status = 'Maintenance' | 'Free' | 'Occupied' | 'Disconnected' | 'Paused';
 
 interface NodeDetailsProps {
   name: string;
@@ -62,6 +62,8 @@ const NodeDetails = ({
       case 'Occupied':
         return 'bg-red-500';
       case 'Maintenance':
+        return 'bg-orange-400';
+      case 'Paused':
         return 'bg-orange-400';
       default:
         return 'bg-green-500';

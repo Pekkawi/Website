@@ -18,7 +18,7 @@ import { Types } from 'mongoose';
 import { socket } from '@/app/socket';
 import NodeHistoryDialog from './NodeHistoryDialog';
 
-type Status = 'Maintenance' | 'Free' | 'Occupied' | 'Disconnected';
+type Status = 'Maintenance' | 'Free' | 'Occupied' | 'Disconnected' | 'Paused';
 
 interface BambuPrinterNodeDetailsProps {
   node: BambuPrinterNode;
