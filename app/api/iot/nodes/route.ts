@@ -7,7 +7,13 @@ export async function GET(request: NextRequest) {
     await connectToDatabase();
     const nodes = await baseNode.find({});
 
-    return NextResponse.json(nodes, { status: 200 });
+    const bambuPrinters = nodes.filter((node) => node.__t === 'Bambu Printer');
+
+    const sortedBambuPrinters = bambuPrinters.sort(
+      (a, b) => a.orderNumber - b.orderNumber
+    );
+
+    return NextResponse.json(sortedBambuPrinters, { status: 200 });
   } catch (err) {
     return NextResponse.json({ err }, { status: 500 });
   }

@@ -36,7 +36,12 @@ const baseNodeSchema = new Schema({
   },
 });
 
-const LASSchema = new Schema({});
+const LASSchema = new Schema({
+  orderNumber: {
+    type: Number,
+    unique: true,
+  },
+});
 
 const BAMSchema = new Schema({
   IP: {
@@ -80,6 +85,10 @@ const BCPSchema = new Schema({
         // required: true,
       },
     ],
+  },
+  orderNumber: {
+    type: Number,
+    unique: true,
   },
 });
 

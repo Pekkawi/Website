@@ -23,7 +23,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectToDatabase();
-    const nodes = await baseNode.find({});
+    let nodes = await baseNode.find({});
+
+    nodes = nodes.sort((a, b) => a.orderNumber - b.orderNumber);
 
     return new Response(JSON.stringify(nodes), { status: 200 });
   } catch (err) {}
