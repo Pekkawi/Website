@@ -24,8 +24,10 @@ export async function GET(request: Request) {
     // Attempt to find a user by card_id and populate their permissions.
     const user = await User.findOne({ card_id: cardId }).populate('permissions');
     const some = await Permissions.find({}); // This is just a temporary workaround since Permissions is not specified anywhere else in the code,
+    console.log(`Person with cardID: ${cardId} (Searching now....)`);
 
     if (!user) {
+      console.log(`Person with cardID: ${cardId} does not exist`);
       // If no user is found, return a 404 response.
       return NextResponse.json('User not found', { status: 404 });
     }
@@ -40,6 +42,7 @@ export async function GET(request: Request) {
       (permission: IPerm) => permission.abbreviation === 'FDM'
     );
 
+    console.log(`Checking if user with cardID: ${cardId} has neccesary permissions`);
     // Construct and return the response with user details and permissions.
     // this logic needs to fucking change too
     return NextResponse.json(
