@@ -67,6 +67,38 @@ and add the following command
     volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]
 ```
 
+concurrent = 2
+check_interval = 0
+connection_max_age = "15m0s"
+shutdown_timeout = 0
+
+[session_server]
+session_timeout = 1800
+
+[[runners]]
+name = "TheCore"
+url = "https://gitlab.com"
+id = 50035979
+token = "glrt-08UEGl11mFf2i-9YsI1UFG86MQpwOngzNDMzCnQ6Mwp1OmJ5OHA3Fw.01.1i1e5bks0"
+token_obtained_at = 2025-10-05T17:23:12Z
+token_expires_at = 0001-01-01T00:00:00Z
+executor = "docker"
+[runners.cache]
+MaxUploadedArchiveSize = 0
+[runners.cache.s3]
+[runners.cache.gcs]
+[runners.cache.azure]
+[runners.docker]
+tls_verify = false
+image = "docker:latest"
+privileged = false
+disable_entrypoint_overwrite = false
+oom_kill_disable = false
+disable_cache = false
+volumes = ["/var/run/docker.sock:/var/run/docker.sock","/cache"]
+shm_size = 0
+network_mtu = 0
+
 1. Cloning the repository
 
 2. Downloading the necessary libraries to run the website
