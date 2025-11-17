@@ -224,7 +224,7 @@ const EditPermissionDialog = ({
                 name="abbreviation"
                 render={({ field }) => (
                   <FormItem className="relative mb-2">
-                    <FormLabel className="form-header">Abbreviation</FormLabel>
+                    <FormLabel className="form-header ">Abbreviation</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -243,7 +243,7 @@ const EditPermissionDialog = ({
               name="description"
               render={({ field }) => (
                 <FormItem className="relative -top-1">
-                  <FormLabel className="form-header">Description</FormLabel>
+                  <FormLabel className="form-header -top-2">Description</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}

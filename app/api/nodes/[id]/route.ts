@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 import Devices from '@/database/device.model';
-import { baseNode } from '@/database/newnode.model';
+import { BambuPrinterNode, baseNode } from '@/database/newnode.model';
 import { NodeType } from '@/interfaces/nodes.interface';
 import { connectToDatabase } from '@/lib/mongoose';
 import { NextRequest, NextResponse } from 'next/server';
@@ -91,5 +91,55 @@ export async function DELETE(
     return new Response(JSON.stringify({ err, message: 'Failed to delete node' }), {
       status: 500,
     });
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> }
+) {
+  const params = await props.params;
+  try {
+    const session = await auth();
+
+    // If someone is not logged in, block their request
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // If the user who is logged in is not an admin
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+    const nodeId = params.id;
+    await connectToDatabase(); // connect to MongoDB
+    const data = await request.json();
+    const updateNode = await BambuPrinterNode.findOneAndUpdate(
+      { _id: nodeId },
+      {
+        $set: {
+          ...data,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updateNode) {
+      return NextResponse.json('Failed to update node', { status: 400 });
+    }
+    console.log(`Succesfully Updated ${data.name}`);
+    return NextResponse.json(updateNode, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (err) {
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      {
+        status: 500,
+      }
+    );
   }
 }

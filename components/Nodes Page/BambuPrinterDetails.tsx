@@ -17,6 +17,7 @@ import {
 import { Types } from 'mongoose';
 import { socket } from '@/app/socket';
 import NodeHistoryDialog from './NodeHistoryDialog';
+import NodeEditDialog from './NodeEditDialog';
 
 type Status = 'Maintenance' | 'Free' | 'Occupied' | 'Disconnected' | 'Paused';
 
@@ -180,7 +181,13 @@ const BambuControlPanelDetails: React.FC<BambuPrinterNodeDetailsProps> = ({ node
       {/* BUTTON SECTION BELLOW THE DIV (Dialogs) */}
       <div className="absolute bottom-5 right-10 flex gap-2">
         {/* <EditNodeDialog nodeId={node._id} /> */}
-
+        <NodeEditDialog
+          nodeId={node._id}
+          nodeName={node.name}
+          IP={node.IP}
+          SerialNumber={node.SerialNumber}
+          accessCode={node.accessCode}
+        />
         <NodeHistoryDialog nodeId={node._id} />
 
         <Dialog>

@@ -51,7 +51,7 @@ const UserHistoryDialog = ({ userId }: { userId: string }) => {
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger>
+        <DialogTrigger asChild>
           <Button
             variant="outline"
             className="background-light900_dark300 text-dark100_light900  border-gray-300 px-3 py-1 text-base  hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 md:py-2 xl:px-7 xl:py-2"
