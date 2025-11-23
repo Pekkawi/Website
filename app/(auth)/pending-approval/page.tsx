@@ -2,7 +2,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import { FaClock, FaEnvelope, FaUserClock, FaCheckCircle } from 'react-icons/fa';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession, signOut, signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -23,10 +23,6 @@ const PendingApprovalPage = () => {
       }
     }
   }, [session, router]);
-
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/login' });
-  };
 
   const handleCheckStatus = async () => {
     setIsChecking(true);
@@ -151,9 +147,19 @@ const PendingApprovalPage = () => {
             >
               {isChecking ? 'Checking...' : 'Check Status'}
             </Button>
-            <Button onClick={handleSignOut} variant="outline" className="w-full">
-              Sign Out
-            </Button>
+            {session ? (
+              <Button
+                onClick={() => signIn('entra-id', { redirectTo: '/' })}
+                variant="outline"
+                className="w-full"
+              >
+                Sign Out
+              </Button>
+            ) : (
+              <Button onClick={() => signOut()} variant="outline" className="w-full">
+                Sign Out
+              </Button>
+            )}
           </div>
 
           {/* Footer Note */}

@@ -4,7 +4,6 @@ import {
   FaUserShield,
   FaTools,
   FaPlusCircle,
-  FaLock,
   FaExclamationTriangle,
 } from 'react-icons/fa';
 import React from 'react';
@@ -17,7 +16,7 @@ const Home = () => {
 
   return (
     <>
-      <div className="background background-light900_dark300 h-[70vh] mt-[-30px]">
+      <div className="background background-light900_dark300 mt-[-30px] h-[70vh]">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -30,14 +29,14 @@ const Home = () => {
 
           {/* Simple warning for Users only */}
           {isUser && (
-            <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-500 rounded">
+            <div className="mb-6 rounded border-l-4 border-orange-500 bg-orange-50 p-4 dark:bg-orange-900/20">
               <div className="flex items-center gap-2">
-                <FaExclamationTriangle className="text-orange-600 text-lg" />
+                <FaExclamationTriangle className="text-lg text-orange-600" />
                 <p className="font-medium text-orange-800 dark:text-orange-400">
                   Limited Access - Waiting for Admin Approval
                 </p>
               </div>
-              <p className="text-sm text-orange-700 dark:text-orange-500 mt-1 ml-6">
+              <p className="ml-6 mt-1 text-sm text-orange-700 dark:text-orange-500">
                 Contact a workshop administrator to get full access to the webpage.
               </p>
             </div>
