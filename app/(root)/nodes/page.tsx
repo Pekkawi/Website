@@ -43,7 +43,7 @@ const Nodes = () => {
   if (statusNodes === 'loading') {
     return <PageLoader />;
   }
-  if (session?.user?.role === 'Admin') {
+  if (status === 'authenticated') {
     return (
       <div className="background background-light900_dark300 mb-2 mt-[-30px] h-auto">
         <>

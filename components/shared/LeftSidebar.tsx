@@ -26,20 +26,23 @@ const SidebarSkeleton = () => {
 
 const LeftSidebar = () => {
   // ALL HOOKS MUST BE AT THE TOP, BEFORE ANY CONDITIONS OR RETURNS
-  const { data: session, status, update } = useSession();
+  // const { data: session, status, update } = useSession();
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  // const role = session?.user?.role;
 
-  const role = session?.user?.role;
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      update();
-      setTimeout(() => console.log('Updating....'), 100);
-    }
-  });
+  // useEffect(() => {
+  //   if (status === 'unauthenticated') {
+  //     update();
+  //     setTimeout(() => console.log('Updating....'), 100);
+  //   }
+  // });
 
   // NOW we can do conditional returns, AFTER all hooks have been called
-  if (status === 'loading' || status === 'unauthenticated') {
+  // if (status === 'loading' || status === 'unauthenticated') {
+  //   return <SidebarSkeleton />;
+  // }
+  if (status === 'loading') {
     return <SidebarSkeleton />;
   }
 
@@ -47,7 +50,7 @@ const LeftSidebar = () => {
     <section className="background-light900_dark200 light-border custom-scrollbar sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 shadow-light-300 dark:shadow-none max-sm:hidden lg:w-[266px]">
       <div className="flex flex-1 flex-col gap-6 ">
         {sidebarLinks.map((item) => {
-          if (item.allowedRoles.includes(role)) {
+          if (pathname) {
             const isActive =
               (pathname.includes(item.route) && item.route.length > 1) || // checks if it's not the home route
               pathname === item.route; // isActive will be whichever route we are currently on , in order highlight it in the navbar

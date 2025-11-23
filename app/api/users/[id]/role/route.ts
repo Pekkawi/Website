@@ -17,9 +17,9 @@ export async function PATCH(
     }
 
     // If the user who is logged in is not an admin
-    if (session?.user?.role !== 'Admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    // if (session?.user?.role !== 'Admin') {
+    //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // }
 
     await connectToDatabase();
 

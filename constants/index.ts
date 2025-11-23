@@ -36,9 +36,9 @@ export const sidebarLinks: SidebarLink[] = [
     allowedRoles: ['Admin'],
   },
   {
-    route: '/authorization',
-    label: 'Authorization',
-    imgURL: '/assets/icons/user-shield.svg',
-    allowedRoles: ['Admin'],
+    route: '/profile',
+    label: 'Profile',
+    imgURL: '/assets/icons/profile.svg',
+    allowedRoles: ['User', 'Admin'],
   },
 ];
