@@ -1,22 +1,6 @@
-# Nginx + NextJS deployment ..
+# Nginx + ACME + NextJS deployment
 
 services:
-  # To fix
-  # nginx:
-  #   image: nginx
-  #   container_name: nginx-local
-  #   ports:
-  #     - '80:80'
-  #     - '443:443'
-  #   volumes:
-  #     - ./certs:/etc/nginx/ssl/certs:ro
-  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  #   depends_on:
-  #     - nextjs
-  #   restart: unless-stopped
-  #   networks:
-  #     - app-network
-
   nextjs:
     container_name: WebApp
     build:
@@ -24,125 +8,54 @@ services:
         - MONGODB_URL=$MONGODB_URL
       context: .
       dockerfile: Dockerfile
-    ports:
-      - '3000:3000'
+    expose:
+      - '3000'
+    networks:
+      - proxy
     environment:
       - AUTH_SECRET=$AUTH_SECRET
       - AUTH_TRUST_HOST=$AUTH_TRUST_HOST
       - MONGODB_URL=$MONGODB_URL
       - NEXTAUTH_URL=$NEXTAUTH_URL
+      - VIRTUAL_HOST=$DOMAIN
+      - VIRTUAL_PORT=$PORT
+      - LETSENCRYPT_EMAIL=$LETSENCRYPT_EMAIL
+      - LETSENCRYPT_HOST= $DOMAIN
     restart: unless-stopped
-# nextjs:
-#   build: .
-#   container_name: nextjs
-#   ports:
-#     - '3000:3000'
-#   env_file:
-#     - .env.local
-# ----------- THIS VERSION IS FOR PRODUCTION  WHEN THE WEBSITE IS CONNECTED TO A DOMAIN NAME -------
-# services:
-#   # nextjs:
-#   #   container_name: WebApp
-#   #   build:
-#   #     context: .
-#   #     dockerfile: Dockerfile
-#   #   ports:
-#   #     - '3000:3000'
-#   #   privileged: true
-#   #   image: website:latest
-#   #   env_file:
-#   #     - .env.local
-#   #   environment:
-#   #   restart: always
 
-#   nginx:
-#     container_name: nginx-proxy
-#     image: nginxproxy/nginx-proxy
-#     ports:
-#       - '80:80'
-#       - '443:443'
-#     # depends_on:
-#     #   - nextjs
-#     volumes:
-#       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-#       - certbot-www:/var/www/certbot # webroot for challenges
-#       - letsencrypt:/etc/letsencrypt # where certs will live
-#       # - ./nginx/conf.d:/etc/nginx/conf.d:ro
-#       # - certbot-www:/var/www/certbot
-#       # - letsencrypt:/etc/letsencrypt
-#       # - /var/run/docker.sock:/tmp/docker.sock:ro
-#       # - ./nginx/conf.d:/etc/nginx/conf.d
-#     restart: always
-#     privileged: true # <-- this one
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:1.9
+    container_name: nginx-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+    environment:
+      - VIRTUAL_HOST=$DOMAIN
+    networks:
+      - proxy
+    restart: unless-stopped
 
-#   certbot:
-#     image: certbot/certbot:latest
-#     container_name:
-#       certbot
-#       # No ports; it writes tokens into /var/www/certbot for nginx to serve
-#     volumes:
-#       - certbot-www:/var/www/certbot
-#       - letsencrypt:/etc/letsencrypt
+  acme-companion:
+    image: nginxproxy/acme-companion
+    container_name: nginx-acme
+    volumes_from:
+      - nginx-proxy:rw
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+    environment:
+      - DEFAULT_EMAIL=$LETSENCRYPT_EMAIL
+    networks:
+      - proxy
 
-# volumes:
-#   certbot-www:
-#   letsencrypt:
-# ------------ PROD BUILD ENDS HERE (DOMAIN NAME) ---------------
+networks:
+  proxy:
 
-# nginx-proxy-acme:
-#   container_name: nginx-proxy-acme
-#   image: nginxproxy/acme-companion
-#   environment:
-#     - DEFAULT_EMAIL=eduard.dez@gmail.com
-#   volumes:
-#     - /var/run/docker.sock:/var/run/docker.sock:ro
-#     - ./nginx/certs:/etc/nginx/certs:rw
-#     - ./nginx/vhost.d:/etc/nginx/vhost.d
-#     - ./nginx/html:/usr/share/nginx/html
-#     - ./nginx/acme.sh:/etc/acme.sh
-#   depends_on:
-#     - nginx-proxy
-#   restart: always
-# services:
-#   nextjs:
-#     container_name: nextjs
-#     build: .
-#     ports:
-#       - "3000:3000"
-#     env_file:
-#       - .env.local
-#     environment:
-#       - VIRTUAL_HOST=myapp.thecores.xyz
-#       - LETSENCRYPT_HOST=myapp.thecores.xyz
-#       - LETSENCRYPT_EMAIL=edlie22@student.sdu.dk
-#     restart: always
-
-#   nginx-proxy:
-#     container_name: nginx-proxy
-#     image: jwilder/nginx-proxy
-#     ports:
-#       - "80:80"
-#       - "443:443"
-#     volumes:
-#       - /var/run/docker.sock:/tmp/docker.sock:ro
-#       - ./nginx/certs:/etc/nginx/certs:ro
-#       - ./nginx/html:/usr/share/nginx/html:rw  # Mount for ACME challenge files
-#     restart: always
-
-#   letsencrypt-nginx-proxy-companion:
-#     container_name: nginx-proxy-acme
-#     image: nginxproxy/acme-companion
-#     environment:
-#       - NGINX_PROXY_CONTAINER=nginx-proxy
-#       - DEFAULT_EMAIL=edlie22@student.sdu.dk
-#     depends_on:
-#       - nginx-proxy
-#     volumes:
-#       - /var/run/docker.sock:/var/run/docker.sock:ro
-#       - ./nginx/certs:/etc/nginx/certs:rw
-#       - ./nginx/html:/usr/share/nginx/html:rw  # Ensure this is writable
-#       - ./nginx/acme:/etc/acme.sh:rw  # Mount for ACME client data
-#     restart: always
-
-# volumes:
-#   acme:
+volumes:
+  certs:
+  html:
+  acme:
