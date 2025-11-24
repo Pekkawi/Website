@@ -18,9 +18,9 @@ services:
       - MONGODB_URL=$MONGODB_URL
       - NEXTAUTH_URL=$NEXTAUTH_URL
       - VIRTUAL_HOST=$DOMAIN
-      - VIRTUAL_PORT=$PORT
+      - VIRTUAL_PORT=3000
       - LETSENCRYPT_EMAIL=$LETSENCRYPT_EMAIL
-      - LETSENCRYPT_HOST= $DOMAIN
+      - LETSENCRYPT_HOST=$DOMAIN
     restart: unless-stopped
 
   nginx-proxy:
