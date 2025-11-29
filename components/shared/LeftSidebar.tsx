@@ -26,7 +26,6 @@ const SidebarSkeleton = () => {
 
 const LeftSidebar = () => {
   // ALL HOOKS MUST BE AT THE TOP, BEFORE ANY CONDITIONS OR RETURNS
-  // const { data: session, status, update } = useSession();
   const pathname = usePathname();
   const { data: session, status } = useSession();
   // const role = session?.user?.role;
@@ -42,9 +41,10 @@ const LeftSidebar = () => {
   // if (status === 'loading' || status === 'unauthenticated') {
   //   return <SidebarSkeleton />;
   // }
-  if (status === 'loading') {
-    return <SidebarSkeleton />;
-  }
+
+  // if (status === 'loading') {
+  //   return <SidebarSkeleton />;
+  // }
 
   return (
     <section className="background-light900_dark200 light-border custom-scrollbar sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto border-r p-6 pt-36 shadow-light-300 dark:shadow-none max-sm:hidden lg:w-[266px]">
@@ -54,32 +54,52 @@ const LeftSidebar = () => {
             const isActive =
               (pathname.includes(item.route) && item.route.length > 1) || // checks if it's not the home route
               pathname === item.route; // isActive will be whichever route we are currently on , in order highlight it in the navbar
-            return (
-              <Link
-                key={item.route}
-                href={item.route}
-                className={`${
-                  isActive
-                    ? 'primary-gradient rounded-lg text-light-900'
-                    : 'text-dark300_light900'
-                } flex items-center justify-start gap-4 bg-transparent p-4`}
-              >
-                <Image
-                  src={item.imgURL}
-                  alt={item.label}
-                  width={28}
-                  height={28}
-                  className={`${isActive ? '' : 'invert-colors'}`}
-                />
-                <p className="base-medium max-lg:hidden">{item.label}</p>
-              </Link>
-            );
-          } else {
-            return (
-              <>
-                <p>No routes for you</p>
-              </>
-            );
+
+            if (status === 'authenticated') {
+              return (
+                <Link
+                  key={item.route}
+                  href={item.route}
+                  className={`${
+                    isActive
+                      ? 'primary-gradient rounded-lg text-light-900'
+                      : 'text-dark300_light900'
+                  } flex items-center justify-start gap-4 bg-transparent p-4`}
+                >
+                  <Image
+                    src={item.imgURL}
+                    alt={item.label}
+                    width={28}
+                    height={28}
+                    className={`${isActive ? '' : 'invert-colors'}`}
+                  />
+                  <p className="base-medium max-lg:hidden">{item.label}</p>
+                </Link>
+              );
+            } else if (status === 'loading' || status === 'unauthenticated') {
+              if (item.route === '/') {
+                return (
+                  <Link
+                    key={item.route}
+                    href={item.route}
+                    className={`${
+                      isActive
+                        ? 'primary-gradient rounded-lg text-light-900'
+                        : 'text-dark300_light900'
+                    } flex items-center justify-start gap-4 bg-transparent p-4`}
+                  >
+                    <Image
+                      src={item.imgURL}
+                      alt={item.label}
+                      width={28}
+                      height={28}
+                      className={`${isActive ? '' : 'invert-colors'}`}
+                    />
+                    <p className="base-medium max-lg:hidden">{item.label}</p>
+                  </Link>
+                );
+              }
+            }
           }
         })}
       </div>

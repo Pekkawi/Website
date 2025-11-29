@@ -18,6 +18,12 @@ export const sidebarLinks: SidebarLink[] = [
     allowedRoles: ['User', 'Admin'],
   },
   {
+    route: '/profile',
+    label: 'Profile',
+    imgURL: '/assets/icons/profile.svg',
+    allowedRoles: ['User', 'Admin'],
+  },
+  {
     route: '/nodes',
     label: 'Nodes',
     imgURL: '/assets/icons/nodes.svg',
@@ -36,9 +42,9 @@ export const sidebarLinks: SidebarLink[] = [
     allowedRoles: ['Admin'],
   },
   {
-    route: '/profile',
-    label: 'Profile',
-    imgURL: '/assets/icons/profile.svg',
-    allowedRoles: ['User', 'Admin'],
+    route: '/documentation',
+    label: 'Documentation',
+    imgURL: '/assets/icons/documentation.svg',
+    allowedRoles: ['Admin'],
   },
 ];
