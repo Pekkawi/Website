@@ -40,4 +40,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   jwt: { maxAge: 60 * 60 * 24 }, // time is in second so: 60 * 60 * 24 = 1 day
   debug: true, // this is only for debugging during testing. Exclude it completely or set it to false for deployment.
+
+  callbacks: {
+    async signIn({ user,  profile }) {
+      try {
+        const db = client.db(); // uses default DB from your URI
+        const users = db.collection('users');
+
+        const existingUser = await users.findOne({ email: user.email });
+
+        if (!existingUser) {
+          await users.insertOne({
+            email: user.email,
+            name: user.name,
+            entraId: (profile as any)?.sub ?? (profile as any)?.oid,
+            role: 'pending',          // or whatever default role you use
+            cardId: null,             // populate later from Entra extension attrs
+            createdAt: new Date(),
+          });
+        }
+
+        return true; // allow sign in
+      } catch (error) {
+        console.error('Error during signIn callback:', error);
+        return false; // block sign in on DB error
+      }
+    },
+
+
 });
+
