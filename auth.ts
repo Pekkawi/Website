@@ -1,64 +1,43 @@
 import NextAuth from 'next-auth';
 import MicrosoftEntraID from 'next-auth/providers/microsoft-entra-id';
 
+// const CARD_ID_CLAIM = 'extension_507ec957a35b4f4e8251339ee1e5fe2f_sduAppMyFairID';
+// const CARD_NO_CLAIM = 'extension_507ec957a35b4f4e8251339ee1e5fe2f_sduRealCardNo';
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     MicrosoftEntraID({
-      clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID,
-      clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
-      issuer: process.env.AUTH_MICROSOFT_ENTRA_ID_ISSUER,
+      clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID!,
+      clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET!,
+      issuer: process.env.AUTH_MICROSOFT_ENTRA_ID_ISSUER!,
+      authorization: {
+        params: {
+          scope: 'openid profile email offline_access',
+          response_type: 'code',
+        },
+      },
+      checks: ['state'],
+
+      async profile(profile) {
+        console.log('ENTRA PROFILE (userinfo/profile):', profile);
+        return {
+          azure_id: (profile as any).oid, // in MongoDB it was previously saved as azure_id, so we keep the same name
+          name: (profile as any).name,
+          email: (profile as any).email ?? (profile as any).preferred_username, // when receiving the profile the 'email' and 'preferred_username' are the exact same
+
+          // Yes, the way we receive these parameters and the way they are saved is different for some reason :/
+          // In some cases people do not have cards for a certain email, example: you are a student helper and you didnt receive a work card
+          // but you should still be able to login to the website. And histroically on the previous system card_number = null and card_id = '' if no card existed
+          // so we are keeping the same convented
+          card_number: (profile as any).Card_ID ?? null,
+          card_id: (profile as any).Card_number ?? '',
+        };
+      },
     }),
   ],
+
+  session: { strategy: 'jwt' }, // All the information about the user that you'll receive from microsoft will be stored in a JSON Webtoken
+
+  jwt: { maxAge: 60 * 60 * 24 }, // time is in second so: 60 * 60 * 24 = 1 day
+  debug: true, // this is only for debugging during testing. Exclude it completely or set it to false for deployment.
 });
-
-// export const { auth, handlers, signIn, signOut } = NextAuth({
-//   ...authConfig,
-//   adapter: MongoDBAdapter(client),
-//   providers: [
-//     Credentials({
-//       name: 'Credentials',
-
-//       credentials: {
-//         email: { label: 'Email', type: 'email' },
-//         password: { label: 'Password', type: 'password' },
-//       },
-
-//       async authorize(credentials) {
-//         const parsedCredentials = z
-//           .object({ email: z.string().email(), password: z.string().min(6) })
-//           .safeParse(credentials);
-
-//         if (parsedCredentials.success) {
-//           const { email, password } = parsedCredentials.data;
-
-//           await connectToDatabase();
-
-//           const usercredentials = await UserCredentials.findOne({
-//             email,
-//           }).select('+password');
-//           if (!usercredentials) return null;
-
-//           const passwordsMatch = await bcrypt.compare(password, usercredentials.password);
-//           if (!passwordsMatch) return null;
-
-//           return {
-//             id: usercredentials._id.toString(),
-//             name: usercredentials.name,
-//             email: usercredentials.email,
-//             role: usercredentials.role,
-//             access: usercredentials.access,
-//           };
-//         }
-
-//         return null;
-//       },
-//     }),
-//   ],
-
-//   session: { strategy: 'jwt' },
-//   jwt: {
-//     // The maximum age of the NextAuth.js issued JWT in seconds
-//     // maxAge: 60 * 60 * 24,
-//     maxAge: 60 * 60 * 24,
-//   },
-// });

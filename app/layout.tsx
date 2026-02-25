@@ -19,9 +19,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   return (
     <html lang="en">
       <body className="font-inter">
-        <Provider>
-          <ThemeProvider>{children}</ThemeProvider>
-        </Provider>
+        <Provider>{children}</Provider>
       </body>
     </html>
   );

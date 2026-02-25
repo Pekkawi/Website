@@ -10,12 +10,6 @@ This project aims to create an access control system for workshop equipment, pro
 - **Permission Management**: Easily add new machines as permissions.
 - **Monitor Machine Usage**: Check the status of a machine and it's history usage
 
-<!-- ## Features
-
-- **User Interface**: A clean, responsive web interface for managing users,machines and permissions
-- **Role-Based Permissions**: Assign different roles and permissions to users to determine which machines they have access to.
-- **Dynamic Machine Addition**: Ability to create new permissions for new equipment. -->
-
 ## Getting Started
 
 ### Prerequisites
@@ -116,10 +110,6 @@ Contributions are welcome! Feel free to open issues or submit pull requests to i
    ```
 
 5. Open a pull request.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
