@@ -15,8 +15,8 @@ export async function GET(
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     // If the user who is logged in is not an admin
-    // if (session?.user?.role !== 'Admin')
-    //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const userId = params.id;
     await connectToDatabase(); // attempt connecting to the DB first

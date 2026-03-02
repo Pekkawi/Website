@@ -11,8 +11,7 @@ import { Types } from 'mongoose';
 import Image from 'next/image';
 import { IPerm } from '@/interfaces/database.interfaces';
 import { useQuery } from 'react-query';
-import { Check, CheckCircle2, X, XCircle } from 'lucide-react';
-import clsx from 'clsx';
+import { Check, X } from 'lucide-react';
 import { getPermissions } from '@/hooks/permissionHooks';
 
 const UserPermissionTable = ({

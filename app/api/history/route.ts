@@ -3,6 +3,10 @@ import { History } from '@/database/history.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { auth } from '@/auth';
 
+// This route is for testing purposes ONLY
+// You can make a POST request to the History of a device aka 3D printer by doing this
+// Otherwise not used since the embedded devices will be updating the history instead in the iot route (folder)
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();

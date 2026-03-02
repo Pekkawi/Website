@@ -40,17 +40,20 @@ app.prepare().then(() => {
     socket.on('updateHistory', async (payload) => {
       const nodeId = payload._id;
 
-      const res = await fetch(`http://${hostname}:${port}/api/nodes/${nodeId}/history`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          printTime: payload.printTime,
-          fileName: payload.fileName,
-          name: payload.name,
-        }),
-      });
+      const res = await fetch(
+        `http://${hostname}:${port}/api/iot/nodes/${nodeId}/history`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            printTime: payload.printTime,
+            fileName: payload.fileName,
+            card_id: payload.card_id,
+          }),
+        }
+      );
       if (!res.ok) {
         console.error(`Failed to update history: ${res.status}`);
       }

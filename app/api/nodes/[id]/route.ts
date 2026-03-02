@@ -5,6 +5,7 @@ import { NodeType } from '@/interfaces/nodes.interface';
 import { connectToDatabase } from '@/lib/mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Deleting a Node
 export async function DELETE(
   request: NextRequest,
   props: { params: Promise<{ id: string }> }
@@ -16,9 +17,9 @@ export async function DELETE(
     // If someone is not logged in, block their request
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // If the user who is logged in is not an admin
-    // if (session?.user?.role !== 'Admin')
-    //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // If the user who is logged in is not an admin DENY their request
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const nodeId = params.id;
     await connectToDatabase(); // connect to MongoDB

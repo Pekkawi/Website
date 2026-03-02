@@ -1,3 +1,4 @@
+import { auth } from '@/auth';
 import Permissions from '@/database/permission.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Db, GridFSBucket } from 'mongodb';
@@ -10,6 +11,15 @@ export async function DELETE(
 ) {
   const params = await props.params;
   try {
+    const session = await auth();
+
+    // If someone is not logged in, block their request
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // If the user who is logged in is not an admin
+    if (session?.user?.role !== 'Admin')
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     const permId = params.id;
     const db = await connectToDatabase(); // attempt connecting to the DB first
     if (db instanceof Db) {
@@ -39,6 +49,15 @@ export async function PATCH(
   request: NextRequest,
   props: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+
+  // If someone is not logged in, block their request
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  // If the user who is logged in is not an admin
+  if (session?.user?.role !== 'Admin')
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
   const params = await props.params;
   try {
     const permId = params.id;
