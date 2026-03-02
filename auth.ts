@@ -1,10 +1,10 @@
 import NextAuth from 'next-auth';
 import MicrosoftEntraID from 'next-auth/providers/microsoft-entra-id';
-
-// const CARD_ID_CLAIM = 'extension_507ec957a35b4f4e8251339ee1e5fe2f_sduAppMyFairID';
-// const CARD_NO_CLAIM = 'extension_507ec957a35b4f4e8251339ee1e5fe2f_sduRealCardNo';
+import { connectToDatabase } from './lib/mongoose';
+import User from './database/user.model';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // adapter: MongoDBAdapter(client),
   providers: [
     MicrosoftEntraID({
       clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID!,
@@ -39,34 +39,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: 'jwt' }, // All the information about the user that you'll receive from microsoft will be stored in a JSON Webtoken
 
   jwt: { maxAge: 60 * 60 * 24 }, // time is in second so: 60 * 60 * 24 = 1 day
-  debug: true, // this is only for debugging during testing. Exclude it completely or set it to false for deployment.
+  debug: false, // this is only for debugging during testing. Exclude it completely or set it to false for deployment.
 
   callbacks: {
-    async signIn({ user,  profile }) {
+    async signIn({ user, profile }) {
       try {
-        const db = client.db(); // uses default DB from your URI
-        const users = db.collection('users');
+        await connectToDatabase();
 
-        const existingUser = await users.findOne({ email: user.email });
+        const azure_id = (profile as any)?.oid;
+        const existingUser = await User.findOne({ azure_id });
+        console.log('Status user existance:', existingUser);
+        // if (!existingUser) {
+        //   await User.create({
+        //     azure_id,
 
-        if (!existingUser) {
-          await users.insertOne({
-            email: user.email,
-            name: user.name,
-            entraId: (profile as any)?.sub ?? (profile as any)?.oid,
-            role: 'pending',          // or whatever default role you use
-            cardId: null,             // populate later from Entra extension attrs
-            createdAt: new Date(),
-          });
-        }
-
-        return true; // allow sign in
+        //     name: user.name,
+        //     email: user.email,
+        //     card_number: (profile as any)?.Card_ID ?? null,
+        //     card_id: (profile as any)?.Card_number ?? '',
+        //     role: 'User',
+        //     createdAt: new Date(),
+        //   });
+        // }
+        return true;
       } catch (error) {
-        console.error('Error during signIn callback:', error);
-        return false; // block sign in on DB error
+        console.error('signIn error:', error);
+        return false;
       }
     },
-
-
+  },
 });
-
