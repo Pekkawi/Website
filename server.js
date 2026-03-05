@@ -7,7 +7,7 @@ import next from 'next';
 import { Server } from 'socket.io';
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost'; // IMPORTANT: Use 0.0.0.0 for Docker
+const hostname = 'localhost';
 const port = 3000;
 console.log('App is here');
 const app = next({ dev, hostname, port });
@@ -15,71 +15,70 @@ const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
+
   const io = new Server(httpServer, {
     cors: {
-      origin: [
-        'http://10.126.128.51:3000',
-        'http://localhost:3000',
-        'http://0.0.0.0:3000',
-      ],
+      origin: dev ? ['http://localhost:3000'] : ['https://thecore.sdu.dk'],
       methods: ['GET', 'POST'],
+      credentials: true,
     },
   });
 
-  io.on('connection', (socket) => {
-    console.log('Node env:', process.env.NODE_ENV);
-    console.log('👤 New client connected:', socket.id);
+  io.use((socket, nextFn) => {
+    const token = socket.handshake.auth?.token;
 
-    // 1) Forward any "printerStatus" from any client (Python or front-end)
+    if (!token) return nextFn(new Error('missing token'));
+
+    // Allow printer nodes:
+    const printerKey = process.env.API_KEY_PRINTERS;
+
+    // Choose your policy:
+    if (token !== printerKey) return nextFn(new Error('unauthorized'));
+
+    return nextFn();
+  });
+
+  io.on('connection', (socket) => {
+    console.log('Socket connected:', socket.id);
+
     socket.on('printerStatus', (payload) => {
-      // Re-broadcast to *all* connected clients (browsers, Python, etc.)
-      console.log('A message has been received');
       io.emit('printerStatus', payload);
     });
 
-    socket.on('updateHistory', async (payload) => {
-      const nodeId = payload._id;
+    // IMPORTANT: match the Python event name
+    socket.on('updateNodeHistory', async (payload) => {
+      try {
+        const nodeId = payload._id;
 
-      const res = await fetch(
-        `http://${hostname}:${port}/api/iot/nodes/${nodeId}/history`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            printTime: payload.printTime,
-            fileName: payload.fileName,
-            card_id: payload.card_id,
-          }),
-        }
-      );
-      if (!res.ok) {
-        console.error(`Failed to update history: ${res.status}`);
+        const res = await fetch(
+          `http://127.0.0.1:${port}/api/iot/nodes/${nodeId}/history`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              // Authorization: `Bearer ${process.env.API_KEY_PRINTERS}`,
+            },
+            body: JSON.stringify({
+              printTime: payload.printTime,
+              fileName: payload.fileName,
+              name: payload.name,
+              card_id: payload.card_id,
+            }),
+          }
+        );
+
+        if (!res.ok) console.error(`Failed to update history: ${res.status}`);
+      } catch (e) {
+        console.error('updateNodeHistory handler failed:', e);
       }
     });
 
-    // … your existing handlers …
-    socket.on('message', (data) => {
-      io.emit('message', {
-        text: data.text,
-        userId: socket.id,
-        timestamp: new Date().toISOString(),
-        username: data.username,
-      });
-    });
-
     socket.on('disconnect', () => {
-      console.log('⚠️ Client disconnected:', socket.id);
+      console.log('Socket disconnected:', socket.id);
     });
   });
 
-  httpServer
-    .once('error', (err) => {
-      console.error(err);
-      process.exit(1);
-    })
-    .listen(port, () => {
-      console.log(`> Ready on http://${hostname}:${port}`);
-    });
+  httpServer.listen(port, hostname, () => {
+    console.log(`> Ready on http://${hostname}:${port}`);
+  });
 });
