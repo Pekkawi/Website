@@ -11,8 +11,9 @@ import { useSession } from 'next-auth/react';
 
 const Home = () => {
   const { data: session, status } = useSession();
-  // const userRole = (session?.user as any)?.role;
-  // const isUser = userRole === 'User';
+  const userRole = (session?.user as any)?.role;
+  const isUser = userRole === 'User';
+  const isAdmin = userRole === 'admin';
 
   console.log('Session data:', session);
 
@@ -55,26 +56,28 @@ const Home = () => {
             </div>
           )}
 
-          <div className="mt-10 flex flex-col space-y-6">
-            <div className="flex items-center space-x-4">
-              <FaUserShield className="text-4xl text-orange-600" />
-              <p className="font-medium text-gray-700">
-                <b>User Management</b>: View and manage user roles and permissions easily.
-              </p>
+          {isAdmin && (
+            <div className="mt-10 flex flex-col space-y-6">
+              <div className="flex items-center space-x-4">
+                <FaUserShield className="text-4xl text-orange-600" />
+                <p className="font-medium text-gray-700">
+                  <b>User Management</b>: View and manage roles and permissions.
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <FaTools className="text-4xl text-orange-600" />
+                <p className="font-medium text-gray-700">
+                  <b>Permission Control</b>: Add or Remove a new Machine Type.
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <FaPlusCircle className="text-4xl text-orange-600" />
+                <p className="font-medium text-gray-700">
+                  <b>Machine Management</b>: View machine status and history.
+                </p>
+              </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <FaTools className="text-4xl text-orange-600" />
-              <p className="font-medium text-gray-700">
-                <b>Permission Control</b>: Add or Remove a new Machine Type.
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <FaPlusCircle className="text-4xl text-orange-600" />
-              <p className="font-medium text-gray-700">
-                <b>Machine Management</b>: View machine status and history.
-              </p>
-            </div>
-          </div>
+          )}
         </motion.div>
       </div>
     </>

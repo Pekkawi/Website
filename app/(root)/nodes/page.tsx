@@ -16,13 +16,11 @@ import {
 // import { RestrictedAccess } from '@/components/shared/RestrictedAccess';
 // import { useUser } from '@clerk/nextjs';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 
 const Nodes = () => {
   const [nodeOpen, setnodeOpen] = useState(''); // initially an empty string
-  const { data: session, status } = useSession();
   // makes sure that only one drop down is opened at a time
   const handleToggle = (deviceName: string) => {
     if (deviceName === nodeOpen) {
@@ -43,6 +41,7 @@ const Nodes = () => {
   if (statusNodes === 'loading') {
     return <PageLoader />;
   }
+
   if (status === 'authenticated') {
     return (
       <div className="background background-light900_dark300 mb-2 mt-[-30px] h-auto">
