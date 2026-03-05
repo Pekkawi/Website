@@ -16,7 +16,7 @@ export async function GET(
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     // If the user who is logged in is not an admin Deny their request
-    if (session?.user?.role !== 'Admin')
+    if (session?.user?.role !== 'admin')
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     await connectToDatabase();

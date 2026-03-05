@@ -15,13 +15,13 @@ export async function GET(
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     // If the user who is logged in is not an admin
-    if (session?.user?.role !== 'Admin')
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // if (session?.user?.role !== 'Admin')
+    //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const userId = params.id;
     await connectToDatabase(); // attempt connecting to the DB first
 
-    const user = await User.where({ display_name: userId })
+    const user = await User.where({ _id: userId })
       .findOne()
       .select('display_name email card_id card_number role permissions');
     return NextResponse.json(
@@ -54,7 +54,7 @@ export async function DELETE(
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     // If the user who is logged in is not an admin
-    if (session?.user?.role !== 'Admin')
+    if (session?.user?.role !== 'admin')
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const userId = params.id;

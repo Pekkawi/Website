@@ -17,7 +17,7 @@ export async function PATCH(
     }
 
     // If the user who is logged in is not an admin
-    if (session?.user?.role !== 'Admin') {
+    if (session?.user?.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
