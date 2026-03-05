@@ -11,7 +11,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       issuer: process.env.AUTH_MICROSOFT_ENTRA_ID_ISSUER!,
       authorization: {
         params: {
-          scope: 'openid profile email offline_access',
+          scope: 'openid profile email',
           response_type: 'code',
         },
       },
@@ -35,9 +35,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 
-  session: { strategy: 'jwt' }, // All the information about the user that you'll receive from microsoft will be stored in a JSON Webtoken
+  session: { strategy: 'jwt', maxAge: 60 * 15 }, // All the information about the user that you'll receive from microsoft will be stored in a JSON Webtoken
 
-  jwt: { maxAge: 60 * 60 * 24 }, // time is in second so: 60 * 60 * 24 = 1 day
+  jwt: { maxAge: 60 * 15 }, // time is in second so: 60 * 15 = 15 minutes
   debug: false, // this is only for debugging during testing. Exclude it completely or set it to false for deployment.
 
   // This entire callback function basically creates a new User in the DB if it does not already exist.
@@ -89,16 +89,44 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               console.warn('Duplicate key during create — treating as success.');
               return true;
             }
-
             return false;
           }
         }
-
         return true;
       } catch (error) {
         console.error('signIn error:', error);
         return false;
       }
+    },
+
+    async jwt({ token, profile }) {
+      // On first sign-in, token will have identifiers we can use
+      // (profile is typically present on initial login)
+      if (profile) {
+        const azure_id = (profile as any)?.oid;
+
+        if (azure_id) {
+          await connectToDatabase();
+          const dbUser = await User.findOne({ azure_id }).select('role azure_id _id');
+
+          // Persist into the JWT
+          token.azure_id = azure_id;
+          token.role = dbUser?.role ?? 'user';
+          token._id = dbUser?._id?.toString();
+        }
+      }
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      // Expose it to the client
+      if (session.user) {
+        (session.user as any).azure_id = token.azure_id;
+        (session.user as any).role = token.role;
+        (session.user as any)._id = token._id;
+      }
+      return session;
     },
   },
 });
