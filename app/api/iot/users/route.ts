@@ -1,28 +1,26 @@
 import User from '@/database/user.model';
+import { requireAnyIotBearer } from '@/lib/iotAuth';
 import { connectToDatabase } from '@/lib/mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = requireAnyIotBearer(request as any, ['API_KEY_LASER']);
+    if (!auth.ok) {
+      return NextResponse.json(
+        { error: auth.msg },
+        { status: auth.status, headers: { 'Cache-Control': 'no-store' } }
+      );
+    }
+
     await connectToDatabase();
-    const users = await User.find({}); // Fetch all the users
+    const users = await User.find({}, { card_id: 1, permissions: 1, _id: 0 }).lean();
 
-    // sort users alphabetically by name
-    users.sort((a, b) => {
-      if (a.first_name < b.first_name) {
-        return -1;
-      } else if (a.first_name > b.first_name) {
-        return 1;
-      } else {
-        return 0;
-      }
+    return NextResponse.json(users, {
+      status: 200,
+      headers: { 'Cache-Control': 'no-store' },
     });
-
-    return NextResponse.json(users, { status: 200 });
   } catch (err) {
-    return NextResponse.json(
-      { error: err, message: 'Failed to fetch User' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

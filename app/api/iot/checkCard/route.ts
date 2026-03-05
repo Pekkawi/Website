@@ -4,9 +4,18 @@ import User from '@/database/user.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import Permissions from '@/database/permission.model';
 import { IPerm } from '@/interfaces/database.interfaces';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAnyIotBearer } from '@/lib/iotAuth';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const auth = requireAnyIotBearer(request as any, ['API_KEY_PRINTERS', 'API_KEY_LASER']);
+  if (!auth.ok) {
+    return NextResponse.json(
+      { error: auth.msg },
+      { status: auth.status, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
+
   const url = new URL(request.url); // create  a new URL object from the request URL
   const cardId = url.searchParams.get('cardId'); // get the cardId query parameter from the URL
 
@@ -23,11 +32,8 @@ export async function GET(request: Request) {
 
     // Attempt to find a user by card_id and populate their permissions.
     const user = await User.findOne({ card_id: cardId }).populate('permissions');
-    const some = await Permissions.find({}); // This is just a temporary workaround since Permissions is not specified anywhere else in the code,
-    console.log(`Person with cardID: ${cardId} (Searching now....)`);
 
     if (!user) {
-      console.log(`Person with cardID: ${cardId} does not exist`);
       // If no user is found, return a 404 response.
       return NextResponse.json('User not found', { status: 404 });
     }
@@ -42,7 +48,6 @@ export async function GET(request: Request) {
       (permission: IPerm) => permission.abbreviation === 'FDM'
     );
 
-    console.log(`Checking if user with cardID: ${cardId} has neccesary permissions`);
     // Construct and return the response with user details and permissions.
     // this logic needs to fucking change too
     return NextResponse.json(
@@ -59,9 +64,7 @@ export async function GET(request: Request) {
       }
     );
   } catch (err) {
-    // Log the error for debugging purposes.
-    console.error(err);
     // Return a 500 response in case of any errors.
-    return NextResponse.json('Failed to fetch user', { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

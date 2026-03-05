@@ -2,6 +2,7 @@ import { History } from '@/database/history.model';
 import { connectToDatabase } from '@/lib/mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 import User from '@/database/user.model';
+import { requireAnyIotBearer } from '@/lib/iotAuth';
 
 export async function POST(
   request: NextRequest,
@@ -10,6 +11,14 @@ export async function POST(
   const params = await props.params;
   try {
     // ### TO DO: Add Node auithentication logic so they can post their history here :D ###
+
+    const auth = requireAnyIotBearer(request as any, ['API_KEY_PRINTERS']);
+    if (!auth.ok) {
+      return NextResponse.json(
+        { error: auth.msg },
+        { status: auth.status, headers: { 'Cache-Control': 'no-store' } }
+      );
+    }
 
     await connectToDatabase();
 
@@ -32,7 +41,10 @@ export async function POST(
         fileName,
       }).save();
       // return new Response(JSON.stringify(newHistory), { status: 201 });
-      return NextResponse.json(newHistory, { status: 201 });
+      return NextResponse.json(newHistory, {
+        status: 201,
+        headers: { 'Cache-Control': 'no-store' },
+      });
     }
   } catch (err) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
