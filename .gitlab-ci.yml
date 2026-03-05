@@ -61,7 +61,6 @@ deploy-production:
     # Clean up dangling images only (won’t delete cached layers in use)
 
   after_script:
-    # Always clean up certificate and private key, even if pipeline fails
     - docker image prune -f
     - docker system prune --volumes -f
   only:
