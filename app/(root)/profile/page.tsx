@@ -4,21 +4,21 @@ import React from 'react';
 import { useSession } from 'next-auth/react';
 import PageLoader from '@/components/shared/PageLoader';
 import { useQuery } from 'react-query';
-import { getUser } from '@/hooks/userHooks';
+import { getUserDetails } from '@/hooks/userHooks';
 import { motion } from 'framer-motion';
 import UserPermissionTable from '@/components/Profile Page/UserPermissionTable';
 
 const Profile = () => {
   const { data: session, status: sessionStatus } = useSession();
 
-  const name = session?.user?.name;
+  const userId = session?.user?._id;
   console.log(session);
   const { data: user, status: userStatus } = useQuery(
     ['user'],
-    () => getUser(name),
+    () => getUserDetails(userId),
 
     {
-      enabled: !!name, // makes sure name exists before sending the request, to avoid sending a bad request
+      enabled: !!userId, // makes sure name exists before sending the request, to avoid sending a bad request
       staleTime: Infinity,
     }
   );
