@@ -1,36 +1,54 @@
-import NextAuth from 'next-auth';
-
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
-// export default NextAuth(authConfig).auth;
 
 const apiAuthPrefix = '/api/auth';
-// const authPagrRoutes = ['/'];
-const protectedRoutes = ['/nodes', 'permissions', '/users', '/authorization'];
+
+// server-safe RBAC
+const roleRoutes: Record<string, string[]> = {
+  '/nodes': ['admin', 'maintainer'],
+  '/users': ['admin', 'maintainer'],
+  '/permissions': ['admin', 'maintainer'],
+  '/documentation': ['admin', 'maintainer'],
+  '/authorization': ['admin'],
+  '/profile': ['user', 'admin', 'maintainer'],
+};
+
+function allowedRolesForPath(path: string) {
+  for (const route of Object.keys(roleRoutes)) {
+    if (path === route || path.startsWith(route + '/')) return roleRoutes[route];
+  }
+  return null;
+}
 
 export default auth((req) => {
-  const { nextUrl } = req;
+  const path = req.nextUrl.pathname;
+
+  // Always allow NextAuth endpoints
+  if (path.startsWith(apiAuthPrefix)) return NextResponse.next();
+
+  const allowedRoles = allowedRolesForPath(path);
+  if (!allowedRoles) return NextResponse.next(); // route not role-protected
+
   const isLoggedIn = !!req.auth;
-  const path = nextUrl.pathname;
+  const role = (req.auth?.user as any)?.role as string | undefined;
 
-  const isAuthApiRoute = path.startsWith(apiAuthPrefix);
-  const isProtectedRoute = protectedRoutes.includes(path);
-  //   const isAuthPageRoute = authPagrRoutes.includes(path);
-
-  if (isAuthApiRoute) {
-    return NextResponse.next();
+  if (!isLoggedIn) {
+    // redirect to home but keep the original path so you can route back after login if you want
+    const url = new URL('/', req.nextUrl);
+    url.searchParams.set('next', path);
+    return NextResponse.redirect(url);
   }
 
-  if (!isLoggedIn && isProtectedRoute) {
+  if (!role || !allowedRoles.includes(role)) {
+    // IMPORTANT: redirect to a page that is NOT protected
     return NextResponse.redirect(new URL('/', req.nextUrl));
+    // Better: return NextResponse.redirect(new URL('/403', req.nextUrl));
   }
 
   return NextResponse.next();
 });
 
 export const config = {
-  // the middleware will not run on paths such as the favicon or static images
-
   matcher: [
     '/((?!api/auth|api/iot|_next/static|_next/image|favicon.ico|public/.*|icons/.*|images/.*|assets/.*).*)',
   ],
